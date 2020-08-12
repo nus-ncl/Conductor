@@ -1,0 +1,15 @@
+# service: zara
+- name: copy all files in place
+  become: no
+  become_user: root
+  copy:
+    src: {{ path }}
+    dest: /home/vagrant/zara
+    owner: vagrant
+    group: vagrant
+    mode: '0644'
+
+- name: decompression
+  script: /home/vagrant/zara/script.sh
+
+

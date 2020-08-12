@@ -1,0 +1,36 @@
+# service: blx
+- name: copy all files in place
+  become: no
+  become_user: root
+  copy:
+    src: /Users/hkwany/PycharmProjects/Conductor/bin/../services/blx
+    dest: /home/vagrant/blx
+    owner: vagrant
+    group: vagrant
+    mode: '0644'
+
+
+- name: install libssl.deb
+  become: yes
+  become_user: root
+  apt:
+    deb: /home/vagrant/blx/dependency/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+
+
+- name: decompression
+  script: /home/vagrant/blx/script.sh
+
+# service: zara
+- name: copy all files in place
+  become: no
+  become_user: root
+  copy:
+    src: /Users/hkwany/PycharmProjects/Conductor/bin/../services/zara
+    dest: /home/vagrant/zara
+    owner: vagrant
+    group: vagrant
+    mode: '0644'
+
+- name: decompression
+  script: /home/vagrant/zara/script.sh
+

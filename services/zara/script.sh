@@ -1,0 +1,1 @@
+sudo tar -xzvf /home/vagrant/blx/zara.tar.gz -C /opt

@@ -1,0 +1,2 @@
+[VM1]
+172.16.1.101 ansible_user=vagrant
