@@ -1,0 +1,22 @@
+---
+
+- hosts: {{ host_name }}
+  gather_facts: true
+  tasks:
+    # service: apt-get update & install essentials for a VM
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+
+    - name: apt install essentials
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - net-tools
+        - nfs-common
+        - software-properties-common

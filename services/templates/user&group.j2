@@ -1,0 +1,18 @@
+    # service: create user & group
+    - name: create group projects
+      become: yes
+      become_user: root
+      group:
+        name: projects
+        gid: 500
+        state: present
+
+    - name: create user projects under groups projects & sudo
+      become: yes
+      become_user: root
+      user:
+        name: projects
+        shell: /bin/bash
+        create_home: yes
+        uid: 500
+        groups: projects,sudo

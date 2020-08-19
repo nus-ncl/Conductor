@@ -1,0 +1,27 @@
+---
+
+- hosts: nginxservers
+  gather_facts: false
+  tasks:
+    - name: Copy file with owner and permissions
+      become: yes
+      become_user: root
+      copy:
+        src: /Users/hkwany/vagrant/provision/nginx
+        dest: /etc/init.d/nginx
+        owner: root
+        group: root
+        mode: '0755'
+    # - name: (no need to do this)Copy file with owner and permissions
+    #   copy:
+    #     src: /Users/hkwany/vagrant/provision/nginx.sh
+    #     dest: ~/nginx.sh
+    #     owner: vagrant
+    #     group: vagrant
+    #     mode: '0755'
+    - name: Run a script with arguments (free form)
+      script: /Users/hkwany/vagrant/provision/nginx.sh
+      # script: ~/nginx.sh
+    # - name: Start nginx
+    #   script: /Users/hkwany/vagrant/provision/nginx_start.sh
+     

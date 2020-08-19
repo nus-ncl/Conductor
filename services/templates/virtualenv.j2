@@ -1,0 +1,45 @@
+    # service: create virtualenv
+
+    #- name: update .bashrc of user 'projects' & install virtualenvwrapper under user 'projects'
+    #  become: yes
+    #  become_user: projects
+    #  script: services/virtualenv/script.sh
+
+    - name: add line to ~/.bashrc
+      become: yes
+      become_user: projects
+      lineinfile:
+        path: ~/.bashrc
+        line: "export PATH='$PATH:/home/projects/.local/bin'\nexport WORKON_HOME='~/.virtualenv'\nexport VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3\nsource /home/projects/.local/bin/virtualenvwrapper.sh"
+        state: present
+
+    # yes | pip3 install virtualenvwrapper --user
+    - name: pip3 install virtualenvwrapper
+      pip:
+       name: virtualenvwrapper
+       extra_args: --user
+       executable: pip3
+
+    - name: Create the virtualenv 'klara'
+      become: yes
+      become_user: projects
+      shell:
+           export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/projects/.local/bin'
+
+           export WORKON_HOME='~/.virtualenv'
+
+           export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+
+           . /home/projects/.local/bin/virtualenvwrapper.sh
+
+           mkvirtualenv klara --python=python2
+      args:
+        executable: /usr/bin/bash
+        creates: ~/.virtualenv/klara
+
+    - name: pip install requirements(under 'projects' in virtualenv 'klara')
+      become: yes
+      become_user: projects
+      pip:
+        requirements=/home/vagrant/VM1/dependency/pip_requirements.txt
+        virtualenv=/home/projects/.virtualenv/klara

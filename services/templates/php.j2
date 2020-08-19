@@ -1,0 +1,44 @@
+    # service: php7.0 & remove php7.4
+    - name: apt-repo & update
+      become: yes
+      become_user: root
+      apt_repository:
+        validate_certs: no
+        repo: 'ppa:ondrej/php'
+        state: present
+        update_cache: yes
+
+    - name: apt install
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - libapache2-mod-php7.0
+        - php7.0-fpm
+        - php7.0
+        - php7.0-mysqli
+        - php7.0-curl
+        - php7.0-gd
+        - php7.0-intl
+        - php-pear
+        - php-imagick
+        - php7.0-imap
+        - php7.0-mcrypt
+        - php-memcache
+        - php7.0-pspell
+        - php7.0-recode
+        - php7.0-sqlite3
+        - php7.0-tidy
+        - php7.0-xmlrpc
+        - php7.0-xsl
+        - php7.0-mbstring
+        - php-gettext
+        - php-apcu
+
+    - name: purge php7.4*
+      become: yes
+      become_user: root
+      shell:
+        cmd: apt-get -y purge php7.4*

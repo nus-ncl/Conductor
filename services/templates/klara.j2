@@ -1,161 +1,3 @@
----
-
-- hosts: VM1
-  gather_facts: true
-  tasks:
-    # service: apt-get update & install essentials for a VM
-    - name: apt-get update
-      become: yes
-      become_user: root
-      apt:
-        update_cache: yes
-
-    - name: apt install essentials
-      become: yes
-      become_user: root
-      apt:
-        name: ""
-        state: present
-      loop:
-        - net-tools
-        - nfs-common
-        - software-properties-common
-
-    # service: python2, python-dev, pip2 & pip3
-    # For Ubuntu, python-dev and python3-dev
-    # For CentOS, python-devel and python3-devel
-    - name: apt install python2, python-dev, pip2 & pip3
-      become: yes
-      become_user: root
-      apt:
-        name: ""
-        state: present
-      loop:
-        - python
-        - python-pip
-        - python3-pip
-        - python-dev
-
-    # service: php7.0 & remove php7.4
-    - name: apt-repo & update
-      become: yes
-      become_user: root
-      apt_repository:
-        validate_certs: no
-        repo: 'ppa:ondrej/php'
-        state: present
-        update_cache: yes
-
-    - name: apt install
-      become: yes
-      become_user: root
-      apt:
-        name: ""
-        state: present
-      loop:
-        - libapache2-mod-php7.0
-        - php7.0-fpm
-        - php7.0
-        - php7.0-mysqli
-        - php7.0-curl
-        - php7.0-gd
-        - php7.0-intl
-        - php-pear
-        - php-imagick
-        - php7.0-imap
-        - php7.0-mcrypt
-        - php-memcache
-        - php7.0-pspell
-        - php7.0-recode
-        - php7.0-sqlite3
-        - php7.0-tidy
-        - php7.0-xmlrpc
-        - php7.0-xsl
-        - php7.0-mbstring
-        - php-gettext
-        - php-apcu
-
-    - name: purge php7.4*
-      become: yes
-      become_user: root
-      shell:
-        cmd: apt-get -y purge php7.4*
-
-    # service: django
-    - name: pip install django
-      pip:
-       name: ""
-       extra_args: --user
-       executable: pip3
-      loop:
-        - django
-
-    # service: attribution fstab
-    - name: Create a directory if it does not exist
-      become: yes
-      become_user: root
-      file:
-        path: /opt/attribution
-        state: directory
-        # You must either add a leading zero so that Ansible YAML parser knows it's an octal number
-        mode: '0755'
-
-    - name: add line to /etc/fstab
-      become: yes
-      become_user: root
-      lineinfile:
-        path: /etc/fstab
-        line: 10.0.2.2:/mnt/sda3/attribution /opt/attribution nfs defaults 0 0
-        state: present
-
-    - name: mount /etc/fstab
-      become: yes
-      become_user: root
-      shell: mount -a
-      args:
-        executable: /usr/bin/bash
-
-    # service: blx
-    - name: copy libssl in place if missing
-      copy:
-        src: services/blx/dependency/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
-        dest: /home/{{ ansible_env.USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
-        backup: yes
-
-    - name: install libssl.deb
-      become: yes
-      become_user: root
-      apt:
-        deb: /home/{{ ansible_env.USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
-
-    - name: unarchive blx folders
-      become: yes
-      become_user: root
-      unarchive:
-        src: services/blx/blx.tar.gz
-        remote_src: no
-        copy: yes
-        dest: /opt/
-
- 
-
-    # service: binspace
-    - name: unarchive binspace
-      unarchive:
-        src: services/binspace/binspace.tar.gz
-        remote_src: no
-        copy: yes
-        dest: /home/{{ ansible_env.USER }}/
-
-    # service: zara
-    - name: unarchive zara
-      unarchive:
-        src: services/zara/zara.tar.gz
-        remote_src: no
-        copy: yes
-        dest: /opt/
- 
-
     # service: klara
       # requirements:
       # 1. GNU/Linux (we recommend Ubuntu 16.04 or latest LTS)
@@ -169,7 +11,7 @@
       become: yes
       become_user: root
       apt:
-        name: ""
+        name: "{{ item }}"
         state: present
       loop:
         - libmysqlclient-dev
@@ -225,7 +67,7 @@
         src: services/klara/klara.tar.gz
         remote_src: no
         copy: yes
-        dest: /home/{{ ansible_env.USER }}/
+        dest: /home/{{ USER }}/
 
     - name: decompression klara overlay to /opt/
       become: yes
@@ -388,4 +230,3 @@
       become: yes
       become_user: root
       shell: supervisord -c /etc/supervisor/supervisord.conf
-

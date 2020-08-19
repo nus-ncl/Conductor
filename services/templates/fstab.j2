@@ -1,0 +1,43 @@
+    # service: fstab
+    - name: comment
+      become: yes
+      become_user: root
+      replace:
+        path: /etc/fstab
+        # regexp: '^(Listen .*)$'
+        regexp: '{{ regexp_1 }}'
+        # replace: '# \1'
+        replace: '{{ replace }}'
+        # create backup file to rollback
+        # backup: yes
+
+
+    - name: change /etc/fstab
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/fstab
+        insertbefore: '{{ regexp_2 }}'
+        line: {{ line }}
+        firstmatch: yes
+        state: present
+
+    - name: Add the line if it does not exist
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/fstab
+        line: {{ line }}
+        state: present
+        #backup: yes
+
+    - name: mount /etc/fstab
+      become: yes
+      become_user: root
+      shell: mount -a
+      args:
+        executable: /usr/bin/bash
+
+
+
+

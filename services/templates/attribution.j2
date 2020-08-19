@@ -1,0 +1,24 @@
+    # service: attribution fstab
+    - name: Create a directory if it does not exist
+      become: yes
+      become_user: root
+      file:
+        path: /opt/attribution
+        state: directory
+        # You must either add a leading zero so that Ansible YAML parser knows it's an octal number
+        mode: '0755'
+
+    - name: add line to /etc/fstab
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/fstab
+        line: 10.0.2.2:/mnt/sda3/attribution /opt/attribution nfs defaults 0 0
+        state: present
+
+    - name: mount /etc/fstab
+      become: yes
+      become_user: root
+      shell: mount -a
+      args:
+        executable: /usr/bin/bash

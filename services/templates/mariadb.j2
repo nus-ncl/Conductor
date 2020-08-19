@@ -1,0 +1,45 @@
+    # service: mariadb
+    - name: apt install
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - libmysqlclient-dev
+        - mariadb-server
+
+    - name: Extract libmariadb.tar.gz into /usr/lib/x86_64-linux-gnu/
+      become: yes
+      become_user: root
+      unarchive:
+        src: services/mariadb/dependency/libmariadb.tar.gz
+        remote_src: no
+        copy: yes
+        dest: /usr/lib/x86_64-linux-gnu/
+        extra_opts: ['--strip-components=1']
+        #- --strip-components=1
+
+    - name: Create a symbolic link
+      become: yes
+      become_user: root
+      file:
+        src: /usr/lib/x86_64-linux-gnu/libmariadb.so
+        dest: /usr/lib/x86_64-linux-gnu/libmariadb.so.3
+        owner: root
+        group: root
+        state: link
+
+    - name: copy my_config.h in place if missing
+      become: yes
+      become_user: root
+      copy:
+        src: services/mariadb/dependency/my_config.h
+        dest: /usr/include/mysql/my_config.h
+        backup: yes
+        #owner: vagrant
+        #group: vagrant
+        #mode: '0644'
+
+    - name: import databases & grants
+      script: services/mariadb/script.sh

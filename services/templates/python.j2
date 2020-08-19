@@ -1,0 +1,14 @@
+    # service: python2, python-dev, pip2 & pip3
+    # For Ubuntu, python-dev and python3-dev
+    # For CentOS, python-devel and python3-devel
+    - name: apt install python2, python-dev, pip2 & pip3
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python
+        - python-pip
+        - python3-pip
+        - python-dev

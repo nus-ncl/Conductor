@@ -1,0 +1,25 @@
+    # service: nginx
+    - name: Copy file with owner and permissions
+      become: yes
+      become_user: root
+      copy:
+        src: /Users/hkwany/vagrant/provision/nginx
+        dest: /etc/init.d/nginx
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: download, configure, make, install specific version of nginx
+      script: /Users/hkwany/vagrant/provision/nginx.sh
+
+  {# - name: (no need to do this)Copy file with owner and permissions
+       copy:
+         src: /Users/hkwany/vagrant/provision/nginx.sh
+         dest: ~/nginx.sh
+         owner: vagrant
+         group: vagrant
+         mode: '0755'
+
+     - name: Start nginx
+       script: /Users/hkwany/vagrant/provision/nginx_start.sh
+  #}

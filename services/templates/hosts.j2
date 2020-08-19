@@ -1,0 +1,8 @@
+    # service: hosts
+    - name: add line to /etc/hosts
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/fstab
+        line: '127.0.0.1\tklara.ncl.sg'
+        state: present

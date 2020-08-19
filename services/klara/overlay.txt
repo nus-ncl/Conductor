@@ -1,0 +1,2 @@
+none /mnt/klara/clean overlay auto,defaults,lowerdir=/opt/attribution/collection/clean_50k,upperdir=/opt/klara.overlay/clean/upper,workdir=/opt/klara.overlay/clean/work,comment=klara_clean_50k	0	2
+none /mnt/klara/malware overlay auto,defaults,lowerdir=/opt/attribution/collection/malware,upperdir=/opt/klara.overlay/malware/upper,workdir=/opt/klara.overlay/malware/work,comment=klara_clean	0	2

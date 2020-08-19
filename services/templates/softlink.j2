@@ -1,0 +1,14 @@
+    # service: softlink
+    - name: Create a symbolic link
+      become: yes
+      become_user: root
+      file:
+        src: /usr/lib/x86_64-linux-gnu/libmariadb.so
+        dest: /usr/lib/x86_64-linux-gnu/libmariadb.so.3
+        owner: root
+        group: root
+        state: link
+
+
+
+

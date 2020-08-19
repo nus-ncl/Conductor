@@ -1,0 +1,6 @@
+    # service: apt-update
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes

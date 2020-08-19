@@ -1,23 +1,65 @@
-# service: blx
-- name: copy all files in place
-  become: no
-  become_user: root
-  copy:
-    src: {{ path }}
-    dest: /home/vagrant/blx
-    owner: vagrant
-    group: vagrant
-    mode: '0644'
+    # service: blx
+    - name: copy libssl in place if missing
+      copy:
+        src: services/blx/dependency/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+        dest: /home/{{ USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+        backup: yes
 
+    - name: install libssl.deb
+      become: yes
+      become_user: root
+      apt:
+        deb: /home/{{ USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
 
-- name: install libssl.deb
-  become: yes
-  become_user: root
-  apt:
-    deb: /home/vagrant/blx/dependency/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+    - name: unarchive blx folders
+      become: yes
+      become_user: root
+      unarchive:
+        src: services/blx/blx.tar.gz
+        remote_src: no
+        copy: yes
+        dest: /opt/
 
+ {# - name: copy all files in place
+      become: no
+      become_user: root
+      copy:
+        src: services/blx/
+        dest: /home/{{ USER }}/blx
+        owner: vagrant
+        group: vagrant
+        mode: '0644'
 
-- name: decompression
-  script: /home/vagrant/blx/script.sh
+    - name: decompression
+      unarchive:
+        src: "{{ gz_path }}"
+        remote_src: no
+        copy: yes
+        dest: /opt/
 
+    - name: Check if my_package is installed
+      command: dpkg-query -W my_package
+      register: my_package_check_deb
+      failed_when: my_package_check_deb.rc > 1
+      changed_when: my_package_check_deb.rc == 1
 
+    - name: Download my_package
+      get_url:
+        url="{{ my_package_url }}"
+        dest="/home/{{ USER }}/Downloads/{{ my_package_name }}.deb"
+      when: my_package_check_deb.rc == 1
+
+    - name: Install my_package
+      apt: deb="/home/{{ USER }}/Downloads/{{ my_package_name }}.deb"
+      sudo: true
+      when: my_package_check_deb.rc ==
+
+    - name: install libssl.deb
+      become: yes
+      become_user: root
+      apt:
+        deb: /home/{{ USER }}/blx/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+
+    - name: decompression
+      script: /home/vagrant/blx/script.sh
+ #}

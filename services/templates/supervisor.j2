@@ -1,0 +1,28 @@
+    # service: supervisor
+    - name: pip install supervisor
+      become: yes
+      become_user: root
+      pip:
+       name: supervisor
+       executable: pip3
+
+    - name: prepare supervisor folders
+      unarchive:
+        src: services/supervisor/supervisor.tar.gz
+        remote_src: no
+        copy: yes
+        dest: /etc/
+
+    - name: Create a directory if it does not exist
+      become: yes
+      become_user: root
+      file:
+        path: /var/log/supervisor
+        state: directory
+        # You must either add a leading zero so that Ansible YAML parser knows it's an octal number
+        mode: '0755'
+
+    - name: Running supervisor
+      become: yes
+      become_user: root
+      shell: supervisord -c /etc/supervisor/supervisord.conf
