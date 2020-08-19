@@ -3,3 +3,6 @@
 defaults/__pycache__/
 services/__pycache__/
 templates/__pycache__/
+/temp
+*.tar.gz
+*.sql
