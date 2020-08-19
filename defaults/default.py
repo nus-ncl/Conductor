@@ -33,6 +33,7 @@ NS_FILE = "../outputs/NSfile"
 VAGRANT_FILE = "../outputs/Vagrantfile"
 HOSTS_FILE = "../outputs/hosts"
 ANSIBLE_FILE = "../outputs/ansible.yml"
+CLIENT_FILE = "../outputs/client.xml"
 
 ### Ansible config
 PING_PLAYBOOK_PATH = 'component/ansible/playbooks/ping.yml'

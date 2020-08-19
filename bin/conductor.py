@@ -34,12 +34,12 @@ def hosts_renderer(hostname, ip):
 		file.close()
 
 
-def ansiblefile_renderer(service,hostname):
+def ansiblefile_renderer(service, hostname):
 		dir = os.path.dirname(__file__)
 		file = open(default.ANSIBLE_FILE, 'a')
 		env = Environment(loader=PackageLoader('services'))
 		ansiblefile = env.get_template(service + '.j2')
-		#content = ansiblefile.render(path=dir + '/../services/' + service)
+		# content = ansiblefile.render(path=dir + '/../services/' + service)
 		content = ansiblefile.render(host_name=hostname, USER='{{ ansible_env.USER }}')
 		file.write(content)
 		file.write('\n\n')
@@ -55,12 +55,22 @@ def NSfile_renderer():
 		file.close()
 
 
+def Clientfile_renderer(hostname):
+		file = open(default.CLIENT_FILE, 'w')
+		env = Environment(loader=PackageLoader('templates'))
+		Clientfile = env.get_template('Client.j2')
+		content = Clientfile.render(hostname=hostname)
+		file.write(content)
+		file.close()
+
+
 if __name__ == "__main__":
 		PRINT = 0
 		NSFILE = 0
 		HOSTS = 0
 		VAGRANTFILE = 0
 		ANSIBLEFILE = 1
+		CLIENTFILE = 0
 
 		conf = configparser.ConfigParser()
 		conf.read(default.CONFIG_FILE)
@@ -96,4 +106,11 @@ if __name__ == "__main__":
 		# generate ansible file
 		if (ANSIBLEFILE):
 				for i in service_list:
-						ansiblefile_renderer(i,hostname)
+						ansiblefile_renderer(i, hostname)
+
+		# generate clientfile
+		if(CLIENTFILE):
+				Clientfile_renderer(hostname)
+
+
+
