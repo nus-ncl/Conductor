@@ -28,7 +28,8 @@ TEMPLATE_DIRECTORY = os.path.join('templates','templates')
 # TMP_DIRECTORY_BASE = os.path.join('component', 'ansible', 'tmp')
 
 ### Files locations
-CONFIG_FILE = "configure.cfg"
+CONFIG_FILE = "../config/configure.cfg"
+GENERATED_CONFIG_FILE = "../config/gen_configure.cfg"
 NS_FILE = "../outputs/NSfile"
 VAGRANT_FILE = "../outputs/Vagrantfile"
 HOSTS_FILE = "../outputs/hosts"

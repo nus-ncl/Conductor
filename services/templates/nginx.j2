@@ -1,4 +1,15 @@
     # service: nginx
+    - name: template an nginx installation file into remote machine
+      template:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/nginx/nginx.j2
+        dest: ~/nginx.sh
+
+    - name: run the nginx installation file
+      command: bash ~/nginx.sh
+
+ {# - name: download, configure, make, install specific version of nginx
+      script: services/nginx/nginx.j2
+
     - name: Copy file with owner and permissions
       become: yes
       become_user: root
@@ -9,17 +20,14 @@
         group: root
         mode: '0755'
 
-    - name: download, configure, make, install specific version of nginx
-      script: /Users/hkwany/vagrant/provision/nginx.sh
+    - name: (no need to do this)Copy file with owner and permissions
+      copy:
+        src: ../nginx/nginx.sh
+        dest: ~/nginx.sh
+        owner: vagrant
+        group: vagrant
+        mode: '0755'
 
-  {# - name: (no need to do this)Copy file with owner and permissions
-       copy:
-         src: /Users/hkwany/vagrant/provision/nginx.sh
-         dest: ~/nginx.sh
-         owner: vagrant
-         group: vagrant
-         mode: '0755'
-
-     - name: Start nginx
-       script: /Users/hkwany/vagrant/provision/nginx_start.sh
-  #}
+    - name: Start nginx
+        script: /Users/hkwany/vagrant/provision/nginx_start.sh
+ #}

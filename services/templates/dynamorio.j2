@@ -1,0 +1,21 @@
+    - name: unarchive dynamorio
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/dynamorio/dynamorio_source.tar.gz
+        copy: yes
+        dest: ~/
+
+{#  - name: apt install tar for unarchive
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - tar
+        - unzip
+
+    - name: copy dynamorio.tar.gz
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/dynamorio/dynamorio_source.tar.gz
+        dest: ~/
+#}

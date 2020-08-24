@@ -34,8 +34,18 @@ def hosts_renderer(hostname, ip):
 		file.close()
 
 
+def ansiblefile_header_renderer(hostname):
+		file = open(default.ANSIBLE_FILE, 'a')
+		env = Environment(loader=PackageLoader('templates'))
+		ansiblefile = env.get_template('ansiblefile_header.j2')
+		content = ansiblefile.render(hostname=hostname)
+		file.write(content)
+		# file.write('\n')
+		file.close()
+
+
 def ansiblefile_renderer(service, hostname):
-		dir = os.path.dirname(__file__)
+		# dir = os.path.dirname(__file__)
 		file = open(default.ANSIBLE_FILE, 'a')
 		env = Environment(loader=PackageLoader('services'))
 		ansiblefile = env.get_template(service + '.j2')
@@ -105,8 +115,9 @@ if __name__ == "__main__":
 
 		# generate ansible file
 		if (ANSIBLEFILE):
-				for i in service_list:
-						ansiblefile_renderer(i, hostname)
+			ansiblefile_header_renderer(hostname)
+			for i in service_list:
+				ansiblefile_renderer(i, hostname)
 
 		# generate clientfile
 		if(CLIENTFILE):
