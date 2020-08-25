@@ -9,7 +9,7 @@ Testbed Orchestration Tool
 |    Switch   | Value |                Description                |                    Usage                   |
 |:-----------:|:-----:|:-----------------------------------------:|:------------------------------------------:|
 |    NSFILE   |  0/1  |          Generate NSfile for NCL          |      NCL Node & Network initialization     |
-|    HOSTS    |  0/1  | Generate hosts inventory file for Ansible |           Ansible hosts inventory          |
+|    HOSTS    |  0/1  | Generate hosts inventory for Ansible |           Ansible hosts inventory          |
 | VAGRANTFILE |  0/1  |      Generate Vagrantfile for Vagrant     |   Construction file of Virtual machines    |
 | ANSIBLEFILE |  0/1  |    Generate provision file for Ansible    |     Provision file of Virtual machines     |
 |  CLIENTFILE |  0/1  |    Generate client configuration file     | RDP remote access file of Virtual machines |
