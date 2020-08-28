@@ -1,8 +1,3 @@
----
-
-- hosts: {{ host_name }}
-  gather_facts: true
-  tasks:
     # service: apt-get update & install essentials for a VM
     - name: apt-get update
       become: yes

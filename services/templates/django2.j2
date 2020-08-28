@@ -1,0 +1,14 @@
+    # service: django2
+    - name: pip install django
+      pip:
+       name: "{{ item }}"
+       extra_args: --user
+       executable: pip3
+      loop:
+        - django
+
+    - name: decompression django folder to home/
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/django2/sherlock-website-django.tar.gz
+        copy: yes
+        dest: /home/{{ USER }}/

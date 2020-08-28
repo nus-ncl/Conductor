@@ -1,0 +1,21 @@
+    # service: apt-get update & install essentials for a VM
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+
+    - name: apt install essentials2
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - net-tools
+        - nfs-common
+        - libcurl4-openssl-dev
+        - cmake
+        - python3.7-dev
+        - libssl-dev
+        - python3-pip

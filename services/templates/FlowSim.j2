@@ -1,15 +1,59 @@
-    # service: zara
-    - name: copy all files in place
+    # service: FlowSim
+    - name: decompression FlowSim folder to home directory
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/flowsim/FlowSim.tar.gz
+        copy: yes
+        dest: /home/{{ USER }}/
+
+    - name: Create a symbolic link
+      file:
+        src: /home/{{ USER }}/TaintRuleDB
+        dest: /opt/attribution/flowsim/TaintRuleDB
+        state: link
+
+    - name: copy libkeystone.so
+      become: yes
+      become_user: root
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/flowsim/libkeystone.so
+        dest: /usr/local/lib/libkeystone.so
+
+    - name: copy keystone.py
       become: no
       become_user: root
       copy:
-        src: {{ path }} # zara.tar.gz location
-        dest: /home/vagrant/zara
-        owner: vagrant
-        group: vagrant
-        mode: '0644'
+        src: /Users/hkwany/PycharmProjects/Conductor/services/flowsim/keystone.py
+        dest: ~/.local/lib/python3.7/site-packages/keystone/keystone.py
 
-    - name: decompression
-      script: /home/vagrant/zara/script.sh
+    - name: expand swap
+      become: yes
+      become_user: root
+      shell:
+           mkdir /usr/img
+           rm -rf /usr/img/swap
+           dd if=/dev/zero of=/usr/img/swap bs=1024 count=2048000
+           mkswap /usr/img/swap
+           swapon /usr/img/swapexport
+      args:
+        executable: /usr/bin/bash
+
+    - name: pip install requirements
+      pip:
+        requirements: /Users/hkwany/PycharmProjects/Conductor/services/flowsim/VM2_pip_requirements.txt
+        extra_args: --user
+        executable: pip3
+
+    - name: copy squirrel
+      become: no
+      become_user: root
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/flowsim/squirrel_framework-0.1.12-py3-none-any.whl
+        dest: /home/{{ USER }}/squirrel_framework-0.1.12-py3-none-any.whl
+
+    - name: pip install squirrel
+      pip:
+        name: file:///home/{{ USER }}/squirrel_framework-0.1.12-py3-none-any.whl
+        extra_args: --user
+        executable: pip3
 
 

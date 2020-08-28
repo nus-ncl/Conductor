@@ -1,0 +1,10 @@
+    # service: softlink
+    - name: Create a symbolic link
+      file:
+        src: /home/{{ ansible_env.USER }}/TaintRuleDB
+        dest: /opt/attribution/flowsim/TaintRuleDB
+        state: link
+
+
+
+

@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../')
 from defaults import default
 import configparser
 
@@ -25,17 +27,17 @@ def cfg_generator(sections_list, keys_list, values_list, filename=default.GENERA
 
 if __name__ == "__main__":
 		sections = ['Experiment', 'LANs', 'LAN1', 'Nodes', 'Node1', 'Node2', 'VMs', 'VM1', 'VM2']
-		keys = [['teamname', 'experimentname', 'lan_num', 'nodes_num', 'vms_num'], \
+		keys = [['teamname', 'experimentname', 'lans_num', 'nodes_num', 'vms_num'], \
 		        [], \
 		        ['name', 'endpoints'], \
 		        [], \
-		        ['name', 'connectivity', 'lan', 'lan_ip', 'lan_netmask', 'host_network_name', 'host_network_ip',
+		        ['name', 'connectivity', 'lan', 'lan_node_ip', 'lan_netmask', 'host_network_name', 'host_network_ip',
 		         'host_network_netmask'], \
-		        ['name', 'connectivity', 'lan', 'lan_ip', 'lan_netmask', 'host_network_name', 'host_network_ip',
+		        ['name', 'connectivity', 'lan', 'lan_node_ip', 'lan_netmask', 'host_network_name', 'host_network_ip',
 		         'host_network_netmask'], \
 		        [], \
 		        ['node', 'hostname', 'provider', 'network', 'ip', 'image', 'service', 'activity'], \
-		        ['node', 'hostname', 'provider', 'subnet', 'ip', 'image', 'service', 'activity']]
+		        ['node', 'hostname', 'provider', 'network', 'ip', 'image', 'service', 'activity']]
 		values = [['CS4238-19-01', 'Exp3', '1', '2', '2'], \
 		          [], \
 		          ['lan1', 'n1,n2'], \

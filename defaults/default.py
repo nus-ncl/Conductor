@@ -28,13 +28,13 @@ TEMPLATE_DIRECTORY = os.path.join('templates','templates')
 # TMP_DIRECTORY_BASE = os.path.join('component', 'ansible', 'tmp')
 
 ### Files locations
-CONFIG_FILE = "../config/gen_configure.cfg"
-GENERATED_CONFIG_FILE = "../config/gen_configure.cfg"
-NS_FILE = "../outputs/NSfile"
-VAGRANT_FILE = "../outputs/Vagrantfile"
-HOSTS_FILE = "../outputs/hosts"
-ANSIBLE_FILE = "../outputs/ansible.yml"
-CLIENT_FILE = "../outputs/client.xml"
+CONFIG_FILE = "../config/sherlock/gen_configure.cfg"
+GENERATED_CONFIG_FILE = "../config/sherlock/gen_configure.cfg"
+NS_FILE = "../outputs/sherlock/NSfile"
+VAGRANT_FILE = "../outputs/sherlock/Vagrantfile"
+HOSTS_FILE = "../outputs/sherlock/hosts"
+ANSIBLE_FILE = "../outputs/sherlock/ansible.yml"
+CLIENT_FILE = "../outputs/sherlock/client.xml"
 
 ### Ansible config
 PING_PLAYBOOK_PATH = 'component/ansible/playbooks/ping.yml'

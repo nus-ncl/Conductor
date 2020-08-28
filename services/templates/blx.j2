@@ -1,7 +1,7 @@
     # service: blx
     - name: copy libssl in place if missing
       copy:
-        src: services/blx/dependency/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+        src: /Users/hkwany/PycharmProjects/Conductor/services/blx/dependency/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
         dest: /home/{{ USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
         backup: yes
 
@@ -15,7 +15,7 @@
       become: yes
       become_user: root
       unarchive:
-        src: services/blx/blx.tar.gz
+        src: /Users/hkwany/PycharmProjects/Conductor/services/blx/blx.tar.gz
         remote_src: no
         copy: yes
         dest: /opt/

@@ -22,8 +22,7 @@
       become: yes
       become_user: root
       unarchive:
-        src: services/mariadb/dependency/libmariadb.tar.gz
-        remote_src: no
+        src: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/dependency/libmariadb.tar.gz
         copy: yes
         dest: /usr/lib/x86_64-linux-gnu/
         extra_opts: ['--strip-components=1']
@@ -43,7 +42,7 @@
       become: yes
       become_user: root
       copy:
-        src: services/mariadb/dependency/my_config.h
+        src: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/dependency/my_config.h
         dest: /usr/include/mysql/my_config.h
         backup: yes
         #owner: vagrant
@@ -51,21 +50,19 @@
         #mode: '0644'
 
     - name: import databases & grants
-      script: services/mariadb/script.sh
+      script: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/script.sh
 
     - name: decompression klara project to /var/
       become: yes
       become_user: root
       unarchive:
-        src: services/klara/projects.tar.gz
-        remote_src: no
+        src: /Users/hkwany/PycharmProjects/Conductor/services/klara/projects.tar.gz
         copy: yes
         dest: /var/
 
     - name: decompression klara to home directory
       unarchive:
-        src: services/klara/klara.tar.gz
-        remote_src: no
+        src: /Users/hkwany/PycharmProjects/Conductor/services/klara/klara.tar.gz
         copy: yes
         dest: /home/{{ USER }}/
 
@@ -73,8 +70,7 @@
       become: yes
       become_user: root
       unarchive:
-        src: services/klara/klara.overlay.tar.gz
-        remote_src: no
+        src: /Users/hkwany/PycharmProjects/Conductor/services/klara/klara.overlay.tar.gz
         copy: yes
         dest: /opt/
 
@@ -151,8 +147,8 @@
       become: yes
       become_user: projects
       copy:
-        src: services/klara/pip_requirements.txt
-        dest: ~/
+        src: /Users/hkwany/PycharmProjects/Conductor/services/klara/pip_requirements.txt
+        dest: ~/pip_requirements.txt
         #owner: projects
         #group: projects
         #mode: '0644'
@@ -212,8 +208,7 @@
       become: yes
       become_user: root
       unarchive:
-        src: services/supervisor/supervisor.tar.gz
-        remote_src: no
+        src: /Users/hkwany/PycharmProjects/Conductor/services/supervisor/supervisor.tar.gz
         copy: yes
         dest: /etc/
 
