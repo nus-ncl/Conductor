@@ -526,7 +526,7 @@
 
     - name: pip install requirements
       pip:
-        requirements: /Users/hkwany/PycharmProjects/Conductor/services/flowsim/VM2_pip_requirements.txt
+        requirements: /home/{{ ansible_env.USER }}/VM2_pip_requirements.txt
         extra_args: --user
         executable: pip3
 

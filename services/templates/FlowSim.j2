@@ -26,16 +26,21 @@
         dest: /home/{{ USER }}/TaintRuleDB
         state: link
 
-    - name: copy VM2_pip_requirements
+    - name: copy VM2_pip_requirements to home/
       copy:
         src: {{ conductor_path }}/services/flowsim/VM2_pip_requirements.txt
         dest: /home/{{ USER }}/VM2_pip_requirements.txt
 
     - name: pip install requirements
       pip:
-        requirements: {{ conductor_path }}/services/flowsim/VM2_pip_requirements.txt
+        requirements: /home/{{ USER }}/VM2_pip_requirements.txt
         extra_args: --user
         executable: pip3
+
+    - name: delete VM2_pip_requirements.txt from home/
+      file:
+        path: /home/{{ USER }}/VM2_pip_requirements.txt
+        state: absent
 
     - name: copy libkeystone.so
       become: yes
@@ -56,7 +61,7 @@
       become_user: root
       script: /home/localuser/Conductor/services/fstab/swap.sh
 
-    - name: copy squirrel
+    - name: copy squirrel_framework to home/
       become: no
       become_user: root
       copy:
@@ -68,5 +73,10 @@
         name: file:///home/{{ USER }}/squirrel_framework-0.1.12-py3-none-any.whl
         extra_args: --user
         executable: pip3
+
+    - name: delete squirrel_framework from home/
+      file:
+        path: /home/{{ USER }}/squirrel_framework-0.1.12-py3-none-any.whl
+        state: absent
 
 

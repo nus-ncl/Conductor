@@ -1,5 +1,14 @@
     # service: django using pip3
     {% raw %}
+    - name: apt install pip3
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python3-pip
+
     - name: pip install django
       pip:
        name: "{{ item }}"
