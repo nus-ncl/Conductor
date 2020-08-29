@@ -5,6 +5,7 @@
       apt:
         update_cache: yes
 
+    {% raw %}
     - name: apt install essentials
       become: yes
       become_user: root
@@ -13,5 +14,5 @@
         state: present
       loop:
         - net-tools
-        - nfs-common
         - software-properties-common
+    {% endraw %}

@@ -1,7 +1,7 @@
-    # service: blx
+    # service: blx,bix,eigen,magic_finder,zara_sigmaker
     - name: copy libssl in place if missing
       copy:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/blx/dependency/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+        src: {{ conductor_path }}/services/blx/dependency/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
         dest: /home/{{ USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
         backup: yes
 
@@ -15,8 +15,7 @@
       become: yes
       become_user: root
       unarchive:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/blx/blx.tar.gz
-        remote_src: no
+        src: {{ conductor_path }}/services/blx/blx.tar.gz
         copy: yes
         dest: /opt/
 
@@ -33,7 +32,6 @@
     - name: decompression
       unarchive:
         src: "{{ gz_path }}"
-        remote_src: no
         copy: yes
         dest: /opt/
 

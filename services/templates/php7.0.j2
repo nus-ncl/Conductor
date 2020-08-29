@@ -8,6 +8,7 @@
         state: present
         update_cache: yes
 
+    {% raw %}
     - name: apt install
       become: yes
       become_user: root
@@ -36,6 +37,7 @@
         - php7.0-mbstring
         - php-gettext
         - php-apcu
+    {% endraw %}
 
     - name: purge php7.4*
       become: yes

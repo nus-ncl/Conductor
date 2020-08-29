@@ -1,8 +1,9 @@
-    # service: zara
+    # service: zara,zara.launcher
     - name: unarchive zara
+      become: yes
+      become_user: root
       unarchive:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/zara/zara.tar.gz
-        remote_src: no
+        src: {{ conductor_path }}/services/zara/zara.tar.gz
         copy: yes
         dest: /opt/
  {# - name: copy all files in place

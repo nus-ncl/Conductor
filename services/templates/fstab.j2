@@ -1,35 +1,38 @@
-    # service: fstab
-    - name: comment
+    # service:
+    {% raw %}
+    - name: install nfs-common in order to use command 'mount' for NFS
       become: yes
       become_user: root
-      replace:
-        path: /etc/fstab
-        # regexp: '^(Listen .*)$'
-        regexp: '{{ regexp_1 }}'
-        # replace: '# \1'
-        replace: '{{ replace }}'
-        # create backup file to rollback
-        # backup: yes
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - nfs-common
+    {% endraw %}
 
+    - name: import vars
+      include_vars:
+        file: {{ conductor_path }}/vars/fstab.yml
+        name: fstab_vars
 
-    - name: change /etc/fstab
+    {% raw %}
+    - name: Create a directory if it does not exist
+      become: yes
+      become_user: root
+      file:
+        path: "{{ fstab_vars.mount_dest_directory }}"
+        state: directory
+        # You must add a leading zero so that Ansible YAML parser knows it's an octal number
+        mode: '0755'
+
+    - name: add line to /etc/fstab
       become: yes
       become_user: root
       lineinfile:
         path: /etc/fstab
-        insertbefore: '{{ regexp_2 }}'
-        line: {{ line }}
-        firstmatch: yes
+        line: "{{ fstab_vars.mount_src_ip }}:{{ fstab_vars.mount_src_directory }} {{ fstab_vars.mount_dest_directory }} nfs defaults 0 0"
         state: present
-
-    - name: Add the line if it does not exist
-      become: yes
-      become_user: root
-      lineinfile:
-        path: /etc/fstab
-        line: {{ line }}
-        state: present
-        #backup: yes
+    {% endraw %}
 
     - name: mount /etc/fstab
       become: yes
@@ -37,7 +40,3 @@
       shell: mount -a
       args:
         executable: /usr/bin/bash
-
-
-
-

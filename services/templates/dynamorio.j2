@@ -1,6 +1,6 @@
     - name: unarchive dynamorio
       unarchive:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/dynamorio/dynamorio_source.tar.gz
+        src: {{ conductor_path }}/services/dynamorio/dynamorio_source.tar.gz
         copy: yes
         dest: ~/
 
@@ -16,6 +16,6 @@
 
     - name: copy dynamorio.tar.gz
       copy:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/dynamorio/dynamorio_source.tar.gz
+        src: {{ conductor_path }}/services/dynamorio/dynamorio_source.tar.gz
         dest: ~/
 #}

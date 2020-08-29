@@ -1,0 +1,5 @@
+---
+
+mount_src_ip: "10.0.2.2"
+mount_src_directory: "/mnt/sda3/attribution"
+mount_dest_directory: "/opt/attribution"

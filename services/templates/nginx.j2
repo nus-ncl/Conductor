@@ -1,7 +1,12 @@
     # service: nginx
+    - name: import vars
+      include_vars:
+        file: {{ conductor_path }}/vars/nginx.yml
+        name: nginx_vars
+
     - name: template an nginx installation file into remote machine
       template:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/nginx/nginx.j2
+        src: {{ conductor_path }}/services/nginx/nginx.j2
         dest: ~/nginx.sh
 
     - name: run the nginx installation file

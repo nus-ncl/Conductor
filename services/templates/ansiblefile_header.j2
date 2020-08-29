@@ -1,6 +1,9 @@
 - hosts: {{ vm.hostname }}
   gather_facts: true
-  vars_files:
-    - /Users/hkwany/PycharmProjects/Conductor/vars/nginx.yml
+{#vars_files:
+  {% for service in vm.service %}
+    - {{ conductor_path }}/vars/{{ service }}.yml
+  {% endfor %}
+#}
   tasks:
 

@@ -2,7 +2,8 @@
 
 - hosts: VM1
   gather_facts: true
-
+  vars_files:
+    - /Users/hkwany/PycharmProjects/Conductor/vars/nginx.yml
   tasks:
     # service: apt-get update & install essentials for a VM
     - name: apt-get update
@@ -11,7 +12,6 @@
       apt:
         update_cache: yes
 
-    
     - name: apt install essentials
       become: yes
       become_user: root
@@ -20,13 +20,12 @@
         state: present
       loop:
         - net-tools
+        - nfs-common
         - software-properties-common
-    
 
     # service: python2, python-dev, pip2 & pip3
     # For Ubuntu, python-dev and python3-dev
     # For CentOS, python-devel and python3-devel
-    
     - name: apt install python2, python-dev, pip2 & pip3
       become: yes
       become_user: root
@@ -38,7 +37,6 @@
         - python-pip
         - python3-pip
         - python-dev
-    
 
     # service: php7.0 & remove php7.4
     - name: apt-repo & update
@@ -50,7 +48,6 @@
         state: present
         update_cache: yes
 
-    
     - name: apt install
       become: yes
       become_user: root
@@ -79,7 +76,6 @@
         - php7.0-mbstring
         - php-gettext
         - php-apcu
-    
 
     - name: purge php7.4*
       become: yes
@@ -87,8 +83,7 @@
       shell:
         cmd: apt-get -y purge php7.4*
 
-    # service: django using pip3
-    
+    # service: django
     - name: pip install django
       pip:
        name: "{{ item }}"
@@ -96,31 +91,13 @@
        executable: pip3
       loop:
         - django
-    
 
-    # service:
-    
-    - name: install nfs-common in order to use command 'mount' for NFS
-      become: yes
-      become_user: root
-      apt:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - nfs-common
-    
-
-    - name: import vars
-      include_vars:
-        file: /Users/hkwany/PycharmProjects/Conductor/vars/fstab.yml
-        name: fstab_vars
-
-    
+    # service: attribution fstab
     - name: Create a directory if it does not exist
       become: yes
       become_user: root
       file:
-        path: "{{ fstab_vars.mount_dest_directory }}"
+        path: /opt/attribution
         state: directory
         # You must add a leading zero so that Ansible YAML parser knows it's an octal number
         mode: '0755'
@@ -130,9 +107,8 @@
       become_user: root
       lineinfile:
         path: /etc/fstab
-        line: "{{ fstab_vars.mount_src_ip }}:{{ fstab_vars.mount_src_directory }} {{ fstab_vars.mount_dest_directory }} nfs defaults 0 0"
+        line: 10.0.2.2:/mnt/sda3/attribution /opt/attribution nfs defaults 0 0
         state: present
-    
 
     - name: mount /etc/fstab
       become: yes
@@ -141,7 +117,7 @@
       args:
         executable: /usr/bin/bash
 
-    # service: blx,bix,eigen,magic_finder,zara_sigmaker
+    # service: blx
     - name: copy libssl in place if missing
       copy:
         src: /Users/hkwany/PycharmProjects/Conductor/services/blx/dependency/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
@@ -171,7 +147,7 @@
         copy: yes
         dest: /home/{{ ansible_env.USER }}/
 
-    # service: zara,zara.launcher
+    # service: zara
     - name: unarchive zara
       become: yes
       become_user: root
@@ -182,7 +158,6 @@
  
 
     # service: apache2
-    
     - name: apt install
       become: yes
       become_user: root
@@ -191,7 +166,6 @@
         state: present
       loop:
         - apache2
-    
 
     - name: Recursively remove directory
       become: yes
@@ -236,7 +210,6 @@
       # 5. Yara (installed on workers)
 
     # service: mariadb
-    
     - name: apt install essentials for klara
       become: yes
       become_user: root
@@ -244,11 +217,9 @@
         name: "{{ item }}"
         state: present
       loop:
-        - nfs-common
         - libmysqlclient-dev
         - python-dev
         - mariadb-server
-    
 
     - name: Extract libmariadb.tar.gz into /usr/lib/x86_64-linux-gnu/
       become: yes
@@ -293,16 +264,6 @@
 
     - name: import databases & grants
       script: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/script.sh
-
-    - name: delete sherlock_VM1_all_databases.sql from home/
-      file:
-        path: /home/{{ ansible_env.USER }}/sherlock_VM1_all_databases.sql
-        state: absent
-
-    - name: delete sherlock_VM1_all_grants.sql from home/
-      file:
-        path: /home/{{ ansible_env.USER }}/sherlock_VM1_all_grants.sql
-        state: absent
 
     - name: decompression klara project to /var/
       become: yes
@@ -480,7 +441,8 @@
 
 - hosts: VM2
   gather_facts: true
-
+  vars_files:
+    - /Users/hkwany/PycharmProjects/Conductor/vars/nginx.yml
   tasks:
     # service: apt-get update & install essentials for a VM
     - name: apt-get update
@@ -489,8 +451,7 @@
       apt:
         update_cache: yes
 
-    
-    - name: apt install essentials
+    - name: apt install essentials2
       become: yes
       become_user: root
       apt:
@@ -498,11 +459,14 @@
         state: present
       loop:
         - net-tools
-        - software-properties-common
-    
+        - nfs-common
+        - libcurl4-openssl-dev
+        - cmake
+        - python3.7-dev
+        - libssl-dev
+        - python3-pip
 
     # service: django2
-    
     - name: pip install django
       pip:
        name: "{{ item }}"
@@ -510,7 +474,6 @@
        executable: pip3
       loop:
         - django
-    
 
     - name: decompression django folder to home/
       unarchive:
@@ -518,29 +481,12 @@
         copy: yes
         dest: /home/{{ ansible_env.USER }}/
 
-    # service:
-    
-    - name: install nfs-common in order to use command 'mount' for NFS
-      become: yes
-      become_user: root
-      apt:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - nfs-common
-    
-
-    - name: import vars
-      include_vars:
-        file: /Users/hkwany/PycharmProjects/Conductor/vars/fstab.yml
-        name: fstab_vars
-
-    
+    # service: attribution fstab
     - name: Create a directory if it does not exist
       become: yes
       become_user: root
       file:
-        path: "{{ fstab_vars.mount_dest_directory }}"
+        path: /opt/attribution
         state: directory
         # You must add a leading zero so that Ansible YAML parser knows it's an octal number
         mode: '0755'
@@ -550,9 +496,8 @@
       become_user: root
       lineinfile:
         path: /etc/fstab
-        line: "{{ fstab_vars.mount_src_ip }}:{{ fstab_vars.mount_src_directory }} {{ fstab_vars.mount_dest_directory }} nfs defaults 0 0"
+        line: 10.0.2.2:/mnt/sda3/attribution /opt/attribution nfs defaults 0 0
         state: present
-    
 
     - name: mount /etc/fstab
       become: yes
@@ -562,21 +507,6 @@
         executable: /usr/bin/bash
 
     # service: FlowSim
-    
-    - name: apt install essentials for FlowSim
-      become: yes
-      become_user: root
-      apt:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - libcurl4-openssl-dev
-        - cmake
-        - python3.7-dev
-        - libssl-dev
-        - python3-pip
-    
-
     - name: decompression FlowSim folder to home directory
       unarchive:
         src: /Users/hkwany/PycharmProjects/Conductor/services/flowsim/FlowSim.tar.gz
@@ -633,20 +563,4 @@
         executable: pip3
 
 
-
-    # service: nginx
-    - name: import vars
-      include_vars:
-        file: /Users/hkwany/PycharmProjects/Conductor/vars/nginx.yml
-        name: nginx_vars
-
-    - name: template an nginx installation file into remote machine
-      template:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/nginx/nginx.j2
-        dest: ~/nginx.sh
-
-    - name: run the nginx installation file
-      command: bash ~/nginx.sh
-
- 
 

@@ -1,4 +1,5 @@
     # service: django2
+    {% raw %}
     - name: pip install django
       pip:
        name: "{{ item }}"
@@ -6,9 +7,10 @@
        executable: pip3
       loop:
         - django
+    {% endraw %}
 
     - name: decompression django folder to home/
       unarchive:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/django2/sherlock-website-django.tar.gz
+        src: {{ conductor_path }}/services/django2/sherlock-website-django.tar.gz
         copy: yes
         dest: /home/{{ USER }}/

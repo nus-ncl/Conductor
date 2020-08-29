@@ -1,4 +1,5 @@
     # service: apache2
+    {% raw %}
     - name: apt install
       become: yes
       become_user: root
@@ -7,6 +8,7 @@
         state: present
       loop:
         - apache2
+    {% endraw %}
 
     - name: Recursively remove directory
       become: yes
@@ -19,15 +21,14 @@
       become: yes
       become_user: root
       unarchive:
-        src: services/apache2/html.tar.gz
-        remote_src: no
+        src: {{ conductor_path }}/services/apache2/html.tar.gz
         copy: yes
         dest: /var/www/
 
     - name: configure apache2
       become: no
       become_user: root
-      script: services/apache2/script.sh
+      script: {{ conductor_path }}/services/apache2/script.sh
 
     - name: reload service apache2, in all cases
       become: yes

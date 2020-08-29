@@ -7,6 +7,7 @@
       # 5. Yara (installed on workers)
 
     # service: mariadb
+    {% raw %}
     - name: apt install essentials for klara
       become: yes
       become_user: root
@@ -14,15 +15,17 @@
         name: "{{ item }}"
         state: present
       loop:
+        - nfs-common
         - libmysqlclient-dev
         - python-dev
         - mariadb-server
+    {% endraw %}
 
     - name: Extract libmariadb.tar.gz into /usr/lib/x86_64-linux-gnu/
       become: yes
       become_user: root
       unarchive:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/dependency/libmariadb.tar.gz
+        src: {{ conductor_path }}/services/mariadb/dependency/libmariadb.tar.gz
         copy: yes
         dest: /usr/lib/x86_64-linux-gnu/
         extra_opts: ['--strip-components=1']
@@ -42,27 +45,47 @@
       become: yes
       become_user: root
       copy:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/dependency/my_config.h
+        src: {{ conductor_path }}/services/mariadb/dependency/my_config.h
         dest: /usr/include/mysql/my_config.h
         backup: yes
         #owner: vagrant
         #group: vagrant
         #mode: '0644'
 
+    - name: copy sherlock_VM1_all_databases.sql to home/
+      copy:
+        src: {{ conductor_path }}/services/mariadb/sherlock_VM1_all_databases.sql
+        dest: /home/{{ USER }}/sherlock_VM1_all_databases.sql
+
+    - name: copy sherlock_VM1_all_grants.sql to home/
+      copy:
+        src: {{ conductor_path }}/services/mariadb/sherlock_VM1_all_grants.sql
+        dest: /home/{{ USER }}/sherlock_VM1_all_grants.sql
+
     - name: import databases & grants
-      script: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/script.sh
+      script: {{ conductor_path }}/services/mariadb/script.sh
+
+    - name: delete sherlock_VM1_all_databases.sql from home/
+      file:
+        path: /home/{{ USER }}/sherlock_VM1_all_databases.sql
+        state: absent
+
+    - name: delete sherlock_VM1_all_grants.sql from home/
+      file:
+        path: /home/{{ USER }}/sherlock_VM1_all_grants.sql
+        state: absent
 
     - name: decompression klara project to /var/
       become: yes
       become_user: root
       unarchive:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/klara/projects.tar.gz
+        src: {{ conductor_path }}/services/klara/projects.tar.gz
         copy: yes
         dest: /var/
 
     - name: decompression klara to home directory
       unarchive:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/klara/klara.tar.gz
+        src: {{ conductor_path }}/services/klara/klara.tar.gz
         copy: yes
         dest: /home/{{ USER }}/
 
@@ -70,7 +93,7 @@
       become: yes
       become_user: root
       unarchive:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/klara/klara.overlay.tar.gz
+        src: {{ conductor_path }}/services/klara/klara.overlay.tar.gz
         copy: yes
         dest: /opt/
 
@@ -147,7 +170,7 @@
       become: yes
       become_user: projects
       copy:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/klara/pip_requirements.txt
+        src: {{ conductor_path }}/services/klara/pip_requirements.txt
         dest: ~/pip_requirements.txt
         #owner: projects
         #group: projects
@@ -208,7 +231,7 @@
       become: yes
       become_user: root
       unarchive:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/supervisor/supervisor.tar.gz
+        src: {{ conductor_path }}/services/supervisor/supervisor.tar.gz
         copy: yes
         dest: /etc/
 

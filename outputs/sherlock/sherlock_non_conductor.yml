@@ -1,0 +1,274 @@
+---
+
+- hosts: VM1
+  gather_facts: false
+  tasks:
+    - name: Copy all the files in place
+      become: no
+      become_user: root
+      copy:
+        src: /home/localuser/VM1.tar.gz
+        dest: /home/vagrant/VM1.tar.gz
+        owner: vagrant
+        group: vagrant
+        mode: '0644'
+
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+
+    - name: apt-repo & update
+      become: yes
+      become_user: root
+      apt_repository:
+        validate_certs: no
+        repo: 'ppa:ondrej/php'
+        state: present
+        update_cache: yes
+
+    - name: apt install
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - net-tools 
+        - nfs-common 
+        - python 
+        - python-pip 
+        - python3-pip 
+        - libmysqlclient-dev 
+        - python-dev 
+        - apache2 
+        - software-properties-common 
+        - libapache2-mod-php7.0 
+        - mariadb-server
+        - php7.0-fpm 
+        - php7.0 
+        - php7.0-mysqli 
+        - php7.0-curl 
+        - php7.0-gd 
+        - php7.0-intl 
+        - php-pear 
+        - php-imagick 
+        - php7.0-imap
+        - php7.0-mcrypt 
+        - php-memcache  
+        - php7.0-pspell 
+        - php7.0-recode 
+        - php7.0-sqlite3 
+        - php7.0-tidy 
+        - php7.0-xmlrpc 
+        - php7.0-xsl 
+        - php7.0-mbstring 
+        - php-gettext 
+        - php-apcu
+
+    - name: purge php7.4*
+      become: yes
+      become_user: root
+      shell:
+        # take note
+        cmd: apt-get -y purge php7.4*
+
+    - name: pip install django
+      pip:
+       name: "{{ item }}"
+       extra_args: --user
+       executable: pip3
+      loop:
+        - django
+        # - MySQL-python
+
+    - name: pip install supervisor
+      become: yes
+      become_user: root
+      pip:
+       name: supervisor
+       executable: pip3
+
+    - name: decompression
+      script: /etc/ansible/VM1_1.sh
+
+    - name: Create a symbolic link
+      become: yes
+      become_user: root
+      file:
+        src: /usr/lib/x86_64-linux-gnu/libmariadb.so
+        dest: /usr/lib/x86_64-linux-gnu/libmariadb.so.3
+        owner: root
+        group: root
+        state: link
+    
+    - name: install libssl.deb
+      # take note
+      become: yes
+      become_user: root
+      apt:
+        deb: /home/vagrant/VM1/dependency/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+      
+    - name: prepare files & folders & import databases & grants
+      script: /etc/ansible/VM1_2.sh
+
+    - name: mount /etc/fstab
+      become: yes
+      become_user: root
+      shell: mount -a
+      args:
+        executable: /usr/bin/bash
+
+    # - name: import databases & grants
+    #   become: yes
+    #   become_user: root
+    #   shell:
+    #     mysql < /home/vagrant/VM1/mariadb/sherlock_VM1_all_databases.sql
+    #     mysql < /home/vagrant/VM1/mariadb/sherlock_VM1_all_grants.sql
+
+    #   mysql_db:
+    #     state: import
+    #     name: all
+    #     target: "{{ item.name }}"
+    #   loop:
+    #     - { name: '/home/vagrant/VM1/mariadb/sherlock_VM1_all_databases.sql' }
+    #     - { name: '/home/vagrant/VM1/mariadb/sherlock_VM1_all_grants.sql' }
+
+    - name: create group projects
+      become: yes
+      become_user: root
+      group:
+        name: projects
+        gid: 500
+        state: present
+
+    - name: create user projects under groups projects & sudo
+      become: yes
+      become_user: root
+      user:
+        name: projects
+        shell: /bin/bash
+        create_home: yes
+        uid: 500
+        groups: projects,sudo
+
+    - name: configure apache2
+      become: no
+      become_user: root
+      script: /etc/ansible/VM1_3.sh
+
+    - name: update .bashrc of user 'projects' & install virtualenvwrapper under user 'projects' 
+      become: yes
+      become_user: projects
+      script: /etc/ansible/VM1_4.sh
+    
+    - name: Create the virtualenv 'klara'
+      become: yes
+      become_user: projects
+      shell: 
+           export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/projects/.local/bin'
+
+           export WORKON_HOME='~/.virtualenv'
+ 
+           export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+          
+           . /home/projects/.local/bin/virtualenvwrapper.sh
+ 
+           mkvirtualenv klara --python=python2
+      args:
+        executable: /usr/bin/bash
+        creates: ~/.virtualenv/klara
+
+    - name: pip install requirements(under 'projects' in virtualenv 'klara')
+      become: yes
+      become_user: projects
+      pip: 
+        requirements=/home/vagrant/VM1/dependency/pip_requirements.txt
+        virtualenv=/home/projects/.virtualenv/klara
+
+    # only run once, otherwise prompts port occupied
+    - name: Running supervisor
+      become: yes
+      become_user: root
+      shell: supervisord -c /etc/supervisor/supervisord.conf
+
+    # - name: Running server
+    #   shell: python3 ~/binspace/manage.py runserver 0.0.0.0:8000
+
+- hosts: VM2
+  gather_facts: false
+  tasks:
+    - name: Copy all the files in place
+      become: no
+      become_user: root
+      copy:
+        src: /home/localuser/VM2.tar.gz
+        dest: /home/vagrant/VM2.tar.gz
+        owner: vagrant
+        group: vagrant
+        mode: '0644'
+
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+
+    - name: apt install
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - net-tools
+        - nfs-common 
+        - libcurl4-openssl-dev
+        - cmake
+        - python3.7-dev
+        - libssl-dev
+        - python3-pip
+
+    - name: pip install django
+      pip:
+       name: django
+       extra_args: --user
+       executable: pip3
+
+    - name: decompression
+      become: no
+      become_user: root
+      script: /etc/ansible/VM2_1.sh
+
+    - name: prepare files & folders
+      become: no
+      become_user: root
+      script: /etc/ansible/VM2_2.sh
+      
+    - name: mount /etc/fstab
+      become: yes
+      become_user: root
+      shell: mount -a
+      args:
+        executable: /usr/bin/bash
+
+    - name: expand swap
+      become: no
+      become_user: root
+      script: /etc/ansible/VM2_3.sh
+
+    - name: pip install requirements
+      pip: 
+        requirements: /home/vagrant/VM2/dependency/VM2_pip_requirements.txt
+        extra_args: --user
+        executable: pip3
+
+    - name: pip install squirrel
+      pip: 
+        name: file:///home/vagrant/VM2/dependency/squirrel_framework-0.1.12-py3-none-any.whl
+        extra_args: --user
+        executable: pip3
+
+    # - name: Running server
+    #   shell: python3 ~/sherlock-website-django/manage.py runserver 0.0.0.0:8000

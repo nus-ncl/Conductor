@@ -1,4 +1,5 @@
-    # service: django
+    # service: django using pip3
+    {% raw %}
     - name: pip install django
       pip:
        name: "{{ item }}"
@@ -6,3 +7,4 @@
        executable: pip3
       loop:
         - django
+    {% endraw %}

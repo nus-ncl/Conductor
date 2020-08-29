@@ -1,7 +1,6 @@
     # service: binspace
     - name: unarchive binspace
       unarchive:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/binspace/binspace.tar.gz
-        remote_src: no
+        src: {{ conductor_path }}/services/binspace/binspace.tar.gz
         copy: yes
         dest: /home/{{ USER }}/

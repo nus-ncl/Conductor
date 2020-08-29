@@ -1,4 +1,5 @@
     # service: mariadb
+    {% raw %}
     - name: apt install
       become: yes
       become_user: root
@@ -8,13 +9,13 @@
       loop:
         - libmysqlclient-dev
         - mariadb-server
+    {% endraw %}
 
     - name: Extract libmariadb.tar.gz into /usr/lib/x86_64-linux-gnu/
       become: yes
       become_user: root
       unarchive:
         src: services/mariadb/dependency/libmariadb.tar.gz
-        remote_src: no
         copy: yes
         dest: /usr/lib/x86_64-linux-gnu/
         extra_opts: ['--strip-components=1']
