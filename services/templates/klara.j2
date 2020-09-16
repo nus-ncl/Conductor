@@ -5,6 +5,11 @@
       # 3. Python 2.7
       # 4. Python virtualenv package(virtualevnwrapper here)
       # 5. Yara (installed on workers)
+      #
+      # user & password:
+      #     user: user
+      #	    password: SjhX9Obv8VIgN05cRtqK
+
 
     # service: mariadb
     {% raw %}
@@ -166,7 +171,7 @@
         uid: 500
         groups: projects,sudo
 
-    - name: copy pip_requirements for klara in place
+    - name: copy pip_requirements for klara to /projects
       become: yes
       become_user: projects
       copy:
@@ -218,6 +223,13 @@
       pip:
         requirements=~/pip_requirements.txt
         virtualenv=/home/projects/.virtualenv/klara
+
+    - name: delete pip_requirements from /projects
+      become: yes
+      become_user: projects
+      file:
+        path: ~/pip_requirements.txt
+        state: absent
 
     # service: supervisor
     - name: pip install supervisor

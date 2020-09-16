@@ -1,43 +1,52 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <VM>
-  <Machine name="{{ hostname }}" OSType="{{ image }}" Node="{{ Node }}" ExperimentName="{{ ExperimentName }}" TeamName="{{ TeamName }}">
+  {%- for vm in vms %}
+  <Machine name="{{ vm.hostname }}" OSType="{{ vm.image }}" Node="{{ vm.node }}" ExperimentName="{{ experiment_metadata.ExperimentName }}" TeamName="{{ experiment_metadata.TeamName }}">
     <Hardware>
-      <Memory RAMSize="1024MB"/>
+      <Memory RAMSize="default"/>
+      {%- if vm.vrdeport|length %}
       <RemoteDisplay enabled="true">
+      {%- else %}
+      <RemoteDisplay enabled="false">
+      {% endif %}
         <VRDEProperties>
-          <Property name="TCP/Address" value="127.0.0.1"/>
-          <Property name="TCP/Ports" value="11021"/>
+          <vrdeport value="{{ vm.vrdeport }}"/>
+          <vrdeaddress value="127.0.0.1"/>
         </VRDEProperties>
       </RemoteDisplay>
       <Network>
         <Adapter slot="0" enabled="true">
           <NAT>
-            <Forwarding name="ssh" proto="1" hostip="127.0.0.1" hostport="2222" guestport="22"/>
-            <Forwarding name="http" proto="1" hostip="127.0.0.1" hostport="8082" guestport="80"/>
+          {%- for index in range(vm.guest_port_forward|length) %}
+            <Forwarding hostip="127.0.0.1" hostport="{{ vm.host_port_forward[index] }}" guestport="{{ vm.guest_port_forward[index] }}"/>
+          {%- endfor %}
           </NAT>
         </Adapter>
-        <Adapter slot="1" enabled="true">
-          <HostOnlyInterface name="vboxnet0" IP="192.168.100.3"/>
+        {%- if vm.hostonly_network is defined and vm.hostonly_network[0]|length %}
+        {%- for index in range(vm.hostonly_network|length) %}
+        <Adapter slot="{{ index+1 }}" enabled="true">
+          <HostOnlyInterface name="{{ vm.hostonly_network[index] }}" IP="{{ vm.hostonly_ip[index] }}"/>
         </Adapter>
-        <Adapter slot="2" enabled="false">
-          <InternalNetwork name="VN1"/>
+        {%- endfor %}
+        {%- endif %}
+        {%- if vm.internal_network is defined and vm.internal_network[0]|length %}
+        {%- for index in range(vm.internal_network|length) %}
+        <Adapter slot="{{ index + vm.hostonly_network|length +1 }}" enabled="true">
+          <InternalNetwork name="{{ vm.internal_network[index] }}" IP="{{ vm.internal_ip[index] }}"/>
         </Adapter>
-        <Adapter slot="3" enabled="false">
-          <InternalNetwork name="VN2"/>
-        </Adapter>
-        <Adapter slot="4" enabled="false">
-          <InternalNetwork name="VN3"/>
-        </Adapter>
+        {%- endfor %}
+        {%- endif %}
       </Network>
       <SharedFolders>
-        <SharedFolder name="share_ven_esys" hostPath="/share/ven/esys" guestPath="/home/vagrant/guestfolder"/>
-        <SharedFolder name="proj_NCLSecurity_Enterprise_esys" hostPath="/proj/NCLSecurity/Enterprise/esys" writable="true" autoMount="false"/>
-        <SharedFolder name="vagrant" hostPath="/proj/NCLSecurity/Enterprise/n1" writable="true" autoMount="false"/>
       </SharedFolders>
     </Hardware>
     <Software>
-      <Service name="nginx" version="1.4.0"/>
+    {%- for service in vm.service %}
+      <Service name="{{ service }}"/>
+    {%- endfor %}
     </Software>
   </Machine>
+  {%- endfor %}
 </VM>
+
 

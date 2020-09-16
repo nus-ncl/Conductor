@@ -194,8 +194,9 @@
         copy: yes
         dest: /opt/
 
+
     # service: apache2
-    
+
     - name: apt install
       become: yes
       become_user: root
@@ -204,7 +205,7 @@
         state: present
       loop:
         - apache2
-    
+
 
     - name: Recursively remove directory
       become: yes
@@ -229,14 +230,14 @@
     - name: reload service apache2, in all cases
       become: yes
       become_user: root
-      service:
+      systemd:
         name: apache2
         state: reloaded
 
     - name: restart service apache2, in all cases
       become: yes
       become_user: root
-      service:
+      systemd:
         name: apache2
         state: restarted
 
@@ -247,14 +248,9 @@
       # 3. Python 2.7
       # 4. Python virtualenv package(virtualevnwrapper here)
       # 5. Yara (installed on workers)
-      #
-      # user & password:
-      #     user: user
-      #	    password: SjhX9Obv8VIgN05cRtqK
-
 
     # service: mariadb
-    
+
     - name: apt install essentials for klara
       become: yes
       become_user: root
@@ -266,7 +262,7 @@
         - libmysqlclient-dev
         - python-dev
         - mariadb-server
-    
+
 
     - name: Extract libmariadb.tar.gz into /usr/lib/x86_64-linux-gnu/
       become: yes
@@ -413,7 +409,7 @@
         uid: 500
         groups: projects,sudo
 
-    - name: copy pip_requirements for klara to /projects
+    - name: copy pip_requirements for klara in place
       become: yes
       become_user: projects
       copy:
@@ -466,13 +462,6 @@
         requirements=~/pip_requirements.txt
         virtualenv=/home/projects/.virtualenv/klara
 
-    - name: delete pip_requirements from /projects
-      become: yes
-      become_user: projects
-      file:
-        path: ~/pip_requirements.txt
-        state: absent
-
     # service: supervisor
     - name: pip install supervisor
       become: yes
@@ -514,7 +503,7 @@
       apt:
         update_cache: yes
 
-    
+
     - name: apt install essentials
       become: yes
       become_user: root
@@ -524,9 +513,9 @@
       loop:
         - net-tools
         - software-properties-common
-    
 
-    # service: django2 using pip3
+
+    # service: django2
     
     - name: apt install pip3
       become: yes

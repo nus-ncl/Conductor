@@ -3,36 +3,41 @@ set ns [new Simulator]
 source tb_compat.tcl
 
 # Add nodes
-{% for node in nodes %}
+{%- for node in nodes %}
 set {{ node.name }} [$ns node]
-{% endfor %}
+{%- endfor %}
 
 
-# Set node OS from saved image
-{% for node in nodes %}
+# Set node OS from saved image, Ubuntu1604-64-STD by default
+{%- for node in nodes %}
 tb-set-node-os ${{ node.name }} Ubuntu1604-64-STD
-{% endfor %}
+{%- endfor %}
 
 
 # Set LAN
-{% for lan in lans %}
-{# set NODES {{ lan.endpoints|length }} #}
+{%- for lan in lans %}
 set lanstr ""
-{% for node in lan.endpoints %}
+{%- for node in lan.endpoints %}
 append lanstr "${{ node }} "
-{% endfor %}
+{%- endfor %}
 
-# Change the BW and delay if you want
+
+# Change the BW and delay if you want, 100Mb, 0ms by default
 set {{ lan.name }} [$ns make-lan "$lanstr" 100Mb 0ms]
-{% endfor %}
+{%- endfor %}
+
 
 # Set node ip.
-{% for node in nodes %}
-tb-set-ip-lan ${{ node.name }} ${{ node.lan }} {{ node.lan_node_ip }}
-{% endfor %}
+{%- for node in nodes %}
+{%- for index in range(node.lan|length) %}
+tb-set-ip-lan ${{ node.name }} ${{ node.lan[index] }} {{ node.lan_node_ip[index] }}
+{%- endfor %}
+{%- endfor %}
+
 
 # Set route and adjust configure.
 $ns rtproto Static
+
 
 # Go!
 $ns run

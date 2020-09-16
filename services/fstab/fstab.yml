@@ -1,0 +1,19 @@
+---
+
+- service: fstab
+  include_vars:
+    file: {{ conductor_path }}/vars/fstab.yml
+    name: fstab_vars
+#  vars:
+#    - mount_src_ip
+#    - mount_src_directory
+#    - mount_dest_directory
+  dependency:
+    - nfs-common
+  source:
+  prepared:
+    dependency:
+    script:
+    bin:
+    source:
+

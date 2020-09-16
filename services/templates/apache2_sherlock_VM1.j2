@@ -1,0 +1,45 @@
+    # service: apache2
+    {% raw %}
+    - name: apt install
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apache2
+    {% endraw %}
+
+    - name: Recursively remove directory
+      become: yes
+      become_user: root
+      file:
+        path: /var/www/html
+        state: absent
+
+    - name: unarchive prepared html directory, have renamed index.html
+      become: yes
+      become_user: root
+      unarchive:
+        src: {{ conductor_path }}/services/apache2/html.tar.gz
+        copy: yes
+        dest: /var/www/
+
+    - name: configure apache2
+      become: no
+      become_user: root
+      script: {{ conductor_path }}/services/apache2/script.sh
+
+    - name: reload service apache2, in all cases
+      become: yes
+      become_user: root
+      service:
+        name: apache2
+        state: reloaded
+
+    - name: restart service apache2, in all cases
+      become: yes
+      become_user: root
+      service:
+        name: apache2
+        state: restarted

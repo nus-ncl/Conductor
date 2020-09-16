@@ -1,0 +1,77 @@
+# FROM <image>[:<tag>] #VM image
+# FROM scratch
+FROM alpine
+
+# MAINTAINER <name>
+MAINTAINER FirstName LastName <first.last@conductor>
+
+# LABEL <key>=<value> <key>=<value> <key>=<value> ...
+LABEL conductor.key="value"
+
+# VOLUME <mount_point> ...
+# VOLUME [ "<mount_point>", ... ]
+VOLUME /MOUNTPOINT
+
+# ARG <name>[=<default value>]
+ARG nginx_version="nginx-1.4.0"
+
+# ENV <key> <value>
+# ENV <key>=<value> ...
+ENV ENV_VAR "value"
+
+# EXPOSE <port> [<port>...]
+EXPOSE 80
+
+# SHELL ["executable", "parameters"]
+SHELL ["/bin/sh", "-c"]
+
+# ADD <src>... <dest>
+# ADD ["<src>"... "<dest>"] (this form is required for paths containing
+#                            whitespace)
+ADD {{ conductor_path }}/services/nginx/nginx-1.4.0.tar.gz /$HOME/
+
+# ONBUILD [INSTRUCTION]
+ONBUILD RUN /usr/sbin/nologin
+
+# COPY <src>... <dest>
+# COPY ["<src>"... "<dest>"] (this form is required for paths containing
+#                             whitespace)
+COPY {{ conductor_path }}/services/nginx/libssl-dev.deb /$HOME/
+COPY {{ conductor_path }}/services/nginx/nginx /$HOME/
+
+# RUN <command> (the command is run in a shell - /bin/sh -c - shell form)
+# RUN ["executable", "param1", "param2"] (exec form)
+RUN set -x \
+    && apt-get update && apt-get install -y \
+       libpcre3
+       libpcre3-dev
+       libpcrecpp0v5
+       libssl-dev
+       zlib1g-dev
+    && rm -rf /var/lib/apt/lists/*
+
+# WORKDIR <path>
+WORKDIR /$HOME/
+
+# USER <username>
+USER nobody
+
+# ENTRYPOINT ["executable", "param1", "param2"] (the preferred exec form)
+# ENTRYPOINT command param1 param2 (shell form)
+ENTRYPOINT ["nginx", "-c"]
+# Trace
+#ENTRYPOINT ["dynamorio_source/build/bin64/drrun","-c","libpeekaboo_dr.so", "--"]
+
+# STOPSIGNAL signal
+STOPSIGNAL SIGTERM
+
+# HEALTHCHECK [OPTIONS] CMD command (check container health by running a command inside the container)
+# HEALTHCHECK NONE (disable any healthcheck inherited from the base image)
+HEALTHCHECK --interval=15 --timeout=60 --retries=5 CMD [ "/usr/bin/my_health_check_script", "arg_1" ]
+
+# CMD ["executable","param1","param2"] (exec form, this is the preferred form)
+# CMD ["param1","param2"] (as default parameters to ENTRYPOINT)
+# CMD command param1 param2 (shell form)
+CMD ['script.sh']
+# Trace
+#CMD ["nginx","-g","'daemon off;'"]

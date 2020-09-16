@@ -1,0 +1,4 @@
+service template format:
+1. service dependencies
+2. service vars import
+3. service tasks

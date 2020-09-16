@@ -1,5 +1,5 @@
 {% for vm in vms %}
 [{{ vm.hostname }}]
 #only show the first ip, guarantee it accessible from ansible manager
-{{ vm.ip[0] }} ansible_user=vagrant
+{{ vm.hostonly_ip[0] }} ansible_user=vagrant
 {% endfor %}

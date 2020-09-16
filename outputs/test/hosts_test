@@ -1,0 +1,8 @@
+
+[VM1]
+#only show the first ip, guarantee it accessible from ansible manager
+172.16.1.101 ansible_user=vagrant
+
+[VM2]
+#only show the first ip, guarantee it accessible from ansible manager
+172.16.1.102 ansible_user=vagrant

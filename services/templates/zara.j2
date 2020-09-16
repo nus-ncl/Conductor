@@ -6,16 +6,3 @@
         src: {{ conductor_path }}/services/zara/zara.tar.gz
         copy: yes
         dest: /opt/
- {# - name: copy all files in place
-      become: no
-      become_user: root
-      copy:
-        src: {{ path }} # zara.tar.gz location
-        dest: /home/vagrant/zara
-        owner: vagrant
-        group: vagrant
-       mode: '0644'
-
-    - name: decompression
-      script: /home/{{ USER }}/zara/script.sh
- #}
