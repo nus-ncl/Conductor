@@ -1,0 +1,4 @@
+---
+
+- service: nfs-server
+  mount_src_directory: "/mnt/sda3/attribution"

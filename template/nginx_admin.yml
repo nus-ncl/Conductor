@@ -1,0 +1,107 @@
+---
+version: 1.0
+metadata:
+  teamname: NCLSecurity
+  experimentname: Enterprise
+  lans_num: 1
+  nodes_num: 2
+  vms_num: 2
+  reserve_nodes: null
+lan:
+- name: lan1
+  endpoints:
+  - name: n1
+    ip: 172.16.10.101
+    netmask: 255.255.255.0
+  - name: n2
+    ip: 172.16.10.102
+    netmask: 255.255.255.0
+node:
+- name: n1
+  os:
+    #       Linux: Linux
+    #       Windows: Windows
+    #       Mac: Darwin
+    type: node
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    architecture: amd64
+  network:
+    hostonly_network: null
+    internal_network: null
+  service:
+  - name: ansible
+    configuration: null
+- name: n2
+  os:
+    type: node
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    architecture: amd64
+  network:
+    hostonly_network:
+    - name: vboxnet0
+      ip: 172.16.1.1
+      netmask: 255.255.255.0
+    internal_network: null
+  service:
+  - name: ansible
+    configuration: null
+  - name: nfs-server
+    configuration:
+      mount_src_directory: /mnt/sda3/attribution
+vm:
+- name: VM1
+  node: n2
+  provider: virtualbox
+  os:
+    type: vagrant
+    platform: Linux
+    release: ubuntu
+    version: '19.10'
+    architecture: amd64
+  network:
+  - gateway: vboxnet0
+    type: hostonly
+    ip: 172.16.1.106
+    netmask: 255.255.255.0
+  vrde:
+    enabled: True
+    port: 12345
+  port_forwarding:
+    guest_port: 22,80
+    host_port: 2202,8080
+  service:
+  - name: nginx
+    configuration:
+      version: 1.4.0
+      port: 80
+- name: VM2
+  node: n2
+  provider: virtualbox
+  os:
+    type: vagrant
+    platform: Linux
+    release: ubuntu
+    version: '19.10'
+    architecture: amd64
+  network:
+  - gateway: vboxnet0
+    type: hostonly
+    ip: 172.16.1.107
+    netmask: 255.255.255.0
+  vrde:
+    enabled: True
+    port: 12346
+  port_forwarding:
+    guest_port: 22
+    host_port: 2203
+  service:
+  - name: CVE-2013-2028
+    configuration: null
+  - name: nfs-client
+    configuration:
+      mount_src_directory: '/mnt/sda3/attribution'
+      mount_dest_directory: '/opt/attribution'

@@ -11,6 +11,7 @@ debug = 0
 
 if __name__ == '__main__':
 
+
 	# Try except to catch keyboard interrupts
 	try:
 		cli.print_banner()

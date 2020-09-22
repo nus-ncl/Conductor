@@ -8,10 +8,14 @@ vboxmanage list extpacks
 ssh-keygen -t rsa
 # ssh-copy-id vagrant@remote_VMs_ip
 
-{% for service in node['service'] %}
-{%- with configuration=service['configuration']%}
-    {% include "%s/script.sh" % service['name'] %}
-{%- endwith %}
-{% endfor %}
+
+# ansible
+sudo apt-get update
+sudo apt-get install software-properties-common
+sudo apt-add-repository --yes --update ppa:ansible/ansible
+sudo apt-get -y install ansible
+
+
+
 
 

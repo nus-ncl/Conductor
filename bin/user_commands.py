@@ -1,7 +1,22 @@
 import os
+# import io
 import cli
 import components
+import yaml
+import parser_yaml
+import renderer_test
+from defaults import default
 
+def help_command(command):
+	print(f'{command.__doc__}')
+
+def load_template_file(filename):
+	with open(f"{default.conductor_path}/template/{filename}.yml", 'r') as stream:
+		return yaml.safe_load(stream)
+
+def dump_file(content,filename):
+	with open(f"{filename}.yml", 'w') as stream:
+		yaml.dump(content,stream,default_flow_style=False,explicit_start=True,allow_unicode=True,sort_keys=False)
 
 def NewExperiment(args):
 	'''
@@ -77,6 +92,8 @@ def NewExperiment(args):
 				vm.set_vm_hostonly_ip(vm_dict['hostonly_ip'])
 			if vm_dict['image'] != '':
 				vm.set_vm_image(vm_dict['image'])
+			if vm_dict['service'] != '':
+				vm.set_vm_service(vm_dict['service'])
 			if vm_dict['activity'] != '':
 				vm.set_vm_activity(vm_dict['activity'])
 			if vm_dict['vrdeport'] != '':
@@ -129,6 +146,29 @@ def DeployExperiment(args):
 	else:
 		print('pass')
 
+def LoadExperiment(args):
+	'''
+	LoadExperiment <Experiment>: Load all configuration of an experiment
+	'''
+
+	yaml_content = load_template_file(args[0])
+	vms=parser_yaml.get_vms(yaml_content)
+	lans=parser_yaml.get_lans(yaml_content)
+	nodes=parser_yaml.get_nodes(yaml_content)
+	print('vms->')
+	print(vms)
+	print('lans->')
+	print(lans)
+	print('nodes->')
+	print(nodes)
+	# renderer_test.vagrantfile_renderer(vms) pass
+	# renderer_test.hosts_renderer(vms) pass
+	# renderer_test.nodesfile_renderer(nodes)  pass
+	# renderer_test.NSfile_renderer(lans,nodes)  pass
+	# renderer_test.ansiblefile_renderer(vms)
+	# renderer_test.clientfile_renderer(experiment_metadata, vms)
+	# renderer_test.dockerfile_renderer()
+
 
 def ls(args):
 	'''
@@ -144,5 +184,4 @@ def cd(args):
 	os.chdir(args[0])
 
 
-def help_command(command):
-	print(f'{command.__doc__}')
+

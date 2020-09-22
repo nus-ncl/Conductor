@@ -6,11 +6,12 @@ Vagrant.configure("2") do |config|
   {% for vm in vms %}
   config.vm.define "{{ vm.hostname }}" do |node|
     node.vm.box = "{{ vm.os }}"
-    {%- for network in vm.hostonly_network %}
-    node.vm.hostonly_network "private_network", ip: "{{ network['ip'] }}"
+    {%- for ip in vm.hostonly_ip %}
+    {%- for ip in vm.hostonly_ip %}
+    node.vm.hostonly_network "private_network", ip: "{{ ip }}"
     {%- endfor %}
-    {%- for port_forwarding in vm.port_forwarding %}
-    node.vm.network "forwarded_port", guest: {{ port_forwarding['guest_port'] }}, host: {{ port_forwarding['host_port'] }}, host_ip:"127.0.0.1"
+    {%- for index in range(vm.host_port_forward|length) %}
+    node.vm.network "forwarded_port", guest: {{ vm.guest_port_forward[index] }}, host: {{ vm.host_port_forward[index] }}, host_ip:"127.0.0.1"
     {%- endfor %}
     {%- if vm.provider == 'virtualbox' and vm.vrde == True %}
     node.vm.provider :virtualbox do |vb|

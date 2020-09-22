@@ -1,0 +1,6 @@
+---
+
+  service: "nfs-client"
+  configuration:
+    mount_src_directory: "/mnt/sda3/attribution"
+    mount_dest_directory: "/opt/attribution"

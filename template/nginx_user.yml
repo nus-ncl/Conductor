@@ -1,0 +1,85 @@
+---
+version: 1.0
+metadata:
+  teamname: NCLSecurity
+  experimentname: Enterprise
+  lans_num: 1
+  nodes_num: 2
+  vms_num: 2
+  reserve_nodes: null
+lan:
+- name: lan1
+  endpoints:
+  - name: n1
+    ip: 172.16.10.101
+    netmask: 255.255.255.0
+  - name: n2
+    ip: 172.16.10.102
+    netmask: 255.255.255.0
+node:
+- name: n1
+  os:
+    #       Linux: Linux
+    #       Windows: Windows
+    #       Mac: Darwin
+    type: node
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    bit: 64
+  network:
+    hostonly_network: null
+    internal_network: null
+  service:
+  - ansible
+- name: n2
+  os:
+    type: node
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    bit: 64
+  network:
+    hostonly_network:
+    - name: vboxnet0
+      ip: 172.16.1.1
+      netmask: 255.255.255.0
+    internal_network: null
+  service:
+  - ansible
+  - nfs-server
+vm:
+- name: VM1
+  node: n2
+  provider: virtualbox
+  os:
+    type: vm
+    platform: Linux
+    release: ubuntu
+    version: '19.10'
+    bit: 64
+  network:
+  - gateway: vboxnet0
+    type: hostonly
+    ip: 172.16.1.106
+    netmask: 255.255.255.0
+  vrde:
+    enabled: true
+    port: 12345
+  port_forwarding:
+    guest_port: 22,80
+    host_port: 2202,8080
+  service:
+  - nginx
+- name: VM2
+  node: n2
+  provider: virtualbox
+  vrde:
+    enabled: true
+    port: 12346
+  port_forwarding:
+    guest_port: 22
+    host_port: 2203
+  service:
+  - CVE-2013-2028
+  - nfs-client

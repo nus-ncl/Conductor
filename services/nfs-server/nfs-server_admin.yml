@@ -1,0 +1,21 @@
+---
+
+- service: nfs-server
+#  include_vars:
+#    file: {{ conductor_path }}/vars/nfs-server.yml
+#    name: nfs-server_vars
+  vars:
+    - mount_src_directory: "/mnt/sda3/attribution"
+    - exports_attributes: "*(rw, insecure, no_subtree_check, no_root_squash)"
+
+  dependency:
+    - nfs-kernel-server
+  source:
+  prepared:
+    dependency:
+    script:
+      - script.sh
+    bin:
+    source:
+
+

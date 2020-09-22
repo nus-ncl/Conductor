@@ -88,10 +88,10 @@ class Node:
 		self.connectivity = None
 		self.lan = []
 		self.lan_node_ip = []
-		self.lan_node_netmask = ('255.255.255.0,' * len(self.lan_node_ip)).split(',')[:-1]
+		self.lan_node_netmask = []
 		self.hostonly_network_name = []
 		self.hostonly_network_ip = []
-		self.hostonly_network_netmask = ('255.255.255.0,' * len(self.hostonly_network_ip)).split(',')[:-1]
+		self.hostonly_network_netmask = []
 		self.service = []
 
 	# def __init__(self, name, lan, lan_node_ip,lan_node_netmask, hostonly_network_name, hostonly_network_ip, service):
@@ -121,6 +121,9 @@ class Node:
 	def set_node_lan_node_netmask(self,node_netmask):
 		self.lan_node_netmask=node_netmask.split(',')
 
+	def set_node_lan_node_netmask_default(self, node_netmask):
+		self.lan_node_netmask = ('255.255.255.0,' * len(self.lan_node_ip)).split(',')[:-1]
+
 	def set_node_host_network_name(self,name):
 		self.hostonly_network_name=name.split(',')
 
@@ -129,6 +132,9 @@ class Node:
 
 	def set_node_host_network_netmask(self,netmask):
 		self.hostonly_network_netmask=netmask.split(',')
+
+	def set_node_host_network_netmask_default(self):
+		self.hostonly_network_netmask = ('255.255.255.0,' * len(self.hostonly_network_ip)).split(',')[:-1]
 
 	def set_node_service(self,service):
 		self.service=service.split(',')

@@ -22,7 +22,8 @@ DeployExperiment_PROMPT = 'DeployExperiment > '
 Experiment_Menu = ['teamname: ', 'experimentname: ', 'lans_num: ', 'nodes_num: ', 'vms_num: ']
 Lan_Menu = ['name: ', 'endpoints: ']
 Node_Menu = ['name: ', 'lan: ', 'lan_node_ip: ', 'hostonly_network_ip: ', 'service: ']
-VM_Menu = ['hostname: ', 'node: ', 'hostonly_ip: ', 'vrdeport: ']
+VM_Menu = ['hostname: ', 'node: ', 'hostonly_ip: ', 'vrdeport: ', 'service: ']
+Service_Menu = []
 
 # all description parameters with some defaults
 Experiment_dict = {'teamname': '', 'experimentname': '', 'lans_num': '', 'nodes_num': '', 'vms_num': '',
@@ -44,6 +45,7 @@ commands = {"NewExperiment": user_commands.NewExperiment,
             "ShowExperiment": user_commands.ShowExperiment,
             "ListExperiments": user_commands.ListExperiments,
             "DeployExperiment": user_commands.DeployExperiment,
+            "LoadExperiment": user_commands.LoadExperiment,
             "ls": user_commands.ls,
             "cd": user_commands.cd
             }
@@ -115,6 +117,19 @@ def VM_prompt():
 
 	return vm_dict
 
+def Service_prompt():
+	'''
+	Prompt for defining a service
+	'''
+	print_title('Service')
+	vm_dict = copy.deepcopy(VM_dict)
+	for option in VM_Menu:
+		cmd = input_with_prompt(NewExperiment_PROMPT + option)
+		if cmd == 'skip':
+			return
+		vm_dict[option[:-2]] = cmd
+
+	return vm_dict
 
 def print_banner():
 	"""

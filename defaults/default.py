@@ -5,7 +5,9 @@ Default configurations for conductor.
 # Standard packages
 import os
 
-
+### Conductor path
+file_path=os.path.dirname(os.path.realpath(__file__))
+conductor_path = os.path.dirname(file_path)
 ### Versioning
 VERSION = '1.0'
 
