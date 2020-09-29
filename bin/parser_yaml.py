@@ -1,10 +1,15 @@
 #!/usr/bin/python3
+import yaml
 import operating_system
 import copy
+# TODO: import issue
+from defaults import default
 
-
-def print_configure_file(content):
-	print(content)
+def yaml_content_parser(content):
+	vms = get_vms(content)
+	lans = get_lans(content)
+	nodes = get_nodes(content)
+	return vms, lans, nodes
 
 
 def os_parser(content):
@@ -73,10 +78,10 @@ def get_nodes(content):
 					node_lan.append(node_lan_entry)
 		# copy, deepcopy or assignment?
 		node_hostonly_network = copy.deepcopy(node['network']['hostonly_network'])
-		service = copy.deepcopy(node['service'])
+		services = copy.deepcopy(node['services'])
 
 		node_entry = {'name': node_name, 'os': node_os, 'lan': node_lan, 'hostonly_network': node_hostonly_network,
-		              'service': service}
+		              'services': services}
 		nodes.append(node_entry)
 	return nodes
 
@@ -108,12 +113,12 @@ def get_vms(content):
 			                            'host_port': vm_host_port_forward_list[index]}
 			vm_port_forwarding.append(vm_port_forwarding_entry)
 		# copy, deepcopy or assignment?
-		vm_service_list = copy.deepcopy(vm['service'])
+		vm_services_list = copy.deepcopy(vm['services'])
 		vm_activity_list = []
 
 		vm_entry = {'hostname': vm_hostname, 'node': vm_node, 'provider': vm_provider, 'os': vm_os,
 		            'hostonly_network': vm_hostonly_network, 'vrde': vm_vrde, 'vrdeport': vm_vrdeport,
-		            'port_forwarding': vm_port_forwarding, 'service': vm_service_list,
+		            'port_forwarding': vm_port_forwarding, 'services': vm_services_list,
 		            'activity': vm_activity_list}
 		vms.append(vm_entry)
 	return vms
@@ -143,7 +148,7 @@ def get_node_host_network_netmask():
 	pass
 
 
-def get_node_service():
+def get_node_services():
 	pass
 
 
@@ -175,7 +180,7 @@ def get_vm_image():
 	pass
 
 
-def get_vm_service():
+def get_vm_services():
 	pass
 
 

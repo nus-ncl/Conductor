@@ -7,8 +7,6 @@ import sys
 import cli
 import user_commands
 
-debug = 0
-
 if __name__ == '__main__':
 
 

@@ -25,6 +25,10 @@ os = {
 				'19.10': {
 					'i386': None,
 					'amd64': 'generic/ubuntu1910'
+				},
+				'16.04': {
+					'i386': None,
+					'amd64': 'bento/ubuntu-16.04'
 				}
 			},
 			'centos': {},

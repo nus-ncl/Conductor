@@ -1,0 +1,19 @@
+- hosts: {{ vm['hostname'] }}
+  gather_facts: true
+{#-vars_files:
+  {% for service in vm['service'] %}
+    - {{ conductor_path }}/vars/{{ service }}.yml
+  {% endfor %}
+#}
+{%- if vm['services'] is not none %}
+{%- for service in vm['services'] %}
+  {%- if service['parameter'] is not none %}
+  vars:
+    {%- for key,value in service['parameter'].items() %}
+    {{ key }}: {{ value }}
+    {%- endfor %}
+  {%- endif %}
+{%- endfor %}
+{%- endif %}
+  tasks:
+

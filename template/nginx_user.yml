@@ -30,7 +30,7 @@ node:
   network:
     hostonly_network: null
     internal_network: null
-  service:
+  services:
   - ansible
 - name: n2
   os:
@@ -45,7 +45,7 @@ node:
       ip: 172.16.1.1
       netmask: 255.255.255.0
     internal_network: null
-  service:
+  services:
   - ansible
   - nfs-server
 vm:
@@ -69,7 +69,7 @@ vm:
   port_forwarding:
     guest_port: 22,80
     host_port: 2202,8080
-  service:
+  services:
   - nginx
 - name: VM2
   node: n2
@@ -80,6 +80,6 @@ vm:
   port_forwarding:
     guest_port: 22
     host_port: 2203
-  service:
+  services:
   - CVE-2013-2028
   - nfs-client

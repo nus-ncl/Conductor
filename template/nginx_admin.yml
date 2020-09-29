@@ -30,9 +30,9 @@ node:
   network:
     hostonly_network: null
     internal_network: null
-  service:
-  - name: ansible
-    configuration: null
+  services:
+  - service: ansible
+    parameter: null
 - name: n2
   os:
     type: node
@@ -46,12 +46,12 @@ node:
       ip: 172.16.1.1
       netmask: 255.255.255.0
     internal_network: null
-  service:
+  services:
   - name: ansible
-    configuration: null
+    parameter: null
   - name: nfs-server
-    configuration:
-      mount_src_directory: /mnt/sda3/attribution
+    parameter:
+      mount_src_directory: '/mnt/sda3/attribution'
 vm:
 - name: VM1
   node: n2
@@ -60,7 +60,7 @@ vm:
     type: vagrant
     platform: Linux
     release: ubuntu
-    version: '19.10'
+    version: '16.04'
     architecture: amd64
   network:
   - gateway: vboxnet0
@@ -73,11 +73,11 @@ vm:
   port_forwarding:
     guest_port: 22,80
     host_port: 2202,8080
-  service:
-  - name: nginx
-    configuration:
-      version: 1.4.0
-      port: 80
+  services:
+  - service: nginx
+    parameter:
+      nginx_version: 1.4.0
+      nginx_port: 80
 - name: VM2
   node: n2
   provider: virtualbox
@@ -85,7 +85,7 @@ vm:
     type: vagrant
     platform: Linux
     release: ubuntu
-    version: '19.10'
+    version: '16.04'
     architecture: amd64
   network:
   - gateway: vboxnet0
@@ -98,10 +98,10 @@ vm:
   port_forwarding:
     guest_port: 22
     host_port: 2203
-  service:
-  - name: CVE-2013-2028
-    configuration: null
-  - name: nfs-client
-    configuration:
-      mount_src_directory: '/mnt/sda3/attribution'
-      mount_dest_directory: '/opt/attribution'
+  services: null
+#  - name: CVE-2013-2028
+#    parameter: null
+#  - name: nfs-client
+#    parameter:
+#      mount_src_directory: '/mnt/sda3/attribution'
+#      mount_dest_directory: '/opt/attribution'

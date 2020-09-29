@@ -45,7 +45,7 @@ commands = {"NewExperiment": user_commands.NewExperiment,
             "ShowExperiment": user_commands.ShowExperiment,
             "ListExperiments": user_commands.ListExperiments,
             "DeployExperiment": user_commands.DeployExperiment,
-            "LoadExperiment": user_commands.LoadExperiment,
+            "LoadTemplateExperiment": user_commands.LoadTemplateExperiment,
             "ls": user_commands.ls,
             "cd": user_commands.cd
             }
@@ -136,7 +136,7 @@ def print_banner():
 	Print the banner.
 	"""
 	print('=' * WIDTH)
-	print(' ' * 15 + color('Conductor', status=False, bold=True) + ' | [Version]: ' + VERSION)
+	print(' ' * 15 + color('Conductor', status=False, bold=True) + ' | [Version]: LoadTemplateExperiment nginx_admin ' + VERSION)
 	print('=' * WIDTH + '\n')
 
 

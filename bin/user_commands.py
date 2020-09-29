@@ -1,5 +1,4 @@
 import os
-# import io
 import cli
 import components
 import yaml
@@ -10,11 +9,15 @@ from defaults import default
 def help_command(command):
 	print(f'{command.__doc__}')
 
-def load_template_file(filename):
+def yaml_templatefile_load(filename):
 	with open(f"{default.conductor_path}/template/{filename}.yml", 'r') as stream:
 		return yaml.safe_load(stream)
-
-def dump_file(content,filename):
+	
+def yaml_file_load(filename):
+	with open(f"{filename}.yml", 'w') as stream:
+		return yaml.safe_load(stream)
+		
+def yaml_file_dump(content,filename):
 	with open(f"{filename}.yml", 'w') as stream:
 		yaml.dump(content,stream,default_flow_style=False,explicit_start=True,allow_unicode=True,sort_keys=False)
 
@@ -146,26 +149,25 @@ def DeployExperiment(args):
 	else:
 		print('pass')
 
-def LoadExperiment(args):
+def LoadTemplateExperiment(args):
 	'''
-	LoadExperiment <Experiment>: Load all configuration of an experiment
+	LoadTemplateExperiment <Experiment>: Load all configuration of an experiment
 	'''
 
-	yaml_content = load_template_file(args[0])
-	vms=parser_yaml.get_vms(yaml_content)
-	lans=parser_yaml.get_lans(yaml_content)
-	nodes=parser_yaml.get_nodes(yaml_content)
-	print('vms->')
-	print(vms)
-	print('lans->')
-	print(lans)
-	print('nodes->')
-	print(nodes)
-	# renderer_test.vagrantfile_renderer(vms) pass
-	# renderer_test.hosts_renderer(vms) pass
-	# renderer_test.nodesfile_renderer(nodes)  pass
-	# renderer_test.NSfile_renderer(lans,nodes)  pass
-	# renderer_test.ansiblefile_renderer(vms)
+	yaml_content = yaml_templatefile_load(args[0])
+	vms, lans, nodes=parser_yaml.yaml_content_parser(yaml_content)
+	if default.debug:
+		print('vms->')
+		print(vms)
+		# print('lans->')
+		# print(lans)
+		# print('nodes->')
+		# print(nodes)
+	# renderer_test.vagrantfile_renderer(vms)
+	# renderer_test.hosts_renderer(vms)
+	# renderer_test.nodesfile_renderer(nodes)
+	# renderer_test.NSfile_renderer(lans,nodes)
+	renderer_test.ansiblefile_renderer(vms)
 	# renderer_test.clientfile_renderer(experiment_metadata, vms)
 	# renderer_test.dockerfile_renderer()
 

@@ -1,0 +1,9 @@
+---
+  # For user
+  service: nginx
+  parameter:
+    nginx_version: '1.4.0'
+    nginx_port: 80
+
+
+

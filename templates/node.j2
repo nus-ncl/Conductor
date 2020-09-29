@@ -9,7 +9,7 @@ ssh-keygen -t rsa
 # ssh-copy-id vagrant@remote_VMs_ip
 
 {% for service in node['service'] %}
-{%- with configuration=service['configuration']%}
+{%- with parameter=service['parameter'] %}
     {% include "%s/script.sh" % service['name'] %}
 {%- endwith %}
 {% endfor %}
