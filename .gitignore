@@ -1,5 +1,5 @@
 /.idea
-*test.*
+/* *test.* */
 defaults/__pycache__/
 services/__pycache__/
 templates/__pycache__/
