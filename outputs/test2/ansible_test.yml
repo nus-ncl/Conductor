@@ -1,0 +1,680 @@
+---
+
+- hosts: VM1
+  gather_facts: true
+
+  tasks:
+    # service: apt-get update & install essentials for a VM
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+
+    
+    - name: apt install essentials
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - net-tools
+        - software-properties-common
+    
+
+    # service: python2, python-dev, pip2 & pip3
+    # For Ubuntu, python-dev and python3-dev
+    # For CentOS, python-devel and python3-devel
+    
+    - name: apt install python2, python-dev, pip2 & pip3
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python
+        - python-pip
+        - python3-pip
+        - python-dev
+    
+
+    # service: php7.0 & remove php7.4
+    - name: apt-repo & update
+      become: yes
+      become_user: root
+      apt_repository:
+        validate_certs: no
+        repo: 'ppa:ondrej/php'
+        state: present
+        update_cache: yes
+
+    
+    - name: apt install
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - libapache2-mod-php7.0
+        - php7.0-fpm
+        - php7.0
+        - php7.0-mysqli
+        - php7.0-curl
+        - php7.0-gd
+        - php7.0-intl
+        - php-pear
+        - php-imagick
+        - php7.0-imap
+        - php7.0-mcrypt
+        - php-memcache
+        - php7.0-pspell
+        - php7.0-recode
+        - php7.0-sqlite3
+        - php7.0-tidy
+        - php7.0-xmlrpc
+        - php7.0-xsl
+        - php7.0-mbstring
+        - php-gettext
+        - php-apcu
+    
+
+    - name: purge php7.4*
+      become: yes
+      become_user: root
+      shell:
+        cmd: apt-get -y purge php7.4*
+
+    # service: django using pip3
+    
+    - name: apt install pip3
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python3-pip
+
+    - name: pip install django
+      pip:
+       name: "{{ item }}"
+       extra_args: --user
+       executable: pip3
+      loop:
+        - django
+    
+
+    # service:
+    
+    - name: install nfs-common in order to use command 'mount' for NFS
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - nfs-common
+    
+
+    - name: import vars
+      include_vars:
+        file: /Users/hkwany/PycharmProjects/Conductor/vars/fstab.yml
+        name: fstab_vars
+
+    
+    - name: Create a directory if it does not exist
+      become: yes
+      become_user: root
+      file:
+        path: "{{ fstab_vars.mount_dest_directory }}"
+        state: directory
+        # You must add a leading zero so that Ansible YAML parser knows it's an octal number
+        mode: '0755'
+
+    - name: add line to /etc/fstab
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/fstab
+        line: "{{ fstab_vars.mount_src_ip }}:{{ fstab_vars.mount_src_directory }} {{ fstab_vars.mount_dest_directory }} nfs defaults 0 0"
+        state: present
+    
+
+    - name: mount /etc/fstab
+      become: yes
+      become_user: root
+      shell: mount -a
+      args:
+        executable: /usr/bin/bash
+
+    # service: blx,bix,eigen,magic_finder,zara_sigmaker
+    - name: copy libssl in place if missing
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/blx/dependency/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+        dest: /home/{{ ansible_env.USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+        backup: yes
+
+    - name: install libssl.deb
+      become: yes
+      become_user: root
+      apt:
+        deb: /home/{{ ansible_env.USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+
+    - name: delete libssl from home/
+      file:
+        path: /home/{{ ansible_env.USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+        state: absent
+
+    - name: unarchive blx folders
+      become: yes
+      become_user: root
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/blx/blx.tar.gz
+        copy: yes
+        dest: /opt/
+
+ 
+
+    # service: binspace
+    - name: unarchive binspace
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/binspace/binspace.tar.gz
+        copy: yes
+        dest: /home/{{ ansible_env.USER }}/
+
+    # service: zara,zara.launcher
+    - name: unarchive zara
+      become: yes
+      become_user: root
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/zara/zara.tar.gz
+        copy: yes
+        dest: /opt/
+
+    # service: apache2
+    
+    - name: apt install
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apache2
+    
+
+    - name: Recursively remove directory
+      become: yes
+      become_user: root
+      file:
+        path: /var/www/html
+        state: absent
+
+    - name: unarchive prepared html directory, have renamed index.html
+      become: yes
+      become_user: root
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/apache2/html.tar.gz
+        copy: yes
+        dest: /var/www/
+
+    - name: configure apache2
+      become: no
+      become_user: root
+      script: /Users/hkwany/PycharmProjects/Conductor/services/apache2/script.sh
+
+    - name: reload service apache2, in all cases
+      become: yes
+      become_user: root
+      service:
+        name: apache2
+        state: reloaded
+
+    - name: restart service apache2, in all cases
+      become: yes
+      become_user: root
+      service:
+        name: apache2
+        state: restarted
+
+    # service: klara
+      # requirements:
+      # 1. GNU/Linux (we recommend Ubuntu 16.04 or latest LTS)
+      # 2. SQL DB Server: MySQL / MariaDB
+      # 3. Python 2.7
+      # 4. Python virtualenv package(virtualevnwrapper here)
+      # 5. Yara (installed on workers)
+      #
+      # user & password:
+      #     user: user
+      #	    password: SjhX9Obv8VIgN05cRtqK
+
+
+    # service: mariadb
+    
+    - name: apt install essentials for klara
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - nfs-common
+        - libmysqlclient-dev
+        - python-dev
+        - mariadb-server
+    
+
+    - name: Extract libmariadb.tar.gz into /usr/lib/x86_64-linux-gnu/
+      become: yes
+      become_user: root
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/dependency/libmariadb.tar.gz
+        copy: yes
+        dest: /usr/lib/x86_64-linux-gnu/
+        extra_opts: ['--strip-components=1']
+        #- --strip-components=1
+
+    - name: Create a symbolic link
+      become: yes
+      become_user: root
+      file:
+        src: /usr/lib/x86_64-linux-gnu/libmariadb.so
+        dest: /usr/lib/x86_64-linux-gnu/libmariadb.so.3
+        owner: root
+        group: root
+        state: link
+
+    - name: copy my_config.h in place if missing
+      become: yes
+      become_user: root
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/dependency/my_config.h
+        dest: /usr/include/mysql/my_config.h
+        backup: yes
+        #owner: vagrant
+        #group: vagrant
+        #mode: '0644'
+
+    - name: copy sherlock_VM1_all_databases.sql to home/
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/sherlock_VM1_all_databases.sql
+        dest: /home/{{ ansible_env.USER }}/sherlock_VM1_all_databases.sql
+
+    - name: copy sherlock_VM1_all_grants.sql to home/
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/sherlock_VM1_all_grants.sql
+        dest: /home/{{ ansible_env.USER }}/sherlock_VM1_all_grants.sql
+
+    - name: import databases & grants
+      script: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/script.sh
+
+    - name: delete sherlock_VM1_all_databases.sql from home/
+      file:
+        path: /home/{{ ansible_env.USER }}/sherlock_VM1_all_databases.sql
+        state: absent
+
+    - name: delete sherlock_VM1_all_grants.sql from home/
+      file:
+        path: /home/{{ ansible_env.USER }}/sherlock_VM1_all_grants.sql
+        state: absent
+
+    - name: decompression klara project to /var/
+      become: yes
+      become_user: root
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/klara/projects.tar.gz
+        copy: yes
+        dest: /var/
+
+    - name: decompression klara to home directory
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/klara/klara.tar.gz
+        copy: yes
+        dest: /home/{{ ansible_env.USER }}/
+
+    - name: decompression klara overlay to /opt/
+      become: yes
+      become_user: root
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/klara/klara.overlay.tar.gz
+        copy: yes
+        dest: /opt/
+
+    - name: Create a directory if it does not exist
+      become: yes
+      become_user: root
+      file:
+        path: /mnt/klara/clean
+        state: directory
+        # You must either add a leading zero so that Ansible YAML parser knows it's an octal number
+        mode: '0755'
+
+    - name: Create a directory if it does not exist
+      become: yes
+      become_user: root
+      file:
+        path: /mnt/klara/malware
+        state: directory
+        # You must either add a leading zero so that Ansible YAML parser knows it's an octal number
+        mode: '0755'
+
+    - name: add line to /etc/fstab
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/fstab
+        line: none /mnt/klara/clean overlay auto,defaults,lowerdir=/opt/attribution/collection/clean_50k,upperdir=/opt/klara.overlay/clean/upper,workdir=/opt/klara.overlay/clean/work,comment=klara_clean_50k	0	2
+        state: present
+
+    - name: add line to /etc/fstab
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/fstab
+        line: none /mnt/klara/malware overlay auto,defaults,lowerdir=/opt/attribution/collection/malware,upperdir=/opt/klara.overlay/malware/upper,workdir=/opt/klara.overlay/malware/work,comment=klara_clean	0	2
+        state: present
+
+    - name: mount /etc/fstab
+      become: yes
+      become_user: root
+      shell: mount -a
+      args:
+        executable: /usr/bin/bash
+
+    - name: add line to /etc/hosts
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/fstab
+        # YAML requires escape strings('\') to be enclosed by double-quotes(" ")
+        line: "127.0.0.1\tklara.ncl.sg"
+        state: present
+
+    # service: create user & group
+    - name: create group projects for klara
+      become: yes
+      become_user: root
+      group:
+        name: projects
+        gid: 500
+        state: present
+
+    - name: create user projects under groups projects & sudo for klara
+      become: yes
+      become_user: root
+      user:
+        name: projects
+        shell: /bin/bash
+        create_home: yes
+        uid: 500
+        groups: projects,sudo
+
+    - name: copy pip_requirements for klara to /projects
+      become: yes
+      become_user: projects
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/klara/pip_requirements.txt
+        dest: ~/pip_requirements.txt
+        #owner: projects
+        #group: projects
+        #mode: '0644'
+
+    - name: update .bashrc of user 'projects'
+      become: yes
+      become_user: projects
+      lineinfile:
+        path: ~/.bashrc
+        # YAML requires escape strings('\') to be enclosed by double-quotes(" ")
+        line: "export PATH='$PATH:/home/projects/.local/bin'\nexport WORKON_HOME='~/.virtualenv'\nexport VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3\nsource /home/projects/.local/bin/virtualenvwrapper.sh"
+        state: present
+
+    # yes | pip3 install virtualenvwrapper --user
+    - name: pip3 install virtualenvwrapper under user 'projects'
+      become: yes
+      become_user: projects
+      pip:
+       name: virtualenvwrapper
+       extra_args: --user
+       executable: pip3
+
+    # service: create virtualenv
+    - name: Create the virtualenv 'klara'
+      become: yes
+      become_user: projects
+      shell:
+           export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/projects/.local/bin'
+
+           export WORKON_HOME='~/.virtualenv'
+
+           export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+
+           . /home/projects/.local/bin/virtualenvwrapper.sh
+
+           mkvirtualenv klara --python=python2
+      args:
+        executable: /usr/bin/bash
+        creates: ~/.virtualenv/klara
+
+    - name: pip install requirements(under 'projects' in virtualenv 'klara')
+      become: yes
+      become_user: projects
+      pip:
+        requirements=~/pip_requirements.txt
+        virtualenv=/home/projects/.virtualenv/klara
+
+    - name: delete pip_requirements from /projects
+      become: yes
+      become_user: projects
+      file:
+        path: ~/pip_requirements.txt
+        state: absent
+
+    # service: supervisor
+    - name: pip install supervisor
+      become: yes
+      become_user: root
+      pip:
+       name: supervisor
+       executable: pip3
+
+    - name: prepare supervisor folders
+      become: yes
+      become_user: root
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/supervisor/supervisor.tar.gz
+        copy: yes
+        dest: /etc/
+
+    - name: Create a directory if it does not exist
+      become: yes
+      become_user: root
+      file:
+        path: /var/log/supervisor
+        state: directory
+        # You must either add a leading zero so that Ansible YAML parser knows it's an octal number
+        mode: '0755'
+
+    - name: Running supervisor
+      become: yes
+      become_user: root
+      shell: supervisord -c /etc/supervisor/supervisord.conf
+
+- hosts: VM2
+  gather_facts: true
+
+  tasks:
+    # service: apt-get update & install essentials for a VM
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+
+    
+    - name: apt install essentials
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - net-tools
+        - software-properties-common
+    
+
+    # service: django2 using pip3
+    
+    - name: apt install pip3
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python3-pip
+
+    - name: pip install django
+      pip:
+       name: "{{ item }}"
+       extra_args: --user
+       executable: pip3
+      loop:
+        - django
+    
+
+    - name: decompression django folder to home/
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/django2/sherlock-website-django.tar.gz
+        copy: yes
+        dest: /home/{{ ansible_env.USER }}/
+
+    # service:
+    
+    - name: install nfs-common in order to use command 'mount' for NFS
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - nfs-common
+    
+
+    - name: import vars
+      include_vars:
+        file: /Users/hkwany/PycharmProjects/Conductor/vars/fstab.yml
+        name: fstab_vars
+
+    
+    - name: Create a directory if it does not exist
+      become: yes
+      become_user: root
+      file:
+        path: "{{ fstab_vars.mount_dest_directory }}"
+        state: directory
+        # You must add a leading zero so that Ansible YAML parser knows it's an octal number
+        mode: '0755'
+
+    - name: add line to /etc/fstab
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/fstab
+        line: "{{ fstab_vars.mount_src_ip }}:{{ fstab_vars.mount_src_directory }} {{ fstab_vars.mount_dest_directory }} nfs defaults 0 0"
+        state: present
+    
+
+    - name: mount /etc/fstab
+      become: yes
+      become_user: root
+      shell: mount -a
+      args:
+        executable: /usr/bin/bash
+
+    # service: FlowSim
+    
+    - name: apt install essentials for FlowSim
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - libcurl4-openssl-dev
+        - cmake
+        - python3.7-dev
+        - libssl-dev
+        - python3-pip
+    
+
+    - name: decompression FlowSim folder to home directory
+      unarchive:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/flowsim/FlowSim.tar.gz
+        copy: yes
+        dest: /home/{{ ansible_env.USER }}/
+
+    - name: Create a symbolic link
+      file:
+        src: /opt/attribution/flowsim/TaintRuleDB
+        dest: /home/{{ ansible_env.USER }}/TaintRuleDB
+        state: link
+
+    - name: copy VM2_pip_requirements to home/
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/flowsim/VM2_pip_requirements.txt
+        dest: /home/{{ ansible_env.USER }}/VM2_pip_requirements.txt
+
+    - name: pip install requirements
+      pip:
+        requirements: /home/{{ ansible_env.USER }}/VM2_pip_requirements.txt
+        extra_args: --user
+        executable: pip3
+
+    - name: delete VM2_pip_requirements.txt from home/
+      file:
+        path: /home/{{ ansible_env.USER }}/VM2_pip_requirements.txt
+        state: absent
+
+    - name: copy libkeystone.so
+      become: yes
+      become_user: root
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/flowsim/libkeystone.so
+        dest: /usr/local/lib/libkeystone.so
+
+    - name: copy keystone.py
+      become: no
+      become_user: root
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/flowsim/keystone.py
+        dest: ~/.local/lib/python3.7/site-packages/keystone/keystone.py
+
+    - name: expand swap
+      become: yes
+      become_user: root
+      script: /home/localuser/Conductor/services/fstab/swap.sh
+
+    - name: copy squirrel_framework to home/
+      become: no
+      become_user: root
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/flowsim/squirrel_framework-0.1.12-py3-none-any.whl
+        dest: /home/{{ ansible_env.USER }}/squirrel_framework-0.1.12-py3-none-any.whl
+
+    - name: pip install squirrel
+      pip:
+        name: file:///home/{{ ansible_env.USER }}/squirrel_framework-0.1.12-py3-none-any.whl
+        extra_args: --user
+        executable: pip3
+
+    - name: delete squirrel_framework from home/
+      file:
+        path: /home/{{ ansible_env.USER }}/squirrel_framework-0.1.12-py3-none-any.whl
+        state: absent
+
+
+

@@ -9,6 +9,7 @@
 #    - mount_src_directory: "/mnt/sda3/attribution"
 #    - fstab_attribution: "nfs defaults 0 0"
     - mount_src_ip: "10.0.2.2"
+    - mount_dest_directory: "/opt/attribution"
     - mount_src_directory: "/mnt/sda3/attribution"
 
   dependency:

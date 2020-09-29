@@ -1,25 +1,12 @@
 import os
 import cli
 import components
-import yaml
-import parser_yaml
+import yaml_parser
 import renderer_test
 from defaults import default
 
 def help_command(command):
 	print(f'{command.__doc__}')
-
-def yaml_templatefile_load(filename):
-	with open(f"{default.conductor_path}/template/{filename}.yml", 'r') as stream:
-		return yaml.safe_load(stream)
-	
-def yaml_file_load(filename):
-	with open(f"{filename}.yml", 'w') as stream:
-		return yaml.safe_load(stream)
-		
-def yaml_file_dump(content,filename):
-	with open(f"{filename}.yml", 'w') as stream:
-		yaml.dump(content,stream,default_flow_style=False,explicit_start=True,allow_unicode=True,sort_keys=False)
 
 def NewExperiment(args):
 	'''
@@ -154,8 +141,8 @@ def LoadTemplateExperiment(args):
 	LoadTemplateExperiment <Experiment>: Load all configuration of an experiment
 	'''
 
-	yaml_content = yaml_templatefile_load(args[0])
-	vms, lans, nodes=parser_yaml.yaml_content_parser(yaml_content)
+	yaml_content = yaml_parser.yaml_templatefile_load(args[0])
+	vms, lans, nodes=yaml_parser.yaml_content_parser(yaml_content)
 	if default.debug:
 		print('vms->')
 		print(vms)

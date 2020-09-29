@@ -1,0 +1,17 @@
+# comment
+upstream {{ server_name }} {
+{% for n in range(num|length) %}
+        server 172.16.1.{{ n }}:{{ n + (num|length) }};
+{% endfor %}
+}
+
+server {
+        listen 80;
+        server_name {{ server_name }};
+        location / {
+                root /code;
+                index index.html;
+                proxy_pass http://{{ server_name }};
+                proxy_set_header Host $http_host;
+        }
+}
