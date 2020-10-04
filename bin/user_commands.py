@@ -2,105 +2,107 @@ import os
 import cli
 import components
 import yaml_parser
+import yaml
 import renderer_test
 from defaults import default
 
+metadata_set_function = {"teamname": components.metadata.set_teamname,
+                         "experimentname": components.metadata.set_experimentname,
+                         "lans_num": components.metadata.set_lans_num,
+                         "nodes_num": components.metadata.set_nodes_num,
+                         "vms_num": components.metadata.set_vms_num,
+                         "reserved_nodes": components.metadata.set_reserved_nodes}
+lan_set_function = {"name": components.lan.set_name, "endpoints": components.lan.set_endpoints_list}
+node_set_function = {"name": components.node.set_name, "os": components.node.set_os,
+                     "network": components.node.set_network, "services": components.node.set_services_v1}
+vm_set_function = {"name": components.vm.set_name, "node": components.vm.set_node,
+                   "provider": components.vm.set_provider, "os": components.vm.set_os,
+                   "network": components.vm.set_network, "vrde": components.vm.set_vrde,
+                   "port_forwarding": components.vm.set_port_forwarding, "services": components.vm.set_services_v1}
+
+
 def help_command(command):
-	print(f'{command.__doc__}')
+	print(f"{command.__doc__}")
+
 
 def NewExperiment(args):
 	'''
 	NewExperiment: Create a new experiment.
 	'''
-	exp = components.Experiment()
-	exp_dict = cli.Experiment_prompt()
-	if exp_dict['teamname'] != '':
-		exp.set_teamname(exp_dict['teamname'])
-	if exp_dict['experimentname'] != '':
-		exp.set_experimentname(exp_dict['experimentname'])
-	if exp_dict['lans_num'] != '':
-		exp.set_lans_num(exp_dict['lans_num'])
-	if exp_dict['nodes_num'] != '':
-		exp.set_nodes_num(exp_dict['nodes_num'])
-	if exp_dict['vms_num'] != '':
-		exp.set_vms_num(exp_dict['vms_num'])
-	# exp.pp()
-	if exp.get_lans_num() == 0:
-		print('No Lan')
-	else:
-		lan_list = []
-		for i in range(exp.get_lans_num()):
-			lan = components.Lan()
-			lan_dict = cli.Lan_prompt()
-			if lan_dict['name'] != '':
-				lan.set_name(lan_dict['name'])
-			if lan_dict['endpoints'] != '':
-				lan.set_endpoints(lan_dict['endpoints'])
-			lan_list.append(lan)
-	if exp.get_nodes_num() == 0:
-		print('No node')
-	else:
-		node_list = []
-		for i in range(exp.get_nodes_num()):
-			node = components.Node()
-			node_dict = cli.Node_prompt()
-			if node_dict['name'] != '':
-				node.set_node_name(node_dict['name'])
-			if node_dict['connectivity'] != '':
-				node.set_node_connectivity(node_dict['connectivity'])
-			if node_dict['lan'] != '':
-				node.set_node_lan(node_dict['lan'])
-			if node_dict['lan_node_ip'] != '':
-				node.set_node_lan_node_ip(node_dict['lan_node_ip'])
-			if node_dict['lan_node_netmask'] != '':
-				node.set_node_lan_node_netmask(node_dict['lan_node_netmask'])
-			if node_dict['hostonly_network_name'] != '':
-				node.set_node_host_network_name(node_dict['hostonly_network_name'])
-			if node_dict['hostonly_network_ip'] != '':
-				node.set_node_host_network_ip(node_dict['hostonly_network_ip'])
-			if node_dict['hostonly_network_netmask'] != '':
-				node.set_node_host_network_netmask(node_dict['hostonly_network_netmask'])
-			if node_dict['service'] != '':
-				node.set_node_service(node_dict['service'])
-			node_list.append(node)
-	if exp.get_vms_num() == 0:
-		print('No VM')
-	else:
-		vm_list = []
-		for i in range(exp.get_vms_num()):
-			vm = components.VM()
-			vm_dict = cli.VM_prompt()
-			if vm_dict['node'] != '':
-				vm.set_vm_node(vm_dict['node'])
-			if vm_dict['hostname'] != '':
-				vm.set_vm_hostname(vm_dict['hostname'])
-			if vm_dict['provider'] != '':
-				vm.set_vm_provider(vm_dict['provider'])
-			if vm_dict['hostonly_network'] != '':
-				vm.set_vm_hostonly_network(vm_dict['hostonly_network'])
-			if vm_dict['hostonly_ip'] != '':
-				vm.set_vm_hostonly_ip(vm_dict['hostonly_ip'])
-			if vm_dict['image'] != '':
-				vm.set_vm_image(vm_dict['image'])
-			if vm_dict['service'] != '':
-				vm.set_vm_service(vm_dict['service'])
-			if vm_dict['activity'] != '':
-				vm.set_vm_activity(vm_dict['activity'])
-			if vm_dict['vrdeport'] != '':
-				vm.set_vm_vrdeport(vm_dict['vrdeport'])
-			if vm_dict['guest_port_forward'] != '':
-				vm.set_vm_guest_port_forward(vm_dict['guest_port_forward'])
-			if vm_dict['host_port_forward'] != '':
-				vm.set_vm_host_port_forward(vm_dict['host_port_forward'])
-			vm_list.append(vm)
-
-	exp.pp()
+	''' Metadata '''
+	# metadata component #
+	Metadata = components.metadata()
+	Metadata_dict = cli.Experiment_prompt()
+	# print(Metadata_dict)
+	for key, value in Metadata_dict.items():
+		metadata_set_function[key](Metadata, value)
+	output_metadata = {'metadata': Metadata.output()}
+	''' Lan '''
+	lan_list = []
+	output_lan_entry =[]
+	for i in range(Metadata.get_lans_num()):
+		# lan component #
+		lan = components.lan()
+		lan_dict = cli.Lan_prompt()
+		# print(lan_dict)
+		for key, value in lan_dict.items():
+			lan_set_function[key](lan, value)
+		# lan component list #
+		lan_list.append(lan)
 	for lan in lan_list:
-		lan.pp()
+		output_lan_entry.append(lan.output())
+	output_lan = {'lan': output_lan_entry}
+	''' Node '''
+	node_list = []
+	output_node_entry=[]
+	for i in range(Metadata.get_nodes_num()):
+		# node component #
+		node = components.node()
+		node_dict = cli.Node_prompt()
+		# print(node_dict)
+		for key, value in node_dict.items():
+			node_set_function[key](node, value)
+		node_list.append(node)
 	for node in node_list:
-		node.pp()
+		output_node_entry.append(node.output())
+	output_node = {'node': output_lan_entry}
+	''' VM '''
+	vm_list = []
+	output_vm_entry=[]
+	for i in range(Metadata.get_vms_num()):
+		# VM component
+		vm = components.vm()
+		vm_dict = cli.VM_prompt()
+		# print(vm_dict)
+		for key, value in vm_dict.items():
+			vm_set_function[key](vm, value)
+		vm_list.append(vm)
 	for vm in vm_list:
-		vm.pp()
+		output_vm_entry.append(vm.output())
+	output_vm = {'vm': output_vm_entry}
+
+	output = {'version': default.VERSION}
+	output.update(output_metadata)
+	output.update(output_lan)
+	output.update(output_node)
+	output.update(output_vm)
+	with open('output.yml', 'w') as file:
+		yaml.dump(output, file, default_flow_style=False, explicit_start=True, allow_unicode=True, sort_keys=False)
+
+
+# for key, value in vm_dict.items():
+# 	vm_set_function[key](vm, value)
+# vm_list.append(vm)
+
+
+#
+# metadata.pp()
+# for lan in lan_list:
+# 	lan.pp()
+# for node in node_list:
+# 	node.pp()
+# for vm in vm_list:
+# 	vm.pp()
 
 
 def ModifyExperiment(args):
@@ -136,27 +138,30 @@ def DeployExperiment(args):
 	else:
 		print('pass')
 
+
 def LoadTemplateExperiment(args):
 	'''
 	LoadTemplateExperiment <Experiment>: Load all configuration of an experiment
 	'''
 
 	yaml_content = yaml_parser.yaml_templatefile_load(args[0])
-	vms, lans, nodes=yaml_parser.yaml_content_parser(yaml_content)
+	vms, lans, nodes = yaml_parser.yaml_content_parser(yaml_content)
 	if default.debug:
 		print('vms->')
 		print(vms)
-		# print('lans->')
-		# print(lans)
-		# print('nodes->')
-		# print(nodes)
+	# print('lans->')
+	# print(lans)
+	# print('nodes->')
+	# print(nodes)
 	# renderer_test.vagrantfile_renderer(vms)
 	# renderer_test.hosts_renderer(vms)
 	# renderer_test.nodesfile_renderer(nodes)
 	# renderer_test.NSfile_renderer(lans,nodes)
 	renderer_test.ansiblefile_renderer(vms)
-	# renderer_test.clientfile_renderer(experiment_metadata, vms)
-	# renderer_test.dockerfile_renderer()
+
+
+# renderer_test.clientfile_renderer(experiment_metadata, vms)
+# renderer_test.dockerfile_renderer()
 
 
 def ls(args):
@@ -171,6 +176,3 @@ def cd(args):
 	cd <directory>: change dir
 	'''
 	os.chdir(args[0])
-
-
-

@@ -6,8 +6,8 @@ metadata:
   lans_num: 1
   nodes_num: 2
   vms_num: 2
-  reserved_nodes: ''
-lan: &id001
+  reserved_nodes: null
+lan:
 - name: lan1
   endpoints:
   - name: n1
@@ -16,7 +16,38 @@ lan: &id001
   - name: n2
     ip: 172.16.10.102
     netmask: 255.255.255.0
-node: *id001
+node:
+- name: n1
+  os:
+    type: node
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    architecture: amd64
+  network:
+    hostonly_network: null
+    internal_network: null
+  services:
+  - ansible
+- name: n2
+  os:
+    type: node
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    architecture: amd64
+  network:
+    hostonly_network:
+    - name: vboxnet1
+      ip: 172.16.1.1
+      netmask: 255.255.255.0
+    - name: vboxnet2
+      ip: 172.16.2.1
+      netmask: 255.255.255.0
+    internal_network: null
+  services:
+  - nginx
+  - attribution
 vm:
 - name: VM1
   node: n2
@@ -29,9 +60,9 @@ vm:
     architecture: amd64
   network:
   - gateway: vboxnet1
+    type: hostonly
     ip: 172.16.1.101
     netmask: 255.255.255.0
-    type: hostonly
   vrde:
     enabled: true
     port: '12345'
@@ -42,7 +73,7 @@ vm:
   - nginx
 - name: VM2
   node: n2
-  provider: ''
+  provider: virtualbox
   os:
     type: vagrant
     platform: Linux
@@ -51,17 +82,17 @@ vm:
     architecture: amd64
   network:
   - gateway: vboxnet1
-    ip: 172.16.1.102
-    netmask: 255.255.254.0
     type: hostonly
+    ip: 172.16.1.102
+    netmask: 255.255.255.0
   - gateway: vboxnet2
+    type: hostonly
     ip: 172.16.2.101
     netmask: 255.255.255.0
-    type: internal
   vrde:
-    enabled: false
-    port: null
+    enabled: true
+    port: '12346'
   port_forwarding:
     guest_port: '22'
     host_port: '2203'
-  services: []
+  services: null
