@@ -12,13 +12,13 @@ def yaml_templatefile_load(filename):
 
 
 def yaml_file_load(filename):
-	with open(f"{filename}.yml", 'w') as stream:
+	with open(f"{filename}.yml", 'r') as stream:
 		return yaml.safe_load(stream)
 
 
 def yaml_file_dump(content, filename):
 	with open(f"{filename}.yml", 'w') as stream:
-		yaml.dump(content, stream, default_flow_style=False, explicit_start=True, allow_unicode=True, sort_keys=False)
+		yaml.safe_dump(content, stream, default_flow_style=False, explicit_start=True, allow_unicode=True, sort_keys=False)
 
 def yaml_content_parser(content):
 	vms = get_vms(content)

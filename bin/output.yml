@@ -1,67 +1,60 @@
 ---
 version: '1.0'
 metadata:
-  teamname: NCLSecurity
-  experimentname: Enterprise
+  teamname: null
+  experimentname: null
   lans_num: 1
-  nodes_num: 2
-  vms_num: 2
-  reserved_nodes: ''
-lan: &id001
-- name: lan1
+  nodes_num: 1
+  vms_num: 1
+  reserved_nodes: null
+lan:
+- name: null
   endpoints:
-  - name: n1
-    ip: 172.16.10.101
+  - name: ''
+    ip: ''
     netmask: 255.255.255.0
-  - name: n2
-    ip: 172.16.10.102
-    netmask: 255.255.255.0
-node: *id001
-vm:
-- name: VM1
-  node: n2
-  provider: virtualbox
+node:
+- name: ''
   os:
-    type: vagrant
+    type: node
     platform: Linux
     release: ubuntu
     version: '16.04'
     architecture: amd64
   network:
-  - gateway: vboxnet1
-    ip: 172.16.1.101
-    netmask: 255.255.255.0
-    type: hostonly
-  vrde:
-    enabled: true
-    port: '12345'
-  port_forwarding:
-    guest_port: 22,80
-    host_port: 2202,8080
+    hostonly_network:
+    - name: ''
+      ip: ''
+      netmask: 255.255.255.0
+    internal_network: []
   services:
-  - nginx
-- name: VM2
-  node: n2
-  provider: ''
+  - name: nginx
+    parameter:
+      nginx_version: 1.4.0
+      nginx_port: 80
+  - name: nfs-client
+    parameter: {}
+vm:
+- name: null
+  node: null
+  provider: null
   os:
     type: vagrant
     platform: Linux
     release: ubuntu
     version: '16.04'
     architecture: amd64
-  network:
-  - gateway: vboxnet1
-    ip: 172.16.1.102
-    netmask: 255.255.254.0
-    type: hostonly
-  - gateway: vboxnet2
-    ip: 172.16.2.101
-    netmask: 255.255.255.0
-    type: internal
+  network: []
   vrde:
     enabled: false
     port: null
   port_forwarding:
-    guest_port: '22'
-    host_port: '2203'
-  services: []
+    guest_port: null
+    host_port: null
+  services:
+  - name: nginx
+    parameter:
+      nginx_version: 1.4.0
+      nginx_port: 80
+  - name: nfs-client
+    parameter: {}

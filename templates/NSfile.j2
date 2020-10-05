@@ -5,7 +5,9 @@ source tb_compat.tcl
 # Add nodes
 {%- for node in nodes %}
 set {{ node['name'] }} [$ns node]
+{# tb-fix-node $n1 pc16e #}
 {%- endfor %}
+
 
 
 # Set node OS from saved image, Ubuntu1604-64-STD by default

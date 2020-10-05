@@ -18,21 +18,13 @@ For initialization for each component.
 
 
 class metadata:
-	def __init__(self):
-		self.teamname = None
-		self.experimentname = None
-		self.lans_num = 0
-		self.nodes_num = 0
-		self.vms_num = 0
-		self.reserved_nodes = None
-
-	# def __init__(self, teamname, experimentname, lans_num, nodes_num, vms_num, reserve_nodes):
-	# 	self.teamname = teamname
-	# 	self.experimentname = experimentname
-	# 	self.lans_num = lans_num
-	# 	self.nodes_num = nodes_num
-	# 	self.vms_num = vms_num
-	# 	self.reserve_nodes = reserve_nodes
+	def __init__(self, teamname=None, experimentname=None, lans_num=0, nodes_num=0, vms_num=0, reserved_nodes=None):
+		self.teamname = teamname
+		self.experimentname = experimentname
+		self.lans_num = lans_num
+		self.nodes_num = nodes_num
+		self.vms_num = vms_num
+		self.reserved_nodes = reserved_nodes
 
 	def set_teamname(self, teamname):
 		if teamname == '':
@@ -89,10 +81,10 @@ class metadata:
 
 
 class endpoint:
-	def __init__(self):
-		self.name = None
-		self.ip = None
-		self.netmask = None
+	def __init__(self, name=None, ip=None, netmask=None):
+		self.name = name
+		self.ip = ip
+		self.netmask = netmask
 
 	def set_name(self, name):
 		if name == '':
@@ -117,15 +109,10 @@ class endpoint:
 		return output
 
 
-# {'name': 'lan1', 'endpoints': [{'name': 'n1', 'ip': '172.16.1.1', 'netmask': '255.255.255.0'}]}
 class lan:
-	def __init__(self):
-		self.name = None
-		self.endpoints = []
-
-	# def __init__(self, name, endpoints):
-	# 	self.name = name
-	# 	self.endpoints = endpoints
+	def __init__(self, name=None, endpoints=[]):
+		self.name = name
+		self.endpoints = endpoints
 
 	def set_name(self, name):
 		if name == '':
@@ -133,13 +120,30 @@ class lan:
 		else:
 			self.name = name
 
-	def set_endpoints_list(self, endpoint_list):
-		# endpoints_list is a dictionary list
-		self.endpoints = endpoint_list
-
 	def set_endpoints_dict(self, endpoint_dict):
-		# endpoints_list is a dictionary
-		self.endpoints.append(endpoint_dict)
+		# endpoints_dict is a dictionary
+		endpoint_entry = endpoint()
+		endpoint_entry.set_name(endpoint_dict['name'])
+		endpoint_entry.set_ip(endpoint_dict['ip'])
+		endpoint_entry.set_netmask(endpoint_dict['netmask'])
+		self.endpoints.append(endpoint_entry)
+
+	def set_endpoints_dict_list(self, endpoint_dict_list):
+		# endpoint_list is a list of endpoint dict, not endpoint object
+		for endpoint_dict in endpoint_dict_list:
+			endpoint_entry = endpoint()
+			endpoint_entry.set_name(endpoint_dict['name'])
+			endpoint_entry.set_ip(endpoint_dict['ip'])
+			endpoint_entry.set_netmask(endpoint_dict['netmask'])
+			self.endpoints.append(endpoint_entry)
+
+	def set_endpoints_object(self, endpoint_object):
+		# endpoint_list is a list of endpoint dict, not endpoint object
+		self.endpoints.append(endpoint_object)
+
+	def set_endpoints_object_list(self, endpoint_object_list):
+		# endpoint_list is a list of endpoint dict, not endpoint object
+		self.endpoints = endpoint_object_list
 
 	def add_endpoints(self, name, ip, netmask):
 		# endpoint is a dictionary
@@ -147,7 +151,6 @@ class lan:
 		endpoint_entry.set_name(name)
 		endpoint_entry.set_ip(ip)
 		endpoint_entry.set_netmask(netmask)
-		endpoint_entry = endpoint_entry.output()
 		self.endpoints.append(endpoint_entry)
 
 	def output(self):
@@ -261,23 +264,64 @@ class internal_network:
 
 
 class node_network:
-	def __init__(self):
-		self.hostonly_network = []
-		self.internal_network = []
+	def __init__(self, hostonly_network=[], internal_network=[]):
+		self.hostonly_network = hostonly_network
+		self.internal_network = internal_network
 
-	def set_hostonly_network(self, hostonly_networks_list):
-		self.hostonly_network = hostonly_networks_list
+	def set_hostonly_network_dict(self, hostonly_network_dict):
+		# hostonly_network_dict is a dict
+		hostonly_network_entry = hostonly_network()
+		hostonly_network_entry.set_name(hostonly_network_dict['name'])
+		hostonly_network_entry.set_ip(hostonly_network_dict['ip'])
+		hostonly_network_entry.set_netmask(hostonly_network_dict['netmask'])
+		self.hostonly_network.append(hostonly_network_entry)
 
-	def set_internal_network(self, internal_networks_list):
-		self.internal_network = internal_networks_list
+	def set_hostonly_network_dict_list(self, hostonly_network_dict_list):
+		# hostonly_network_list is a hostonly_network dict list, not hostonly_network object list.
+		for hostonly_network_dict in hostonly_network_dict_list:
+			hostonly_network_entry = hostonly_network()
+			hostonly_network_entry.set_name(hostonly_network_dict['name'])
+			hostonly_network_entry.set_ip(hostonly_network_dict['ip'])
+			hostonly_network_entry.set_netmask(hostonly_network_dict['netmask'])
+			self.hostonly_network.append(hostonly_network_entry)
+
+	def set_hostonly_network_object(self, hostonly_network_object):
+		# hostonly_network_list is a hostonly_network-type list
+		self.hostonly_network.append(hostonly_network_object)
+
+	def set_hostonly_network_object_list(self, hostonly_network_object_list):
+		# hostonly_network_list is a hostonly_network-type list
+		self.hostonly_network = hostonly_network_object_list
+
+	def set_internal_network_dict(self, internal_network_dict):
+		# internal_network_dict is a dict
+		internal_network_entry = internal_network()
+		internal_network_entry.set_name(internal_network_dict['name'])
+		internal_network_entry.set_ip(internal_network_dict['ip'])
+		internal_network_entry.set_netmask(internal_network_dict['netmask'])
+		self.internal_network.append(internal_network_entry)
+
+	def set_internal_network_dict_list(self, internal_network_dict_list):
+		# internal_network_list is a internal_network dict list not object list
+		for internal_network_dict in internal_network_dict_list:
+			internal_network_entry = internal_network()
+			internal_network_entry.set_name(internal_network_dict['name'])
+			internal_network_entry.set_ip(internal_network_dict['ip'])
+			internal_network_entry.set_netmask(internal_network_dict['netmask'])
+
+	def set_internal_network_object(self, internal_network_object):
+		# internal_network is an object of class internal_network
+		self.internal_network.append(internal_network_object)
+
+	def set_internal_network_object_list(self, internal_network_object_list):
+		# internal_network_list is a internal_network-type list
+		self.internal_network = internal_network_object_list
 
 	def add_hostonly_network(self, name, ip, netmask):
 		hostonly_network_entry = hostonly_network()
 		hostonly_network_entry.set_name(name)
 		hostonly_network_entry.set_ip(ip)
 		hostonly_network_entry.set_netmask(netmask)
-		hostonly_network_entry = hostonly_network_entry.output()
-
 		self.hostonly_network.append(hostonly_network_entry)
 
 	def add_internal_network(self, name, ip, netmask):
@@ -285,57 +329,41 @@ class node_network:
 		internal_network_entry.set_name(name)
 		internal_network_entry.set_ip(ip)
 		internal_network_entry.set_netmask(netmask)
-		internal_network_entry = internal_network_entry.output()
-
 		self.internal_network.append(internal_network_entry)
 
 	def output(self):
-		output = {'hostonly_network': self.hostonly_network, 'internal_network': self.internal_network}
+		hostonly_network_output = []
+		internal_network_output = []
+		for hostonly_network in self.hostonly_network:
+			hostonly_network_output.append(hostonly_network.output())
+		for internal_network in self.internal_network:
+			internal_network_output.append(internal_network.output())
+		output = {'hostonly_network': hostonly_network_output, 'internal_network': internal_network_output}
 		return output
 
 
-class service:
-	def __init__(self):
-		self.name = None
-		self.parameter = None
+class complement_service:
+	def __init__(self, service=None, parameter={}):
+		self.service = service
+		self.parameter = parameter
 
-	def set_name(self, name):
-		self.name = name
+	def set_name(self, service):
+		self.service = service
 
 	def set_parameter(self, parameter):
 		self.parameter = parameter
 
 	def output(self):
-		output = {'name': self.name, 'parameter': self.parameter}
+		output = {'name': self.service, 'parameter': self.parameter}
 		return output
 
 
-'''
-{'name': 'n1',
- 'os': {'type': 'node', 'platform': 'Linux', 'release': 'ubuntu', 'version': '16.04', 'architecture': 'amd64'},
- 'network': {'hostonly_network': [{'name': 'vboxnet1', 'ip': '172.16.1.1', 'netmask': '255.255.255.0'}],
-             'internal_network': []}, 'services': ['nginx']}
-'''
-
-
 class node:
-	def __init__(self):
-		self.name = ''
-		self.os = os()
-		self.network = node_network()
-		self.services = []
-
-	# def __init__(self, name, lan, lan_node_ip,lan_node_netmask, hostonly_network_name, hostonly_network_ip, service):
-	# 	self.name = name
-	# 	self.OS = 'Ubuntu1604-64-STD'
-	# 	self.connectivity = None
-	# 	self.lan = lan
-	# 	self.lan_node_ip = lan_node_ip
-	# 	self.lan_node_netmask = lan_node_netmask
-	# 	self.hostonly_network_name = hostonly_network_name
-	# 	self.hostonly_network_ip = hostonly_network_ip
-	# 	self.hostonly_network_netmask = ('255.255.255.0,' * len(hostonly_network_name)).split(',')[:-1]
-	# 	self.service = service
+	def __init__(self, name=None, os=os(), network=node_network(), services=[]):
+		self.name = name
+		self.os = os
+		self.network = network
+		self.services = services
 
 	def set_name(self, name):
 		if name == '':
@@ -343,24 +371,30 @@ class node:
 		else:
 			self.name = name
 
-	def set_os(self, os_dict):
+	def set_os_dict(self, os_dict):
 		self.os.set_type(os_dict['type'])
 		self.os.set_platform(os_dict['platform'])
 		self.os.set_release(os_dict['release'])
 		self.os.set_version(os_dict['version'])
 		self.os.set_architecture(os_dict['architecture'])
 
-	# self.os = self.os.output()
-
 	def set_network(self, network_dict):
-		self.network.set_hostonly_network(network_dict['hostonly_network'])
-		self.network.set_internal_network(network_dict['internal_network'])
+		# Take format as reference
+		# network_dict = {
+		#                 "hostonly_network": [{"name": "vboxnet1", "ip": "172.16.1.1", "netmask": "255.255.255.0"},
+		#                                      {"name": 'vboxnet2', "ip": "172.16.2.1", "netmask": "255.255.255.0"}],
+		#                 "internal_network": [{"name": "vboxnet3", "ip": "172.16.3.1", "netmask": "255.255.255.0"},
+		#                                      {"name": 'vboxnet4', "ip": "172.16.4.1", "netmask": "255.255.255.0"}]
+		#                }
+		self.network.set_hostonly_network_dict_list(network_dict['hostonly_network'])
+		self.network.set_internal_network_dict_list(network_dict['internal_network'])
 
 	def add_network(self, network_type, name, ip, netmask):
 		if network_type == 'hostonly':
 			self.network.add_hostonly_network(name, ip, netmask)
 
-	# self.network=self.network.output()
+	def get_services(self):
+		return self.services
 
 	def set_services_v1(self, service_list):
 		# service_list is a service name list
@@ -376,7 +410,14 @@ class node:
 
 	def set_services_v2(self, service_list):
 		# service_list is a service class list
-		self.services = service_list
+		complement_service_list = []
+		for service in service_list:
+			complement_service_entry = complement_service()
+			complement_service_entry.set_name(service['service'])
+			complement_service_entry.set_parameter(service['parameter'])
+			complement_service_list.append(complement_service_entry)
+
+		self.services = complement_service_list
 
 	# ToDo
 	def add_services_v2(self, service):
@@ -388,17 +429,20 @@ class node:
 			self.services.append(service)
 
 	def output(self):
+		services_output = []
+		for service in self.services:
+			services_output.append(service.output())
 		output = {'name': self.name, 'os': self.os.output(), 'network': self.network.output(),
-		          'services': self.services}
+		          'services': services_output}
 		return output
 
 
 class vm_network:
-	def __init__(self):
-		self.gateway = None
-		self.type = None
-		self.ip = None
-		self.netmask = None
+	def __init__(self, gateway=None, ip=None, netmask=None, type=None):
+		self.gateway = gateway
+		self.ip = ip
+		self.netmask = netmask
+		self.type = type
 
 	def set_gateway(self, gateway):
 		if gateway == '':
@@ -430,9 +474,9 @@ class vm_network:
 
 
 class vrde:
-	def __init__(self):
-		self.enabled = False
-		self.port = None
+	def __init__(self, enabled=False, port=None):
+		self.enabled = enabled
+		self.port = port
 
 	def set_enabled(self, enabled):
 		# enabled is True or False
@@ -453,9 +497,9 @@ class vrde:
 
 
 class port_forwarding:
-	def __init__(self):
-		self.guest_port = None
-		self.host_port = None
+	def __init__(self, guest_port=None, host_port=None):
+		self.guest_port = guest_port
+		self.host_port = host_port
 
 	def set_guest_port(self, guest_port):
 		# guest_port is String
@@ -476,26 +520,17 @@ class port_forwarding:
 		return output
 
 
-'''
-{'name': 'VM1', 'node': 'n1', 'provider': 'Virtualbox',
- 'os': {'type': 'vagrant', 'platform': 'Linux', 'release': 'ubuntu', 'version': '16.04', 'architecture': 'amd64'},
- 'network': [{'gateway': 'vboxnet1', 'ip': '172.16.1.1', 'netmask': '255.255.255.0', 'type': 'hostonly'},
-             {'gateway': 'vboxnet2', 'ip': '172.16.1.2', 'netmask': '255.255.255.0', 'type': 'internal'}],
- 'vrde': {'enabled': True, 'port': '12345'}, 'port_forwarding': {'guest_port': '22,80', 'host_port': '2200,8000'},
- 'services': []}
-'''
-
-
 class vm:
-	def __init__(self):
-		self.name = None
-		self.node = None
-		self.provider = None
-		self.os = os()
-		self.network = []
-		self.vrde = vrde()
-		self.port_forwarding = port_forwarding()
-		self.services = []
+	def __init__(self, name=None, node=None, provider=None, os=os(), network=[], vrde=vrde(),
+	             port_forwarding=port_forwarding(), services=[]):
+		self.name = name
+		self.node = node
+		self.provider = provider
+		self.os = os
+		self.network = network
+		self.vrde = vrde
+		self.port_forwarding = port_forwarding
+		self.services = services
 
 	def set_name(self, name):
 		if name == '':
@@ -515,17 +550,26 @@ class vm:
 		else:
 			self.provider = provider
 
-	def set_os(self, os_dict):
+	def set_os_dict(self, os_dict):
 		self.os.set_type(os_dict['type'])
 		self.os.set_platform(os_dict['platform'])
 		self.os.set_release(os_dict['release'])
 		self.os.set_version(os_dict['version'])
 		self.os.set_architecture(os_dict['architecture'])
 
-	# self.os = self.os.output()
-
-	def set_network(self, network_list):
-		self.network = network_list
+	def set_network_dict_list(self, network_dict_list):
+		# Take format as reference
+		# vm_networks_list = [
+		# 	                  {"gateway": "vboxnet1", "ip": "172.16.1.1", "netmask": "255.255.255.0", "type": "hostonly"},
+		#                     {"gateway": "vboxnet2", "ip": "172.16.2.1", "netmask": "255.255.255.0", "type": "hostonly"},
+		#                     {"gateway": "vboxnet3", "ip": "172.16.3.1", "netmask": "255.255.255.0", "type": "internal"}
+		#                    ]
+		for network_dict in network_dict_list:
+			vm_network_entry = vm_network()
+			vm_network_entry.set_gateway(network_dict['gateway'])
+			vm_network_entry.set_ip(network_dict['ip'])
+			vm_network_entry.set_netmask(network_dict['netmask'])
+			self.network.append(vm_network_entry)
 
 	def add_network(self, gateway, type, ip, netmask):
 		vm_network_entry = vm_network()
@@ -540,7 +584,7 @@ class vm:
 		else:
 			self.network.append(vm_network_entry)
 
-	def set_vrde(self, vrde_dict):
+	def set_vrde_dict(self, vrde_dict):
 		self.vrde.set_enabled(vrde_dict['enabled'])
 		self.vrde.set_port(vrde_dict['port'])
 
@@ -548,7 +592,7 @@ class vm:
 		self.vrde.set_enabled(enabled)
 		self.vrde.set_port(port)
 
-	def set_port_forwarding(self, port_forwarding_dict):
+	def set_port_forwarding_dict(self, port_forwarding_dict):
 		self.port_forwarding.set_guest_port(port_forwarding_dict['guest_port'])
 		self.port_forwarding.set_host_port(port_forwarding_dict['host_port'])
 
@@ -560,6 +604,9 @@ class vm:
 		# service_list is a service name list
 		self.services = service_list
 
+	def get_services(self):
+		return self.services
+
 	def add_services_v1(self, service):
 		# service is a service name
 		if self.services is None:
@@ -570,7 +617,15 @@ class vm:
 
 	def set_services_v2(self, service_list):
 		# service_list is a service class list
-		self.services = service_list
+		# self.services = service_list
+		complement_service_list = []
+		for service in service_list:
+			complement_service_entry = complement_service()
+			complement_service_entry.set_name(service['service'])
+			complement_service_entry.set_parameter(service['parameter'])
+			complement_service_list.append(complement_service_entry)
+
+		self.services = complement_service_list
 
 	def add_services_v2(self, service):
 		# service is a service class
@@ -581,7 +636,10 @@ class vm:
 			self.services.append(service)
 
 	def output(self):
+		services_output = []
+		for service in self.services:
+			services_output.append(service.output())
 		output = {'name': self.name, 'node': self.node, 'provider': self.provider, 'os': self.os.output(),
 		          'network': self.network, 'vrde': self.vrde.output(), 'port_forwarding': self.port_forwarding.output(),
-		          'services': self.services}
+		          'services': services_output}
 		return output

@@ -3,6 +3,7 @@ Contains variables & methods for conductor"s CLI.
 """
 import user_commands
 import copy
+import yaml_parser
 from defaults import default
 
 ### Versioning
@@ -210,6 +211,13 @@ def Node_Network_prompt():
 	inputs.append(Hostonly_Network_list)
 	inputs.append(Internal_Network_list)
 	Node_Network_dict = dict(zip(Node_Network_key, inputs))
+
+	# Take format as reference
+	# Node_Network_dict = {"hostonly_network": [{"name": "vboxnet1", "ip": "172.16.1.1", "netmask": "255.255.255.0"},
+	#                                           {"name": 'vboxnet2', "ip": "172.16.2.1", "netmask": "255.255.255.0"}],
+	#                      "internal_network": [{"name": "vboxnet3", "ip": "172.16.3.1", "netmask": "255.255.255.0"},
+	#                                           {"name": 'vboxnet4', "ip": "172.16.4.1", "netmask": "255.255.255.0"}]
+	#                      }
 	return Node_Network_dict
 
 
@@ -227,17 +235,23 @@ def Services_prompt_v1():
 	return inputs
 
 
-def Services_prompt_v2():
-	Service_key = ["name", "parameter"]
-	inputs = []
-	for option in Service_key:
-		if option == "parameter":
-			cmd = input_with_prompt(f"{NewExperiment_PROMPT}{option}: ")
-			inputs.append(cmd)
-		else:
-			cmd = input_with_prompt(f"{NewExperiment_PROMPT}{option}: ")
-			inputs.append(cmd)
-	Service_dict = dict(zip(Service_key, inputs))
+def Services_prompt_v2(service):
+	if service == '':
+		service_list = [None, None]
+	else:
+		Service_key = ["service", "parameter"]
+		yaml_content = yaml_parser.yaml_file_load(f"{default.conductor_path}/services/{service}/{service}")
+		service_list = [yaml_content['service'], yaml_content['parameter']]
+	# inputs = []
+	# for option in Service_key:
+	# 	if option == "parameter":
+	# 		cmd = input_with_prompt(f"{NewExperiment_PROMPT}{option}: ")
+	# 		inputs.append(cmd)
+	# 	else:
+	# 		cmd = input_with_prompt(f"{NewExperiment_PROMPT}{option}: ")
+	# 		inputs.append(cmd)
+	# Service_dict = dict(zip(Service_key, inputs))
+	Service_dict = dict(zip(Service_key, service_list))
 	return Service_dict
 
 
@@ -291,6 +305,9 @@ def VM_hostonly_Network_prompt():
 			inputs.append(cmd)
 	Hostonly_Network_dict = dict(zip(Hostonly_Network_key, inputs))
 	Hostonly_Network_dict['type'] = 'hostonly'
+
+	# Take format as reference
+	# Hostonly_Network_dict={"gateway":"vboxnet1", "ip":"172.16.1.1", "netmask":"255.255.255.0","type":"hostonly"}
 	return Hostonly_Network_dict
 
 
@@ -305,6 +322,9 @@ def VM_internal_Network_prompt():
 			inputs.append(cmd)
 	Internal_Network_dict = dict(zip(Internal_Network_key, inputs))
 	Internal_Network_dict['type'] = 'internal'
+
+	# Take format as reference
+	# Internal_Network_dict={"gateway":"vboxnet2", "ip":"172.16.2.1", "netmask":"255.255.255.0","type":"internal"}
 	return Internal_Network_dict
 
 
@@ -327,6 +347,12 @@ def VM_Network_prompt():
 		else:
 			pass
 
+	# Take format as reference
+	# vm_networks_list = [
+	# 	                  {"gateway": "vboxnet1", "ip": "172.16.1.1", "netmask": "255.255.255.0", "type": "hostonly"},
+	#                     {"gateway": "vboxnet1", "ip": "172.16.1.1", "netmask": "255.255.255.0", "type": "hostonly"},
+	#                     {"gateway": "vboxnet2", "ip": "172.16.2.1", "netmask": "255.255.255.0", "type": "internal"}
+	#                    ]
 	return vm_networks_list
 
 

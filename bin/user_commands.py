@@ -2,7 +2,6 @@ import os
 import cli
 import components
 import yaml_parser
-import yaml
 import renderer_test
 from defaults import default
 
@@ -12,17 +11,23 @@ metadata_set_function = {"teamname": components.metadata.set_teamname,
                          "nodes_num": components.metadata.set_nodes_num,
                          "vms_num": components.metadata.set_vms_num,
                          "reserved_nodes": components.metadata.set_reserved_nodes}
-lan_set_function = {"name": components.lan.set_name, "endpoints": components.lan.set_endpoints_list}
-node_set_function = {"name": components.node.set_name, "os": components.node.set_os,
-                     "network": components.node.set_network, "services": components.node.set_services_v1}
+lan_set_function = {"name": components.lan.set_name, "endpoints": components.lan.set_endpoints_dict_list}
+node_set_function = {"name": components.node.set_name, "os": components.node.set_os_dict,
+                     "network": components.node.set_network, "services": components.node.set_services_v1,
+                     "complement_services": components.node.set_services_v2}
 vm_set_function = {"name": components.vm.set_name, "node": components.vm.set_node,
-                   "provider": components.vm.set_provider, "os": components.vm.set_os,
-                   "network": components.vm.set_network, "vrde": components.vm.set_vrde,
-                   "port_forwarding": components.vm.set_port_forwarding, "services": components.vm.set_services_v1}
+                   "provider": components.vm.set_provider, "os": components.vm.set_os_dict,
+                   "network": components.vm.set_network_list, "vrde": components.vm.set_vrde_dict,
+                   "port_forwarding": components.vm.set_port_forwarding_dict, "services": components.vm.set_services_v1,
+                   "complement_services": components.vm.set_services_v2}
 
 
 def help_command(command):
 	print(f"{command.__doc__}")
+
+
+def Complement_Service(yaml_file):
+	pass
 
 
 def NewExperiment(args):
@@ -39,7 +44,7 @@ def NewExperiment(args):
 	output_metadata = {'metadata': Metadata.output()}
 	''' Lan '''
 	lan_list = []
-	output_lan_entry =[]
+	output_lan_entry = []
 	for i in range(Metadata.get_lans_num()):
 		# lan component #
 		lan = components.lan()
@@ -52,9 +57,11 @@ def NewExperiment(args):
 	for lan in lan_list:
 		output_lan_entry.append(lan.output())
 	output_lan = {'lan': output_lan_entry}
+	# {'lan': [{'name': 'lan1', 'endpoints': [{'name': 'n1', 'ip': '172.16.1.101', 'netmask': '255.255.255.0'}]}]}
+	# print(output_lan)
 	''' Node '''
 	node_list = []
-	output_node_entry=[]
+	output_node_entry = []
 	for i in range(Metadata.get_nodes_num()):
 		# node component #
 		node = components.node()
@@ -63,12 +70,13 @@ def NewExperiment(args):
 		for key, value in node_dict.items():
 			node_set_function[key](node, value)
 		node_list.append(node)
-	for node in node_list:
-		output_node_entry.append(node.output())
-	output_node = {'node': output_lan_entry}
+	# for node in node_list:
+	# 	output_node_entry.append(node.output())
+	# output_node = {'node': output_node_entry}
+	# print(output_node)
 	''' VM '''
 	vm_list = []
-	output_vm_entry=[]
+	output_vm_entry = []
 	for i in range(Metadata.get_vms_num()):
 		# VM component
 		vm = components.vm()
@@ -77,17 +85,47 @@ def NewExperiment(args):
 		for key, value in vm_dict.items():
 			vm_set_function[key](vm, value)
 		vm_list.append(vm)
-	for vm in vm_list:
-		output_vm_entry.append(vm.output())
-	output_vm = {'vm': output_vm_entry}
+	# for vm in vm_list:
+	# 	output_vm_entry.append(vm.output())
+	# output_vm = {'vm': output_vm_entry}
 
 	output = {'version': default.VERSION}
 	output.update(output_metadata)
 	output.update(output_lan)
+	# complement services
+	for node in node_list:
+		complement_service_list = []
+		if node.get_services() == []:
+			pass
+		else:
+			for service in node.get_services():
+				complement_service_dict = cli.Services_prompt_v2(service)
+				# print(complement_service_dict)
+				complement_service_list.append(complement_service_dict)
+			node_set_function["complement_services"](node, complement_service_list)
+	for node in node_list:
+		output_node_entry.append(node.output())
+	output_node = {'node': output_node_entry}
 	output.update(output_node)
+
+	# complement services
+	for vm in vm_list:
+		complement_service_list = []
+		if vm.get_services() == []:
+			pass
+		else:
+			for service in vm.get_services():
+				complement_service_dict = cli.Services_prompt_v2(service)
+				# print(complement_service_dict)
+				complement_service_list.append(complement_service_dict)
+			vm_set_function["complement_services"](vm, complement_service_list)
+	for vm in vm_list:
+		output_vm_entry.append(vm.output())
+	output_vm = {'vm': output_vm_entry}
 	output.update(output_vm)
-	with open('output.yml', 'w') as file:
-		yaml.dump(output, file, default_flow_style=False, explicit_start=True, allow_unicode=True, sort_keys=False)
+	print(output)
+
+	yaml_parser.yaml_file_dump(output, 'output')
 
 
 # for key, value in vm_dict.items():
