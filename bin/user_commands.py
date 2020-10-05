@@ -17,7 +17,7 @@ node_set_function = {"name": components.node.set_name, "os": components.node.set
                      "complement_services": components.node.set_services_v2}
 vm_set_function = {"name": components.vm.set_name, "node": components.vm.set_node,
                    "provider": components.vm.set_provider, "os": components.vm.set_os_dict,
-                   "network": components.vm.set_network_list, "vrde": components.vm.set_vrde_dict,
+                   "network": components.vm.set_network_dict_list, "vrde": components.vm.set_vrde_dict,
                    "port_forwarding": components.vm.set_port_forwarding_dict, "services": components.vm.set_services_v1,
                    "complement_services": components.vm.set_services_v2}
 
@@ -94,6 +94,7 @@ def NewExperiment(args):
 	output.update(output_lan)
 	# complement services
 	for node in node_list:
+		print(f"complement service's parameter for {node.get_name()}")
 		complement_service_list = []
 		if node.get_services() == []:
 			pass
@@ -110,6 +111,7 @@ def NewExperiment(args):
 
 	# complement services
 	for vm in vm_list:
+		print(f"complement service's parameter for {vm.get_name()}")
 		complement_service_list = []
 		if vm.get_services() == []:
 			pass

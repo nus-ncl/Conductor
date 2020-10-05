@@ -154,7 +154,10 @@ class lan:
 		self.endpoints.append(endpoint_entry)
 
 	def output(self):
-		output = {'name': self.name, 'endpoints': self.endpoints}
+		endpoints_output = []
+		for endpoint in self.endpoints:
+			endpoints_output.append(endpoint.output())
+		output = {'name': self.name, 'endpoints': endpoints_output}
 		return output
 
 	def pp(self):
@@ -206,10 +209,10 @@ class os:
 
 
 class hostonly_network:
-	def __init__(self):
-		self.name = None
-		self.ip = None
-		self.netmask = None
+	def __init__(self, name=None, ip=None, netmask=None):
+		self.name = name
+		self.ip = ip
+		self.netmask = netmask
 
 	def set_name(self, name):
 		if name == '':
@@ -235,10 +238,10 @@ class hostonly_network:
 
 
 class internal_network:
-	def __init__(self):
-		self.name = None
-		self.ip = None
-		self.netmask = None
+	def __init__(self, name=None, ip=None, netmask=None):
+		self.name = name
+		self.ip = ip
+		self.netmask = netmask
 
 	def set_name(self, name):
 		if name == '':
@@ -427,6 +430,9 @@ class node:
 			self.services.append(service)
 		else:
 			self.services.append(service)
+
+	def get_name(self):
+		return self.name
 
 	def output(self):
 		services_output = []
@@ -634,6 +640,9 @@ class vm:
 			self.services.append(service)
 		else:
 			self.services.append(service)
+
+	def get_name(self):
+		return self.name
 
 	def output(self):
 		services_output = []

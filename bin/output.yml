@@ -1,20 +1,20 @@
 ---
 version: '1.0'
 metadata:
-  teamname: null
-  experimentname: null
+  teamname: a
+  experimentname: b
   lans_num: 1
   nodes_num: 1
   vms_num: 1
   reserved_nodes: null
 lan:
-- name: null
+- name: lan1
   endpoints:
-  - name: ''
-    ip: ''
+  - name: n1
+    ip: null
     netmask: 255.255.255.0
 node:
-- name: ''
+- name: n1
   os:
     type: node
     platform: Linux
@@ -22,16 +22,13 @@ node:
     version: '16.04'
     architecture: amd64
   network:
-    hostonly_network:
-    - name: ''
-      ip: ''
-      netmask: 255.255.255.0
+    hostonly_network: []
     internal_network: []
   services:
   - name: nginx
     parameter:
-      nginx_version: 1.4.0
-      nginx_port: 80
+      nginx_version: 1.5.1
+      nginx_port: '8000'
   - name: nfs-client
     parameter: {}
 vm:

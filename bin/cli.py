@@ -114,6 +114,7 @@ def Endpoint_prompt():
 			inputs.append('255.255.255.0')
 		else:
 			inputs.append(cmd)
+	print("=" * WIDTH+"\n")
 	Endpoint_dict = dict(zip(Endpoint_key, inputs))
 	return Endpoint_dict
 
@@ -236,12 +237,21 @@ def Services_prompt_v1():
 
 
 def Services_prompt_v2(service):
+	Service_key = ["service", "parameter"]
+	inputs = []
 	if service == '':
 		service_list = [None, None]
 	else:
-		Service_key = ["service", "parameter"]
 		yaml_content = yaml_parser.yaml_file_load(f"{default.conductor_path}/services/{service}/{service}")
-		service_list = [yaml_content['service'], yaml_content['parameter']]
+		parameters = copy.deepcopy(yaml_content['parameter'])
+		for key, value in yaml_content['parameter'].items():
+			cmd = input_with_prompt(f"{yaml_content['service']} -> {key}(default:{value}): ")
+			if cmd in ['Yes', 'yes', 'Y', 'y', '']:
+				pass
+			else:
+				parameters[key] = cmd
+
+		service_list = [yaml_content['service'], parameters]
 	# inputs = []
 	# for option in Service_key:
 	# 	if option == "parameter":
