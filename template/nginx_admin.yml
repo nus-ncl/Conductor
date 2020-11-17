@@ -47,9 +47,9 @@ node:
       netmask: 255.255.255.0
     internal_network: null
   services:
-  - name: ansible
+  - service: ansible
     parameter: null
-  - name: nfs-server
+  - service: nfs-server
     parameter:
       mount_src_directory: '/mnt/sda3/attribution'
 vm:
@@ -88,8 +88,8 @@ vm:
     version: '16.04'
     architecture: amd64
   network:
-  - gateway: vboxnet0
-    type: hostonly
+  - gateway: 172.16.238.1
+    type: bridge
     ip: 172.16.1.107
     netmask: 255.255.255.0
   vrde:

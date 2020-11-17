@@ -5,15 +5,17 @@
     - {{ conductor_path }}/vars/{{ service }}.yml
   {% endfor %}
 #}
-{%- if vm['services'] is not none %}
-{%- for service in vm['services'] %}
-  {%- if service['parameter'] is not none %}
+{%- if vm['services']|length %}
   vars:
+{%- for service in vm['services'] %}
+  {%- if service['parameter'] is not none and service['parameter']['Error'] is not defined %}
     {%- for key,value in service['parameter'].items() %}
     {{ key }}: {{ value }}
     {%- endfor %}
   {%- endif %}
 {%- endfor %}
+{%- else %}
+  vars: null
 {%- endif %}
   tasks:
 

@@ -1,0 +1,124 @@
+    # service: nginx
+    {#- using raw: {{ item }}, {{ ansible_facts['env']['USER'] }}, all parameters -#}
+    {#- without raw: all configurations in [service].yml file -#}
+    {%- if service['dependency'] is not none %}
+    - name: install dependencies
+      become: yes
+      become_user: root
+      apt:
+      {%- raw %}
+        name: "{{ item }}"
+      {%- endraw %}
+        state: present
+        update_cache: yes
+      loop:
+      {%- for dependency in service['dependency'] %}
+        - {{ dependency }}
+      {%- endfor %}
+    {%- endif %}
+
+    - name: download nginx src and unarchive
+      unarchive:
+      {%- raw %}
+        src: http://nginx.org/download/nginx-{{ nginx_version }}.tar.gz
+        dest: /home/{{ ansible_facts['env']['USER'] }}
+      {%- endraw %}
+        remote_src: yes
+
+    - name: configure
+      shell:
+        argv:
+          - ./configure
+      {%- for configure in service['configure']%}
+          - {{ configure }}
+      {%- endfor %}
+      {%- raw %}
+        chdir: /home/{{ ansible_facts['env']['USER'] }}/nginx-{{ nginx_version }}/
+      {%- endraw %}
+
+    - name: make
+      shell:
+        argv:
+          - make
+          {#- - CFLAGS=-Wno-error #}
+      {%- raw %}
+        chdir: /home/{{ ansible_facts['env']['USER'] }}/nginx-{{ nginx_version }}/
+      {%- endraw %}
+
+    - name: make install
+      become: yes
+      become_user: root
+      shell:
+        argv:
+          - make
+          - install
+      {%- raw %}
+        chdir: /home/{{ ansible_facts['env']['USER'] }}/nginx-{{ nginx_version }}/
+      {%- endraw %}
+
+    - name: Modify the default Nginx port to user's input
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/nginx/nginx.conf
+        regexp: '.{8}listen.{7}80;'
+        {%- raw %}
+        line: '        listen       {{ nginx_port }};'
+        {%- endraw %}
+
+    - name: Copy nginx service file with owner and permissions
+      become: yes
+      become_user: root
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/nginx/nginx_initd
+        dest: /etc/init.d/nginx
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Restart & Enable the service nginx, and not touch the state
+      become: yes
+      become_user: root
+      service:
+        name: nginx
+        state: restarted
+        enabled: yes
+
+
+{#- - name: import vars
+      include_vars:
+        file: {{ conductor_path }}/vars/nginx.yml
+        name: nginx_vars
+
+    - name: template an nginx installation file into remote machine
+      template:
+        src: {{ conductor_path }}/services/nginx/nginx.j2
+        dest: ~/nginx.sh
+
+    - name: run the nginx installation file
+      command: bash ~/nginx.sh
+#}
+{#- - name: download, configure, make, install specific version of nginx
+      script: services/nginx/nginx.j2
+
+    - name: Copy file with owner and permissions
+      become: yes
+      become_user: root
+      copy:
+        src: /Users/hkwany/vagrant/provision/nginx
+        dest: /etc/init.d/nginx
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: (no need to do this)Copy file with owner and permissions
+      copy:
+        src: ../nginx/nginx.sh
+        dest: ~/nginx.sh
+        owner: vagrant
+        group: vagrant
+        mode: '0755'
+
+    - name: Start nginx
+        script: /Users/hkwany/vagrant/provision/nginx_start.sh
+#}

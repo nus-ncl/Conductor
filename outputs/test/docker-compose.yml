@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  nginx_vm1:
+    container_name: vm1_nginx
+    build:
+      context: .
+      dockerfile: Dockerfile_vm1_nginx
+    volumes:
+      - /Users/hkwany/PycharmProjects/Conductor/services/nginx/nginx.conf.template:/tmp/nginx.conf.template
+    command: /bin/bash -c "envsubst < /tmp/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
+    ports:
+      - "2000:2000"
+    environment:
+      - nginx_version=1.4.0
+      - nginx_port=2000

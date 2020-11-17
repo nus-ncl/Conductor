@@ -1,19 +1,20 @@
 """
-Contains variables & methods for conductor"s CLI.
+Contains everything regarding conductor"s CLI.
 """
+import sys
+sys.path.append('../defaults')
 import user_commands
 import copy
 import yaml_parser
-from defaults import default
+import default
 
-### Versioning
+# Versioning
 VERSION = "1.0"
 
-### Logging
-
+# Logging
 LOGGING_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
-### CLI display
+# CLI display
 Conductor_PROMPT = "Conductor > "
 NewExperiment_PROMPT = "NewExperiment > "
 ModifyExperiment_PROMPT = "ModifyExperiment > "
@@ -48,21 +49,24 @@ DeployExperiment_PROMPT = "DeployExperiment > "
 # VM_dict = {"node": '', "hostname": '', "provider": '', "hostonly_network": '', "hostonly_ip": '', "image": '',
 #            "service": '', "activity": '', "vrdeport": '', "guest_port_forward": '', "host_port_forward": ''}
 
-LAN_dict_list = []
-Node_dict_list = []
-VM_dict_list = []
+# LAN_dict_list = []
+# Node_dict_list = []
+# VM_dict_list = []
+# width of CLI in characters
+WIDTH = 70
 
-WIDTH = 70  # width of CLI in characters
-
-commands = {"NewExperiment": user_commands.NewExperiment,
-            "ModifyExperiment": user_commands.ModifyExperiment,
-            "ShowExperiment": user_commands.ShowExperiment,
-            "ListExperiments": user_commands.ListExperiments,
-            "DeployExperiment": user_commands.DeployExperiment,
-            "LoadTemplateExperiment": user_commands.LoadTemplateExperiment,
-            "ls": user_commands.ls,
-            "cd": user_commands.cd
-            }
+# CLI-command pairs
+commands = {
+	"NewExperiment": user_commands.NewExperiment,
+	"ModifyExperiment": user_commands.ModifyExperiment,
+	"ShowExperiment": user_commands.ShowExperiment,
+	"ListExperiments": user_commands.ListExperiments,
+	"DeployExperiment": user_commands.DeployExperiment,
+	"LoadExperiment": user_commands.LoadExperiment,
+	"LoadTemplateExperiment": user_commands.LoadTemplateExperiment,
+	"ls": user_commands.ls,
+	"cd": user_commands.cd
+}
 
 
 def input_with_prompt(prompt):
@@ -87,13 +91,13 @@ If we want to set default:
 '''
 
 
-def Experiment_prompt():
+def Metadata_prompt():
 	'''
 	Prompt for defining an experiment
 	'''
 	Metadata_key = ["teamname", "experimentname", "lans_num", "nodes_num", "vms_num", "reserved_nodes"]
 	inputs = []
-	print_title("Experiment")
+	print_title("Metadata")
 	for option in Metadata_key:
 		cmd = input_with_prompt(f"{NewExperiment_PROMPT}{option}{default.TIPS['metadata'][option]}: ")
 		inputs.append(cmd)
@@ -114,7 +118,7 @@ def Endpoint_prompt():
 			inputs.append('255.255.255.0')
 		else:
 			inputs.append(cmd)
-	print("=" * WIDTH+"\n")
+	print("=" * WIDTH + "\n")
 	Endpoint_dict = dict(zip(Endpoint_key, inputs))
 	return Endpoint_dict
 
@@ -200,7 +204,7 @@ def Node_Network_prompt():
 			if cmd in ['hostonly', 'Hostonly', 'Y', 'y', '']:
 				Node_Hostonly_Network_dict = Node_Hostonly_Network_prompt()
 				Hostonly_Network_list.append(Node_Hostonly_Network_dict)
-			elif cmd in ['internal', "Internal"]:
+			elif cmd in ['internal', 'Internal','N','n']:
 				Node_Internal_Network_dict = Node_Internal_Network_prompt()
 				Internal_Network_list.append(Node_Internal_Network_dict)
 			else:
@@ -222,7 +226,7 @@ def Node_Network_prompt():
 	return Node_Network_dict
 
 
-def Services_prompt_v1():
+def Services_prompt_rough():
 	inputs = []
 	while True:
 		cmd = input_with_prompt(f"{NewExperiment_PROMPT}{default.TIPS['services']['inquiry']}: ")
@@ -236,31 +240,26 @@ def Services_prompt_v1():
 	return inputs
 
 
-def Services_prompt_v2(service):
+def Services_prompt_detailed(service):
 	Service_key = ["service", "parameter"]
-	inputs = []
 	if service == '':
 		service_list = [None, None]
 	else:
 		yaml_content = yaml_parser.yaml_file_load(f"{default.conductor_path}/services/{service}/{service}")
-		parameters = copy.deepcopy(yaml_content['parameter'])
-		for key, value in yaml_content['parameter'].items():
-			cmd = input_with_prompt(f"{yaml_content['service']} -> {key}(default:{value}): ")
-			if cmd in ['Yes', 'yes', 'Y', 'y', '']:
-				pass
-			else:
-				parameters[key] = cmd
+		# hard copy, one used as default, one updated by user input
+		if not bool(yaml_content):
+			yaml_content['service']=service
+			parameters = {'Error': 'No Such Service'}
+		else:
+			parameters = copy.deepcopy(yaml_content['parameter'])
+			for key, value in yaml_content['parameter'].items():
+				cmd = input_with_prompt(f"{yaml_content['service']} -> {key}(default:{value}): ")
+				if cmd in ['Yes', 'yes', 'Y', 'y', '']:
+					pass
+				else:
+					parameters[key] = cmd
 
 		service_list = [yaml_content['service'], parameters]
-	# inputs = []
-	# for option in Service_key:
-	# 	if option == "parameter":
-	# 		cmd = input_with_prompt(f"{NewExperiment_PROMPT}{option}: ")
-	# 		inputs.append(cmd)
-	# 	else:
-	# 		cmd = input_with_prompt(f"{NewExperiment_PROMPT}{option}: ")
-	# 		inputs.append(cmd)
-	# Service_dict = dict(zip(Service_key, inputs))
 	Service_dict = dict(zip(Service_key, service_list))
 	return Service_dict
 
@@ -280,7 +279,7 @@ def Node_prompt():
 			Node_Network_dict = Node_Network_prompt()
 			inputs.append(Node_Network_dict)
 		elif option == "services":
-			service_list = Services_prompt_v1()
+			service_list = Services_prompt_rough()
 			inputs.append(service_list)
 		else:
 			cmd = input_with_prompt(f"{NewExperiment_PROMPT}{option}{default.TIPS['node'][option]}: ")
@@ -390,9 +389,14 @@ def VRDE_prompt():
 def Port_forwarding_prompt():
 	port_forwarding_key = ['guest_port', 'host_port']
 	inputs = []
-	for option in port_forwarding_key:
-		cmd = input_with_prompt(f"{NewExperiment_PROMPT}{option}{default.TIPS['vm']['port_forwarding'][option]}: ")
-		inputs.append(cmd)
+	cmd = input_with_prompt(f"{NewExperiment_PROMPT}{default.TIPS['vm']['port_forwarding']['inquiry']}")
+	if cmd in ['Yes', 'yes', 'Y', 'y', '']:
+		for option in port_forwarding_key:
+			cmd = input_with_prompt(f"{NewExperiment_PROMPT}{option}{default.TIPS['vm']['port_forwarding'][option]}: ")
+			inputs.append(cmd)
+	else:
+		inputs = ['','']
+
 	port_forwarding_dict = dict(zip(port_forwarding_key, inputs))
 	return port_forwarding_dict
 
@@ -418,7 +422,7 @@ def VM_prompt():
 			port_forwarding_dict = Port_forwarding_prompt()
 			inputs.append(port_forwarding_dict)
 		elif option == "services":
-			service_list = Services_prompt_v1()
+			service_list = Services_prompt_rough()
 			inputs.append(service_list)
 		else:
 			cmd = input_with_prompt(f"{NewExperiment_PROMPT}{option}{default.TIPS['vm'][option]}: ")
@@ -427,27 +431,12 @@ def VM_prompt():
 	return VM_dict
 
 
-def Service_prompt():
-	'''
-	Prompt for defining a service
-	'''
-	print_title("Service")
-	vm_dict = copy.deepcopy(VM_dict)
-	for option in VM_Menu:
-		cmd = input_with_prompt(NewExperiment_PROMPT + option)
-		if cmd == "skip":
-			return
-		vm_dict[option[:-2]] = cmd
-
-	return vm_dict
-
-
 def print_banner():
 	"""
 	Print the banner.
 	"""
 	print("=" * WIDTH)
-	print(" " * 15 + color("Conductor", status=False, bold=True) + " | [Version]: NewExperiment " + VERSION)
+	print(" " * 15 + color("Conductor", status=False, bold=True) + " | [Version]: LoadExperiment " + VERSION)
 	print("=" * WIDTH + "\n")
 
 

@@ -1,0 +1,83 @@
+version: '3.8'
+
+{#- much like passing command-line parameters to 'docker run' #}
+services:
+  {%- for vm in vms %}
+  {{ vm['services'][0]['name'] }}_{{ vm['hostname'] }}:
+    container_name: {{ vm['hostname'] }}_{{ vm['services'][0]['name'] }}
+    {%- if vm['os'] is not none %}
+    build:
+      context: .
+      dockerfile: Dockerfile_{{ vm['hostname'] }}_{{ vm['services'][0]['name'] }}
+    {%- else %}
+    {#- image: {{ vm['services'][0]['name'] }}:{{ vm['services'][0]['parameter'][{{ vm['services'][0]['name'] }}_version] }} #}
+    {%- endif %}
+
+    {%- if services[vm['services'][0]['name']]['template'] is not none %}
+    volumes:
+    {%- for template in services[vm['services'][0]['name']]['template'] %}
+      - {{ conductor_path }}/services/{{ vm['services'][0]['name'] }}/{{ template }}:/tmp/{{ template }}
+    {%- endfor %}
+    {%- endif %}
+    command: {{ services[vm['services'][0]['name']]['command'] }}
+    ports:
+    {%- for key, value in vm['services'][0]['parameter'].items() %}
+      {%- if 'port' in key %}
+      - "{{ value }}:{{ value }}"
+      {%- endif %}
+    {%- endfor %}
+    environment:
+    {%- for key, value in vm['services'][0]['parameter'].items() %}
+      - {{ key }}={{ value }}
+    {%- endfor %}
+  {#- restart: no
+    expose:
+      - "3000"
+    container_name: my_app1
+    entrypoint: ["/bin/sh","-c"]
+    extra_hosts:
+      - "somehost:162.242.195.82"
+    networks:
+      new:
+        ipv4_address: 172.16.238.10
+      legacy:
+        ipv4_address: 172.16.239.10
+   #}
+  {%- endfor %}
+
+  {#- app3:
+    image: busybox
+    platform: linux/amd64/ubuntu
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.10
+        ipv6_address: 2001:3984:3989::10
+    networks:
+      - legacy
+#}
+{#- much like 'docker network create' #}
+{#-
+networks:
+  new:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.238.0/24
+          gateway: 172.16.238.1
+        - subnet: 2001:3984:3989::/64
+          gateway: 2001:3984:3989::1
+  legacy:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.239.0/24
+          gateway: 172.16.239.1
+#}
+{#- much like 'docker volume create' #}
+{#- volumes:
+  db-data:/etc/var
+#}
+

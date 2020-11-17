@@ -1,10 +1,10 @@
 ---
 
-- hosts: VM1
+- hosts: vm1
   gather_facts: true
   vars:
     nginx_version: 1.4.0
-    nginx_port: 80
+    nginx_port: 81
   tasks:
     # service: nginx
     - name: install dependencies
@@ -63,6 +63,33 @@
           - install
         chdir: /home/{{ ansible_facts['env']['USER'] }}/nginx-{{ nginx_version }}/
 
-- hosts: VM2
+    - name: Modify the default Nginx port to user's input
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/nginx/nginx.conf
+        regexp: '.{8}listen.{7}80;'
+        line: '        listen       {{ nginx_port }};'
+
+    - name: Copy nginx service file with owner and permissions
+      become: yes
+      become_user: root
+      copy:
+        src: /Users/hkwany/PycharmProjects/Conductor/services/nginx/nginx_initd
+        dest: /etc/init.d/nginx
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Restart & Enable the service nginx, and not touch the state
+      become: yes
+      become_user: root
+      service:
+        name: nginx
+        state: restarted
+        enabled: yes
+
+- hosts: vm2
   gather_facts: true
+  vars: null
   tasks:

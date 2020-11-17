@@ -1,6 +1,10 @@
-import yaml_parser
+import sys
+import matplotlib.pyplot as plt
+sys.path.append('../defaults')
+import default
 import cli
-from defaults import default
+import math
+import numpy as np
 
 
 class a:
@@ -36,8 +40,7 @@ node = {'name': None,
                'services': ['nginx', 'nfs-client']}
 
 if __name__ == '__main__':
-	# yaml_parser.yaml_file_dump(node, 'output')
-	a = metadata()
-	print(a.reserved_nodes)
-	print(a.vms_num)
-	print(a.lans_num)
+	a={}
+	b={'1':1}
+	print(bool(a))
+	print(bool(b))

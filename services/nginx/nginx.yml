@@ -13,7 +13,12 @@
   parameter:
     nginx_version: '1.4.0'
     nginx_port: 80
-
+  os:
+    type: vagrant
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    architecture: amd64
   # For admin
   dependency:
     - build-essential
@@ -39,6 +44,9 @@
     - --without-mail_imap_module
     - --without-mail_smtp_module
 
+  command: /bin/bash -c "envsubst < /tmp/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
+  template:
+      - nginx.conf.template
   prepared:
     dependency:
       - libssl-dev.deb
@@ -48,6 +56,8 @@
       - nginx
     source:
       - nginx-1.4.0.tar.gz
+
+
 
 #  include_vars:
 #    file: {{ conductor_path }}/vars/nginx.yml

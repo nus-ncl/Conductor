@@ -1,20 +1,14 @@
 #!/usr/bin/python3
 
-# Standard packages
 import sys
-
-# Internal packages
 import cli
 import user_commands
 
 if __name__ == '__main__':
-
-
 	# Try except to catch keyboard interrupts
 	try:
 		cli.print_banner()
 		while True:
-
 			cmd = cli.input_with_prompt(cli.Conductor_PROMPT)
 			cmdarray = cmd.split()
 
@@ -23,6 +17,7 @@ if __name__ == '__main__':
 
 			if len(cmdarray) != 0:
 				if cli.commands.get(cmdarray[0], None) is not None:
+					# CLI-command pairs with the remaining(or empty list) as parameters
 					cli.commands[cmdarray[0]](cmdarray[1:])
 					continue
 

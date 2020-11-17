@@ -1,35 +1,28 @@
 """
 Default configurations for conductor.
 """
-
-# Standard packages
 import os
 
-### debug
+# debug
 debug = 1
 
-### Conductor path
+# Conductor path
 file_path = os.path.dirname(os.path.realpath(__file__))
 conductor_path = os.path.dirname(file_path)
-### Versioning
+
+# Versioning
 VERSION = '1.0'
+NODE_VIRTUALBOX_VERSION = '6.0.16'
 
-### Logging
-
+# Logging
 LOGGING_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
-### CLI display
-PROMPT = 'Conductor > '
-WIDTH = 70  # width of CLI in characters
-
-### File paths
-
+# File paths
 SERVICE_DIRECTORY = os.path.join('service')
 ACTIVITY_DIRECTORY = os.path.join('activity')
 TEMPLATE_DIRECTORY = os.path.join('templates', 'templates')
-# TMP_DIRECTORY_BASE = os.path.join('component', 'ansible', 'tmp')
 
-### Files locations
+# Files locations
 CONFIG_FILE = "../config/sherlock/configure.cfg"
 GENERATED_CONFIG_FILE = "../config/sherlock/gen_configure.cfg"
 NS_FILE = "../outputs/sherlock/NSfile"
@@ -48,19 +41,10 @@ HOSTS_TEST_FILE = "../outputs/test/hosts_test"
 ANSIBLE_TEST_FILE = "../outputs/test/ansible_test.yml"
 CLIENT_TEST_FILE = "../outputs/test/client_test.xml"
 NODES_TEST_PATH = "../outputs/test/"
-DOCKER_TEST_FILE = "../outputs/test/dockerfile"
+DOCKERFILE_TEST_FILE = "../outputs/test/Dockerfile"
+DOCKERCOMPOSE_TEST_FILE = "../outputs/test/docker-compose.yml"
 
-### Ansible config
-PING_PLAYBOOK_PATH = 'component/ansible/playbooks/ping.yml'
-
-### File versions
-DEFAULT = 'default'
-META = 'meta'
-
-### Meta
-LOCAL = 'local'
-REMOTE = 'remote'
-
+# TIPS
 TIP_LAN_NAME = ',(lan[1,2,3,...])'
 TIP_ENDPOINT_NAME = ',(n[1,2,3,...])'
 TIP_ENDPOINT_INQUIRY = 'Add one Endpoint?(Yes/No, y/n, default:Yes)'
@@ -79,6 +63,7 @@ TIP_VM_NETWORK_GATEWAY = ',(vboxnet[1,2,3,...])'
 TIP_VM_NETWORK_TYPE = '[ hostonly | internal ]'
 TIP_VRDE_ENABLED = ', [Enable VRDE on this VM?(Yes/No, y/n, default:Yes)]'
 TIP_VRDE_PORT = ', [Which port on node for VRDE?(default:12345)]'
+TIP_PORT_FORWARDING_INQUIRY = 'Set Port Forwarding on this VM?(Yes/No, y/n, default:Yes)'
 TIP_PORT_FORWARDING = "[ ports delimited by comma(',') (eg: 22,80, default: '') ] "
 TIP_OS_TYPE = '[ node | vagrant | docker ]'
 TIP_OS_PLATFORM = '[ Linux | Windows | Darwin ]'
@@ -89,7 +74,7 @@ TIP_OS_VRDE_ENABLED = 'VRDE Enabled? [ True | False ]'
 TIP_SERVICE_INQUIRY = 'Add one Service? (Yes/No, y/n, default:Yes)'
 TIP_SERVICE_NAME = "What's service name?"
 
-### specification configuration tips
+# Specification Configuration Tips
 TIPS = {'metadata': {'teamname': '', 'experimentname': '', 'lans_num': '', 'nodes_num': '', 'vms_num': '',
                      'reserved_nodes': ''},
         'lan': {'name': TIP_LAN_NAME,
@@ -111,7 +96,7 @@ TIPS = {'metadata': {'teamname': '', 'experimentname': '', 'lans_num': '', 'node
                            'gateway': TIP_VM_NETWORK_GATEWAY, 'ip': '', 'netmask': TIP_NETMASK,
                            'type': TIP_VM_NETWORK_TYPE},
                'vrde': {'enabled': TIP_VRDE_ENABLED, 'port': TIP_VRDE_PORT},
-               'port_forwarding': {'guest_port': TIP_PORT_FORWARDING, 'host_port': TIP_PORT_FORWARDING},
+               'port_forwarding': {'inquiry': TIP_PORT_FORWARDING_INQUIRY,'guest_port': TIP_PORT_FORWARDING, 'host_port': TIP_PORT_FORWARDING},
                'services': {'inquiry': TIP_SERVICE_INQUIRY}},
         'os': {'inquiry': TIP_NODE_OS, 'type': TIP_OS_TYPE, 'platform': TIP_OS_PLATFORM,
                'release': TIP_OS_RELEASE, 'version': TIP_OS_VERSION,
@@ -119,7 +104,7 @@ TIPS = {'metadata': {'teamname': '', 'experimentname': '', 'lans_num': '', 'node
         'services': {'inquiry': TIP_SERVICE_INQUIRY, 'name': TIP_SERVICE_NAME}
         }
 
-### specification configuration default
+# Specification Configuration Default
 # DEFAULT_LAN_NAME='lan[1,2,3,...]'
 # DEFAULT_ENDPOINT_NAME='n[1,2,3,...]'
 DEFAULT_NETMASK = '255.255.255.0'

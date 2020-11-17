@@ -1,17 +1,18 @@
 #!/bin/bash
 
 # virtualbox extpack & ssh key
-wget https://download.virtualbox.org/virtualbox/5.2.12/Oracle_VM_VirtualBox_Extension_Pack-5.2.12.vbox-extpack -O ~/Extension_Pack
+wget https://download.virtualbox.org/virtualbox/{{ node_virtualbox_version }}/Oracle_VM_VirtualBox_Extension_Pack-{{ node_virtualbox_version }}.vbox-extpack -O ~/Extension_Pack
 sudo vboxmanage extpack install ~/Extension_Pack
 vboxmanage extpack install ~/Extension_Pack
 vboxmanage list extpacks
 ssh-keygen -t rsa
 # ssh-copy-id vagrant@remote_VMs_ip
-
-{% for service in node['service'] %}
+{% for service in node['services'] %}
+{%- if not 'Error' in service['parameter']  %}
 {%- with parameter=service['parameter'] %}
-    {% include "%s/script.sh" % service['name'] %}
+{% include "%s/script.sh" % service['name'] %}
 {%- endwith %}
+{%- endif %}
 {% endfor %}
 
 

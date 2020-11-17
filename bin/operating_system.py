@@ -46,9 +46,13 @@ os = {
 	'docker': {
 		'Linux': {
 			'ubuntu': {
-				'19.10': {
-					'i386': 'i386/nextcloud',
-					'amd64': 'amd64/traefik'
+				'20.04': {
+					'i386': 'i386/ubuntu:20.04',
+					'amd64': 'amd64/ubuntu:20.04'
+				},
+				'16.04': {
+					'i386': 'i386/ubuntu:16.04',
+					'amd64': 'amd64/ubuntu:16.04'
 				}
 			},
 			'centos': {},

@@ -1,0 +1,54 @@
+#!/bin/bash
+
+sudo apt-get install -y build-essential libpcre3 libpcre3-dev libpcrecpp0v5 libssl-dev zlib1g-dev
+wget http://nginx.org/download/nginx-1.4.0.tar.gz
+tar zxf nginx-1.4.0.tar.gz
+cd nginx-1.4.0
+./configure --prefix=/usr \
+	--conf-path=/etc/nginx/nginx.conf \
+	--error-log-path=/var/log/nginx/error.log \
+	--http-log-path=/var/log/nginx/access.log \
+	--pid-path=/var/run/nginx.pid \
+	--lock-path=/var/lock/nginx.lock \
+	--with-http_ssl_module \
+	--user=www-data \
+	--group=www-data \
+         --with-http_stub_status_module \
+	--with-http_gzip_static_module \
+	--without-mail_pop3_module \
+	--without-mail_imap_module \
+	--without-mail_smtp_module
+
+make
+sudo make install
+sudo update-rc.d -f nginx defaults
+# sudo update-rc.d nginx remove
+sudo service nginx restart
+{#
+NAME
+       update-rc.d - install and remove System-V style init script links
+
+SYNOPSIS
+       update-rc.d [-n] [-f] name remove
+
+       update-rc.d [-n] name defaults
+
+       update-rc.d [-n] name disable|enable [ S|2|3|4|5 ]
+
+DESCRIPTION
+       update-rc.d  updates  the  System V style init script links /etc/rcrunlevel.d/NNname whose
+       target is the script /etc/init.d/name.  These links  are  run  by  init  when  it  changes
+       runlevels;  they  are  generally  used  to start and stop system services such as daemons.
+       runlevel is one of the runlevels supported by init, namely, 0123456789S,  and  NN  is  the
+       two-digit sequence number that determines where in the sequence init will run the scripts.
+
+       This  manpage  documents only the usage and behaviour of update-rc.d.  For a discussion of
+       the System V style init script arrangements please  see  init(8)  and  the  Debian  Policy
+       Manual.
+#}
+{# put nginx_initd to /etc/init.d/ and then run
+sudo update-rc.d -f nginx defaults   // make nginx system-started at rc1 2 3 4(run-level: 2 3 4 5)
+#delete #
+sudo service nginx restart#}
+
+

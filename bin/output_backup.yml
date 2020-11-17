@@ -6,7 +6,7 @@ metadata:
   lans_num: 1
   nodes_num: 2
   vms_num: 2
-  reserved_nodes: null
+  reserved_nodes: pc2a,pc35g
 lan:
 - name: lan1
   endpoints:
@@ -15,6 +15,14 @@ lan:
     netmask: 255.255.255.0
   - name: n2
     ip: 172.16.10.102
+    netmask: 255.255.255.0
+- name: lan2
+  endpoints:
+  - name: n3
+    ip: 172.16.11.101
+    netmask: 255.255.255.0
+  - name: n4
+    ip: 172.16.11.102
     netmask: 255.255.255.0
 node:
 - name: n1
@@ -25,9 +33,11 @@ node:
     version: '16.04'
     architecture: amd64
   network:
-    hostonly_network: null
-    internal_network: null
+    hostonly_network: []
+    internal_network: []
   services:
+  - apt
+  - build-essentials
   - ansible
 - name: n2
   os:
@@ -44,13 +54,62 @@ node:
     - name: vboxnet2
       ip: 172.16.2.1
       netmask: 255.255.255.0
-    internal_network: null
+    internal_network: []
   services:
   - nginx
   - attribution
+- name: n3
+  os:
+    type: node
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    architecture: amd64
+  network:
+    hostonly_network:
+    - name: vboxnet1
+      ip: 172.16.1.1
+      netmask: 255.255.255.0
+    - name: vboxnet2
+      ip: 172.16.2.1
+      netmask: 255.255.255.0
+    internal_network:
+    - name: vboxnet3
+      ip: 172.16.3.1
+      netmask: 255.255.255.0
+    - name: vboxnet4
+      ip: 172.16.4.1
+      netmask: 255.255.255.0
+  services:
+  - name: null
+    parameter: {}
+- name: n4
+  os:
+    type: node
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    architecture: amd64
+  network:
+    hostonly_network:
+    - name: vboxnet1
+      ip: 172.16.1.1
+      netmask: 255.255.255.0
+    - name: vboxnet2
+      ip: 172.16.2.1
+      netmask: 255.255.255.0
+    internal_network: []
+  services:
+  - name: nginx
+    parameter:
+      nginx_version: 1.4.0
+      nginx_port: '80'
+  - name: php
+    parameter:
+      php_version: '1.1'
 vm:
 - name: VM1
-  node: n2
+  node: n1
   provider: virtualbox
   os:
     type: vagrant
@@ -60,16 +119,18 @@ vm:
     architecture: amd64
   network:
   - gateway: vboxnet1
-    type: hostonly
     ip: 172.16.1.101
     netmask: 255.255.255.0
+    type: hostonly
   vrde:
     enabled: true
-    port: '12345'
+    port: '12346'
   port_forwarding:
     guest_port: 22,80
-    host_port: 2202,8080
+    host_port: 2200,8080
   services:
+  - apt
+  - build-essentials
   - nginx
 - name: VM2
   node: n2
@@ -82,17 +143,75 @@ vm:
     architecture: amd64
   network:
   - gateway: vboxnet1
-    type: hostonly
     ip: 172.16.1.102
     netmask: 255.255.255.0
-  - gateway: vboxnet2
     type: hostonly
+  - gateway: vboxnet2
     ip: 172.16.2.101
     netmask: 255.255.255.0
+    type: hostonly
   vrde:
     enabled: true
     port: '12346'
   port_forwarding:
     guest_port: '22'
     host_port: '2203'
-  services: null
+  services: []
+- name: VM3
+  node: n3
+  provider: docker
+  os:
+    type: docker
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    architecture: amd64
+  network:
+  - gateway: vboxnet1
+    ip: 172.16.1.1
+    netmask: 255.255.255.0
+    type: hostonly
+  - gateway: vboxnet2
+    ip: 172.16.2.1
+    netmask: 255.255.255.0
+    type: hostonly
+  - gateway: vboxnet3
+    ip: 172.16.3.1
+    netmask: 255.255.255.0
+    type: internal
+  vrde:
+    enabled: true
+    port: '12346'
+  port_forwarding:
+    guest_port: '22'
+    host_port: '2203'
+  services: []
+- name: VM4
+  node: n4
+  provider: docker
+  os:
+    type: docker
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    architecture: amd64
+  network:
+  - gateway: vboxnet1
+    ip: 172.16.1.1
+    netmask: 255.255.255.0
+    type: hostonly
+  - gateway: vboxnet2
+    ip: 172.16.2.1
+    netmask: 255.255.255.0
+    type: hostonly
+  - gateway: vboxnet3
+    ip: 172.16.3.1
+    netmask: 255.255.255.0
+    type: internal
+  vrde:
+    enabled: true
+    port: '12346'
+  port_forwarding:
+    guest_port: '22'
+    host_port: '2203'
+  services: []

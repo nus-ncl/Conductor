@@ -1,0 +1,96 @@
+# https://docs.docker.com/compose/compose-file/compose-file-v2/#networks
+version: '3'
+services:
+  app1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      shm_size: '1gb'
+    # service-level will override the same setting at build-level
+    # if you run 'docker-compose up -d --build'
+    # at image building process, it reads 1gb
+    # but the running container is actually 2gb
+    shm_size: '2gb'
+    scale: 1
+
+    depends_on:
+      - app2
+      - app3
+    restart: no
+    volumes:
+      - .:/code
+    dns: []
+    dns_search: []
+    env_file: []
+    container_name: my_app1
+    # clear out any ENTRYPOINT & CMD in Dockerfile
+    entrypoint: ["/bin/sh","-c"]
+    command: ["ls"]
+    # only be accessible to linked services without published to the outside, the host machine.
+    expose:
+      - "3000"
+    # add to /etc/hosts like
+    # 162.242.195.82  somehost
+    extra_hosts:
+      - "somehost:162.242.195.82"
+    net: "bridge"
+    # "host","none","service:[service name]","container:[container name]"
+    networks:
+      new:
+        ipv4_address: 172.16.238.10
+        ipv6_address: 2001:3984:3989::10
+      legacy:
+        ipv4_address: 172.16.239.10
+    ports:
+      - "5000:5000"
+      - "6060:6060/udp"
+
+  app2:
+    build:
+      context: ./app2
+      dockerfile: Dockerfile-alternative
+    command: ["./wait-for-postgres.sh", "db", "python", "app.py"]
+    dns:
+      - 8.8.8.8
+    dns_search:
+      - example.com
+    env_file:
+      - ./common.env
+      - ./app1.env
+      # later override previous
+      # in app1.env
+      # VAR=hello
+      # $VAR=hello
+    networks:
+      - new
+  app3:
+    image: busybox
+    platform: linux/amd64/ubuntu
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.10
+        ipv6_address: 2001:3984:3989::10
+    networks:
+      - legacy
+
+  networks:
+    new:
+      driver: bridge
+      enable_ipv6: true
+      ipam:
+        driver: default
+        config:
+          - subnet: 172.16.238.0/24
+            gateway: 172.16.238.1
+          - subnet: 2001:3984:3989::/64
+            gateway: 2001:3984:3989::1
+    legacy:
+      driver: bridge
+      ipam:
+        driver: default
+        config:
+          - subnet: 172.16.239.0/24
+            gateway: 172.16.239.1
+
+
+

@@ -1,9 +1,11 @@
+import sys
+sys.path.append('../defaults')
 import os
 import cli
 import components
 import yaml_parser
 import renderer_test
-from defaults import default
+import default
 
 metadata_set_function = {"teamname": components.metadata.set_teamname,
                          "experimentname": components.metadata.set_experimentname,
@@ -13,13 +15,13 @@ metadata_set_function = {"teamname": components.metadata.set_teamname,
                          "reserved_nodes": components.metadata.set_reserved_nodes}
 lan_set_function = {"name": components.lan.set_name, "endpoints": components.lan.set_endpoints_dict_list}
 node_set_function = {"name": components.node.set_name, "os": components.node.set_os_dict,
-                     "network": components.node.set_network, "services": components.node.set_services_v1,
-                     "complement_services": components.node.set_services_v2}
+                     "network": components.node.set_network, "services": components.node.set_services_rough,
+                     "detailed_services": components.node.set_services_detailed}
 vm_set_function = {"name": components.vm.set_name, "node": components.vm.set_node,
                    "provider": components.vm.set_provider, "os": components.vm.set_os_dict,
                    "network": components.vm.set_network_dict_list, "vrde": components.vm.set_vrde_dict,
-                   "port_forwarding": components.vm.set_port_forwarding_dict, "services": components.vm.set_services_v1,
-                   "complement_services": components.vm.set_services_v2}
+                   "port_forwarding": components.vm.set_port_forwarding_dict, "services": components.vm.set_services_rough,
+                   "detailed_services": components.vm.set_services_detailed}
 
 
 def help_command(command):
@@ -37,7 +39,7 @@ def NewExperiment(args):
 	''' Metadata '''
 	# metadata component #
 	Metadata = components.metadata()
-	Metadata_dict = cli.Experiment_prompt()
+	Metadata_dict = cli.Metadata_prompt()
 	# print(Metadata_dict)
 	for key, value in Metadata_dict.items():
 		metadata_set_function[key](Metadata, value)
@@ -92,35 +94,36 @@ def NewExperiment(args):
 	output = {'version': default.VERSION}
 	output.update(output_metadata)
 	output.update(output_lan)
-	# complement services
+
+	# detailed services for node
 	for node in node_list:
-		print(f"complement service's parameter for {node.get_name()}")
-		complement_service_list = []
+		print(f"detailed service's parameter for {node.get_name()}")
+		detailed_service_list = []
 		if node.get_services() == []:
 			pass
 		else:
 			for service in node.get_services():
-				complement_service_dict = cli.Services_prompt_v2(service)
-				# print(complement_service_dict)
-				complement_service_list.append(complement_service_dict)
-			node_set_function["complement_services"](node, complement_service_list)
+				detailed_service_dict = cli.Services_prompt_detailed(service)
+				# print(detailed_service_dict)
+				detailed_service_list.append(detailed_service_dict)
+			node_set_function["detailed_services"](node, detailed_service_list)
 	for node in node_list:
 		output_node_entry.append(node.output())
 	output_node = {'node': output_node_entry}
 	output.update(output_node)
 
-	# complement services
+	# detailed services for vm
 	for vm in vm_list:
-		print(f"complement service's parameter for {vm.get_name()}")
-		complement_service_list = []
+		print(f"detailed service's parameter for {vm.get_name()}")
+		detailed_service_list = []
 		if vm.get_services() == []:
 			pass
 		else:
 			for service in vm.get_services():
-				complement_service_dict = cli.Services_prompt_v2(service)
-				# print(complement_service_dict)
-				complement_service_list.append(complement_service_dict)
-			vm_set_function["complement_services"](vm, complement_service_list)
+				detailed_service_dict = cli.Services_prompt_detailed(service)
+				# print(detailed_service_dict)
+				detailed_service_list.append(detailed_service_dict)
+			vm_set_function["detailed_services"](vm, detailed_service_list)
 	for vm in vm_list:
 		output_vm_entry.append(vm.output())
 	output_vm = {'vm': output_vm_entry}
@@ -128,6 +131,22 @@ def NewExperiment(args):
 	print(output)
 
 	yaml_parser.yaml_file_dump(output, 'output')
+	yaml_content = yaml_parser.yaml_file_load('output')
+	vms, lans, nodes, networks = yaml_parser.yaml_content_parser(yaml_content)
+	if default.debug:
+		print('nodes->')
+		print(nodes)
+		print('lans->')
+		print(lans)
+		print('networks->')
+		print(networks)
+		print('vms->')
+		print(vms)
+	renderer_test.vagrantfile_renderer(vms)
+	# renderer_test.hosts_renderer(vms)
+	# renderer_test.nodesfile_renderer(nodes,default.NODE_VIRTUALBOX_VERSION)
+	# renderer_test.NSfile_renderer(lans, nodes)
+	# renderer_test.ansiblefile_renderer(vms)
 
 
 # for key, value in vm_dict.items():
@@ -181,23 +200,54 @@ def DeployExperiment(args):
 
 def LoadTemplateExperiment(args):
 	'''
-	LoadTemplateExperiment <Experiment>: Load all configuration of an experiment
+	LoadTemplateExperiment <Experiment>: Load all configuration of a template experiment
 	'''
 
 	yaml_content = yaml_parser.yaml_templatefile_load(args[0])
-	vms, lans, nodes = yaml_parser.yaml_content_parser(yaml_content)
+	vms, lans, nodes, docker_networks = yaml_parser.yaml_content_parser(yaml_content)
 	if default.debug:
+		print('nodes->')
+		print(nodes)
+		print('lans->')
+		print(lans)
+		print('docker_networks->')
+		print(docker_networks)
 		print('vms->')
 		print(vms)
-	# print('lans->')
-	# print(lans)
-	# print('nodes->')
-	# print(nodes)
 	# renderer_test.vagrantfile_renderer(vms)
 	# renderer_test.hosts_renderer(vms)
-	# renderer_test.nodesfile_renderer(nodes)
+	# renderer_test.nodesfile_renderer(nodes,default.NODE_VIRTUALBOX_VERSION)
 	# renderer_test.NSfile_renderer(lans,nodes)
 	renderer_test.ansiblefile_renderer(vms)
+
+
+# renderer_test.clientfile_renderer(experiment_metadata, vms)
+# renderer_test.dockerfile_renderer()
+
+def LoadExperiment(args):
+	'''
+	LoadExperiment <Experiment>: Load all configuration of an experiment
+	'''
+	if len(args) >= 1:
+		yaml_content = yaml_parser.yaml_file_load(args[0])
+		vms, lans, nodes, networks = yaml_parser.yaml_content_parser(yaml_content)
+		if default.debug:
+			print('nodes->')
+			print(nodes)
+			print('lans->')
+			print(lans)
+			print('networks->')
+			print(networks)
+			print('vms->')
+			print(vms)
+		# renderer_test.vagrantfile_renderer(vms)
+		# renderer_test.hosts_renderer(vms)
+		# renderer_test.nodesfile_renderer(nodes,default.NODE_VIRTUALBOX_VERSION)
+		# renderer_test.NSfile_renderer(lans,nodes)
+		# renderer_test.ansiblefile_renderer(vms)
+		renderer_test.dockerfile_renderer(vms)
+	else:
+		help_command(LoadExperiment)
 
 
 # renderer_test.clientfile_renderer(experiment_metadata, vms)

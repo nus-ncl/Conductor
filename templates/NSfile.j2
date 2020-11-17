@@ -5,7 +5,7 @@ source tb_compat.tcl
 # Add nodes
 {%- for node in nodes %}
 set {{ node['name'] }} [$ns node]
-{# tb-fix-node $n1 pc16e #}
+{#- tb-fix-node $n1 pc16e #}
 {%- endfor %}
 
 
@@ -17,17 +17,14 @@ tb-set-node-os ${{ node['name'] }} {{ node['os'] }}
 
 
 # Set LAN
-{%- for lan in lans %}
+{% for lan in lans %}
 set lanstr ""
 {%- for node in lan['endpoints'] %}
 append lanstr "${{ node }} "
 {%- endfor %}
-
-
 # Change the BW and delay if you want, 100Mb, 0ms by default
 set {{ lan['name'] }} [$ns make-lan "$lanstr" 100Mb 0ms]
-{%- endfor %}
-
+{% endfor %}
 
 # Set node ip.
 {%- for node in nodes %}
