@@ -1,9 +1,5 @@
-version: '3.8'
-
-{#- much like passing command-line parameters to 'docker run' #}
-services:
-  {%- for vm in vms %}
   {{ vm['services'][0]['name'] }}_{{ vm['hostname'] }}:
+    {#- one docker one service #}
     container_name: {{ vm['hostname'] }}_{{ vm['services'][0]['name'] }}
     {%- if vm['os'] is not none %}
     build:
@@ -43,7 +39,6 @@ services:
       legacy:
         ipv4_address: 172.16.239.10
    #}
-  {%- endfor %}
 
   {#- app3:
     image: busybox
