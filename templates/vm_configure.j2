@@ -1,0 +1,46 @@
+# Router VM(Which has more than 1 interface)
+# Highly Recommend that the VM which plays the role of router has a static ip ending in ".2", like "*.*.*.2"
+# rather the one ending in ".1", like "*.*.*.1"
+# Because, the Host Adapter vboxnet[N] often goes with ip ending in ".1" which should be better not attach to a VM.
+# So that we don't need to run "sudo ifconfig down vboxnet[N]" for the host node.
+# By default, the Router VM is configured net.ipv4.ip_forward = 1
+
+# Default Gateway
+# We assume, only vboxnet1 with ip endinng in ".1" can be set in VM's default gateway
+# For others, vboxnet[2,3,...,N], the ip ending in ".1" is attached to host node while the one ending in ".2" is attached to VM
+# In general, one Virtual Machine has 1 interface, so default gateway:
+    # if only one hostonly interface 172.16.1.*, default gw is that 172.16.1.2
+    # if only one internal interface 172.16.1.*, default gw is that 172.16.1.2
+# If a Virtual Machine has more than 1 interface, so default gateway:
+    # We assume this VM is Router VM
+    # By default, default gateway is regarding the first hostonly interface:
+    # e.g., if both hostonly&internal interface 172.16.1.*, 172.16.2.* & 172.16.3.*, that VM's default gw is
+    # 172.16.1.1(vboxnet1)
+    # 172.16.1.2(vboxnet[2,3,...,N])
+
+sudo route del default
+{%- if (vm['hostonly_network']|length) and (not vm['internal_network']|length) %}
+# Only have hostonly_network
+{%- set a,b,c,d = vm['hostonly_network'][0]['ip'].split('.') %}
+sudo route add default gw {{ a }}.{{ b }}.{{ c }}.2
+{%- endif %}
+{%- if (not vm['hostonly_network']|length) and (vm['internal_network']|length) %}
+# Only have internal_network
+{%- set a,b,c,d = vm['internal_network'][0]['ip'].split('.') %}
+sudo route add default gw {{ a }}.{{ b }}.{{ c }}.2
+{%- endif %}
+{%- if (vm['hostonly_network']|length) and (vm['internal_network']|length) %}
+# It may be a router VM
+{%- set a,b,c,d = vm['hostonly_network'][0]['ip'].split('.') %}
+{%- if vm['hostonly_network'][0]['gateway'] == 'vboxnet1' %}
+sudo route add default gw {{ a }}.{{ b }}.{{ c }}.1
+{%- else %}
+sudo route add default gw {{ a }}.{{ b }}.{{ c }}.2
+{%- endif %}
+sudo sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
+sudo sysctl -p /etc/sysctl.conf
+{%- endif %}
+# Other network router
+# NAT configuration
+{#- sudo iptables -t nat -A POSTROUTING -s 192.168.1.0/255.255.255.0 -j MASQUERADE #}
+# SSH port forwarding

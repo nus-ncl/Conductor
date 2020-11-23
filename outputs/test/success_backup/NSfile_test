@@ -3,17 +3,18 @@ set ns [new Simulator]
 source tb_compat.tcl
 
 # Add nodes
-
 set n1 [$ns node]
-tb-fix-node $n1 pc2g
 set n2 [$ns node]
-tb-fix-node $n2 pc6h
+set n3 [$ns node]
+set n4 [$ns node]
 
 
 
 # Set node OS from saved image, Ubuntu1604-64-STD by default
 tb-set-node-os $n1 Ubuntu1604-64-STD
 tb-set-node-os $n2 Ubuntu1604-64-STD
+tb-set-node-os $n3 Ubuntu1604-64-STD
+tb-set-node-os $n4 Ubuntu1604-64-STD
 
 
 # Set LAN
@@ -24,10 +25,18 @@ append lanstr "$n2 "
 # Change the BW and delay if you want, 100Mb, 0ms by default
 set lan1 [$ns make-lan "$lanstr" 100Mb 0ms]
 
+set lanstr ""
+append lanstr "$n3 "
+append lanstr "$n4 "
+# Change the BW and delay if you want, 100Mb, 0ms by default
+set lan2 [$ns make-lan "$lanstr" 100Mb 0ms]
+
 
 # Set node ip.
 tb-set-ip-lan $n1 $lan1 172.16.1.1
 tb-set-ip-lan $n2 $lan1 172.16.1.2
+tb-set-ip-lan $n3 $lan2 172.16.2.1
+tb-set-ip-lan $n4 $lan2 172.16.2.2
 
 
 # Set route and adjust configure.

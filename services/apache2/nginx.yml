@@ -1,6 +1,5 @@
 ---
-# Service: nginx
-# Requirement:
+# nginx service based on specific os
 # os:
 #   type: vagrant
 #   platform: Linux
@@ -9,6 +8,7 @@
 #   architecture: amd64
 # configure options list: http://nginx.org/en/docs/configure.html
 
+  # For user
   service: nginx
   parameter:
     nginx_version: '1.4.0'
@@ -19,6 +19,7 @@
     release: ubuntu
     version: '16.04'
     architecture: amd64
+  # For admin
   dependency:
     - build-essential
     - libpcre3
@@ -26,6 +27,7 @@
     - libpcrecpp0v5
     - libssl-dev
     - zlib1g-dev
+
   configure:
     - --prefix=/usr
     - --conf-path=/etc/nginx/nginx.conf
@@ -41,6 +43,7 @@
     - --without-mail_pop3_module
     - --without-mail_imap_module
     - --without-mail_smtp_module
+
   command: /bin/bash -c "envsubst < /tmp/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
   template:
       - nginx.conf.template
@@ -53,4 +56,13 @@
       - nginx
     source:
       - nginx-1.4.0.tar.gz
+
+
+
+#  include_vars:
+#    file: {{ conductor_path }}/vars/nginx.yml
+#    name: nginx_vars
+#  vars:
+#    - nginx_version
+
 

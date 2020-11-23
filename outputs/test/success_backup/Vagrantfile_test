@@ -1,0 +1,32 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box_check_update = false
+  config.vm.define "vm1" do |node|
+    node.vm.hostname = "vm1"
+    node.vm.box = "bento/ubuntu-16.04"
+    node.vm.network "private_network", ip: "172.16.1.1", name: "vboxnet1"
+    node.vm.network "private_network", ip: "172.16.2.1", name: "vboxnet2"
+    node.vm.network "private_network", ip: "172.16.3.1", virtualbox__intnet: "vboxnet3"
+    node.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--vrde","on"]
+	  vb.customize ["modifyvm", :id, "--vrdeport","2"]
+      vb.customize ["modifyvm", :id, "--vrdeaddress","0.0.0.0"]
+    end
+  end
+  config.vm.define "vm2" do |node|
+    node.vm.hostname = "vm2"
+    node.vm.box = "bento/ubuntu-16.04"
+    node.vm.network "private_network", ip: "172.16.1.102", name: "vboxnet1"
+    node.vm.network "private_network", ip: "172.16.2.101", name: "vboxnet2"
+    node.vm.network "forwarded_port", guest: 22, host: 2203
+    node.vm.network "forwarded_port", guest: 80, host: 8000
+      auto_correct: true
+    node.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--vrde","on"]
+	  vb.customize ["modifyvm", :id, "--vrdeport","12346"]
+      vb.customize ["modifyvm", :id, "--vrdeaddress","0.0.0.0"]
+    end
+  end
+end

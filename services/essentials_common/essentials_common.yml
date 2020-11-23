@@ -1,0 +1,10 @@
+---
+# essentials_common service
+# install some common & essential packages for every VM
+
+  service: essentials_common
+  # Here to list essential packages you want to install
+  packages:
+    - net-tools
+    - software-properties-common
+

@@ -13,6 +13,9 @@ def yaml_templatefile_load(filename):
 	with open(f"{default.conductor_path}/template/{filename}.yml", 'r') as stream:
 		return yaml.safe_load(stream)
 
+def yaml_service_load(filename):
+	with open(f"{default.conductor_path}/services/{filename}/{filename}.yml", 'r') as stream:
+		return yaml.safe_load(stream)
 
 def yaml_file_load(filename):
 	try:
@@ -30,11 +33,12 @@ def yaml_file_dump(content, filename):
 
 
 def yaml_content_parser(content):
+	metadata = get_metadata(content)
 	vms = get_vms(content)
 	lans = get_lans(content)
 	nodes = get_nodes(content)
 	networks = get_docker_networks(content)
-	return vms, lans, nodes, networks
+	return metadata, vms, lans, nodes, networks
 
 
 def os_parser(content):
@@ -67,7 +71,22 @@ def get_vms_num(content):
 
 
 def get_reserve_nodes(content):
-	return content['metadata']['reserve_nodes']
+	return content['metadata']['reserved_nodes']
+
+
+def get_metadata(content):
+	metadata = {}
+	if 'metadata' not in content:
+		pass
+	else:
+		metadata['teamname'] = get_teamname(content)
+		metadata['experimentname'] = get_experimentname(content)
+		metadata['lans_num'] = get_lans_num(content)
+		metadata['nodes_num'] = get_nodes_num(content)
+		metadata['vms_num'] = get_vms_num(content)
+		metadata['reserved_nodes'] = get_reserve_nodes(content)
+
+	return metadata
 
 
 def get_lans(content):
@@ -179,7 +198,8 @@ def get_vms(content):
 			vm_activity_list = []
 
 			vm_entry = {'hostname': vm_hostname, 'node': vm_node, 'provider': vm_provider, 'os': vm_os,
-			            'hostonly_network': vm_hostonly_network,'internal_network': vm_internal_network, 'vrde': vm_vrde, 'vrdeport': vm_vrdeport,
+			            'hostonly_network': vm_hostonly_network, 'internal_network': vm_internal_network,
+			            'vrde': vm_vrde, 'vrdeport': vm_vrdeport,
 			            'port_forwarding': vm_port_forwarding, 'services': vm_services_list,
 			            'activity': vm_activity_list}
 			vms.append(vm_entry)

@@ -1,0 +1,135 @@
+---
+version: '1.0'
+metadata:
+  teamname: NCL
+  experimentname: NCL
+  lans_num: 2
+  nodes_num: 2
+  vms_num: 1
+  reserved_nodes: pc2g,pc6h
+lan:
+- name: lan2
+  endpoints:
+  - name: n3
+    ip: 172.16.2.1
+    netmask: 255.255.255.0
+  - name: n4
+    ip: 172.16.2.2
+    netmask: 255.255.255.0
+node:
+- name: n3
+  os:
+    type: node
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    architecture: amd64
+  network:
+    hostonly_network:
+    - name: vboxnet1
+      ip: 172.16.2.1
+      netmask: 255.255.255.0
+    internal_network:
+    - name: vboxnet2
+      ip: 172.16.2.2
+      netmask: 255.255.255.0
+  services:
+  - name: ansible
+  - name: attribution
+  - name: nginx
+    parameter:
+      nginx_version: 1.3.9
+      nginx_port: 80
+- name: n4
+  os:
+    type: node
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    architecture: amd64
+  network:
+    hostonly_network:
+    - name: vboxnet1
+      ip: 172.16.2.1
+      netmask: 255.255.255.0
+    internal_network:
+    - name: vboxnet2
+      ip: 172.16.2.2
+      netmask: 255.255.255.0
+  services:
+  - name: ansible
+  - name: attribution
+  - name: nginx
+    parameter:
+      nginx_version: 1.3.9
+      nginx_port: 80
+vm:
+- name: VM3
+  node: n3
+  provider: docker
+  os:
+    type: docker
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    architecture: amd64
+  network:
+  - gateway: vboxnet1
+    ip: 172.16.1.1
+    netmask: 255.255.255.0
+    type: hostonly
+  - gateway: vboxnet2
+    ip: 172.16.2.1
+    netmask: 255.255.255.0
+    type: hostonly
+  - gateway: vboxnet3
+    ip: 172.16.3.1
+    netmask: 255.255.255.0
+    type: internal
+  vrde:
+    enabled: true
+    port: '12346'
+  port_forwarding:
+    guest_port: '22'
+    host_port: '2203'
+  services:
+  - name: nginx
+    parameter:
+      nginx_version: 1.3.9
+      nginx_port: 80
+- name: VM4
+  node: n4
+  provider: docker
+  os:
+    type: docker
+    platform: Linux
+    release: ubuntu
+    version: '16.04'
+    architecture: amd64
+  network:
+  - gateway: vboxnet1
+    ip: 172.16.1.1
+    netmask: 255.255.255.0
+    type: hostonly
+  - gateway: vboxnet2
+    ip: 172.16.2.1
+    netmask: 255.255.255.0
+    type: hostonly
+  - gateway: vboxnet3
+    ip: 172.16.3.1
+    netmask: 255.255.255.0
+    type: internal
+  vrde:
+    enabled: true
+    port: '12346'
+  port_forwarding:
+    guest_port: '22'
+    host_port: '2203'
+  services:
+  - name: nginx
+    parameter:
+      nginx_version: 1.3.9
+      nginx_port: 80
+  - name: apt
+    parameter:
+      Error: No Such Service

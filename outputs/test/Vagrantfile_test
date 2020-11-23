@@ -3,30 +3,43 @@
 
 Vagrant.configure("2") do |config|
   config.vm.box_check_update = false
-  config.vm.define "vm1" do |node|
-    node.vm.hostname = "vm1"
+  config.vm.define "VM1" do |node|
+    node.vm.hostname = "VM1"
     node.vm.box = "bento/ubuntu-16.04"
-    node.vm.network "private_network", ip: "172.16.1.1", name: "vboxnet1"
-    node.vm.network "private_network", ip: "172.16.2.1", name: "vboxnet2"
-    node.vm.network "private_network", ip: "172.16.3.1", virtualbox__intnet: "vboxnet3"
+    node.vm.network "private_network", ip: "172.16.1.100", name: "vboxnet1"
+    node.vm.network "private_network", ip: "172.16.2.2", name: "vboxnet2"
+    node.vm.network "private_network", ip: "172.16.3.2", virtualbox__intnet: "vboxnet3"
     node.vm.provider :virtualbox do |vb|
       vb.customize ["modifyvm", :id, "--vrde","on"]
-	  vb.customize ["modifyvm", :id, "--vrdeport","2"]
+	  vb.customize ["modifyvm", :id, "--vrdeport","12345"]
       vb.customize ["modifyvm", :id, "--vrdeaddress","0.0.0.0"]
     end
+    node.vm.provision "shell", path "VM1.conf.sh"
   end
-  config.vm.define "vm2" do |node|
-    node.vm.hostname = "vm2"
+  config.vm.define "VM2" do |node|
+    node.vm.hostname = "VM2"
     node.vm.box = "bento/ubuntu-16.04"
-    node.vm.network "private_network", ip: "172.16.1.102", name: "vboxnet1"
-    node.vm.network "private_network", ip: "172.16.2.101", name: "vboxnet2"
-    node.vm.network "forwarded_port", guest: 22, host: 2203
-    node.vm.network "forwarded_port", guest: 80, host: 8000
-      auto_correct: true
+    node.vm.network "private_network", ip: "172.16.2.100", name: "vboxnet2"
+    node.vm.network "forwarded_port", guest: 22, host: 2203, auto_correct: true
+    node.vm.network "forwarded_port", guest: 80, host: 8000, auto_correct: true
     node.vm.provider :virtualbox do |vb|
       vb.customize ["modifyvm", :id, "--vrde","on"]
 	  vb.customize ["modifyvm", :id, "--vrdeport","12346"]
       vb.customize ["modifyvm", :id, "--vrdeaddress","0.0.0.0"]
     end
+    node.vm.provision "shell", path "VM2.conf.sh"
+  end
+  config.vm.define "VM3" do |node|
+    node.vm.hostname = "VM3"
+    node.vm.box = "bento/ubuntu-16.04"
+    node.vm.network "private_network", ip: "172.16.3.100", virtualbox__intnet: "vboxnet3"
+    node.vm.network "forwarded_port", guest: 22, host: 2203, auto_correct: true
+    node.vm.network "forwarded_port", guest: 80, host: 8000, auto_correct: true
+    node.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--vrde","on"]
+	  vb.customize ["modifyvm", :id, "--vrdeport","12347"]
+      vb.customize ["modifyvm", :id, "--vrdeaddress","0.0.0.0"]
+    end
+    node.vm.provision "shell", path "VM3.conf.sh"
   end
 end

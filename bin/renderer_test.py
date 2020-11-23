@@ -59,13 +59,13 @@ def ansiblefile_renderer(vms):
 						file.write('\n\n')
 
 
-def NSfile_renderer(lans, nodes):
+def NSfile_renderer(lans, nodes, metadata):
 	template_dir = [f"{default.conductor_path}/templates"]
 	loader = jinja2.FileSystemLoader(template_dir)
 	with open(default.NS_TEST_FILE, 'w') as file:
 		env = Environment(loader=loader)
 		NSfile = env.get_template('NSfile.j2')
-		content = NSfile.render(lans=lans, nodes=nodes)
+		content = NSfile.render(lans=lans, nodes=nodes, metadata=metadata)
 		file.write(content)
 
 
@@ -78,7 +78,18 @@ def nodesfile_renderer(nodes,node_virtualbox_version):
 	for node in nodes:
 		node_filename = default.NODES_TEST_PATH + node['name'] + '.sh'
 		with open(node_filename, 'w') as file:
-			content = nodefile.render(node=node,node_virtualbox_version=node_virtualbox_version)
+			content = nodefile.render(node=node,node_virtualbox_version=node_virtualbox_version,yaml_service_load=yaml_parser.yaml_service_load)
+			file.write(content)
+
+def vm_configure_renderer(vms):
+	template_dir = [f"{default.conductor_path}/templates"]
+	loader = jinja2.FileSystemLoader(template_dir)
+	env = Environment(loader=loader)
+	vm_configure = env.get_template('vm_configure.j2')
+	for vm in vms:
+		vm_filename = default.VM_CONFIGURE_TEST_PATH + vm['hostname'] + '.conf.sh'
+		with open(vm_filename, 'w') as file:
+			content = vm_configure.render(vm=vm)
 			file.write(content)
 
 
@@ -147,20 +158,25 @@ def dockerfile_renderer(vms):
 
 if __name__ == "__main__":
 	yaml_content = yaml_parser.yaml_file_load('output')
+	print(yaml_content)
 	# print(yaml_content)
-	vms, lans, nodes, docker_networks = yaml_parser.yaml_content_parser(yaml_content)
+	metadata, vms, lans, nodes, docker_networks = yaml_parser.yaml_content_parser(yaml_content)
 	if default.debug:
-		# print('nodes->')
-		# print(nodes)
+		pass
+		# print('metadata->')
+		# print(metadata)
+		print('nodes->')
+		print(nodes)
 		# print('lans->')
 		# print(lans)
 		# print('docker_networks->')
 		# print(docker_networks)
 		# print('vms->')
 		# print(vms)
-	# vagrantfile_renderer(vms)
-	# hosts_renderer(vms)
-	# nodesfile_renderer(nodes,default.NODE_VIRTUALBOX_VERSION)
-	# NSfile_renderer(lans, nodes)
-	# ansiblefile_renderer(vms)
-		dockerfile_renderer(vms)
+		# vm_configure_renderer(vms)
+		# vagrantfile_renderer(vms)
+		# hosts_renderer(vms)
+		nodesfile_renderer(nodes,default.NODE_VIRTUALBOX_VERSION)
+		# NSfile_renderer(lans, nodes, metadata)
+		# ansiblefile_renderer(vms)
+		# dockerfile_renderer(vms)

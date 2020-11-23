@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  nginx_VM3:
+    container_name: VM3_nginx
+    build:
+      context: .
+      dockerfile: Dockerfile_VM3_nginx
+    volumes:
+      - /Users/hkwany/PycharmProjects/Conductor/services/nginx/nginx.conf.template:/tmp/nginx.conf.template
+    command: /bin/bash -c "envsubst < /tmp/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
+    ports:
+      - "80:80"
+    environment:
+      - nginx_version=1.3.9
+      - nginx_port=80
+  nginx_VM4:
+    container_name: VM4_nginx
+    build:
+      context: .
+      dockerfile: Dockerfile_VM4_nginx
+    volumes:
+      - /Users/hkwany/PycharmProjects/Conductor/services/nginx/nginx.conf.template:/tmp/nginx.conf.template
+    command: /bin/bash -c "envsubst < /tmp/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
+    ports:
+      - "80:80"
+    environment:
+      - nginx_version=1.3.9
+      - nginx_port=80

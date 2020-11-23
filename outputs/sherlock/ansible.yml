@@ -466,7 +466,7 @@
         requirements=~/pip_requirements.txt
         virtualenv=/home/projects/.virtualenv/klara
 
-    - name: delete pip_requirements from /projects
+    - name: pip_requirements from /projects
       become: yes
       become_user: projects
       file:

@@ -103,9 +103,12 @@ def NewExperiment(args):
 			pass
 		else:
 			for service in node.get_services():
-				detailed_service_dict = cli.Services_prompt_detailed(service)
-				# print(detailed_service_dict)
-				detailed_service_list.append(detailed_service_dict)
+				if service in default.ROUGH_SERVICES:
+					detailed_service_list.append(service)
+				else:
+					detailed_service_dict = cli.Services_prompt_detailed(service)
+					# print(detailed_service_dict)
+					detailed_service_list.append(detailed_service_dict)
 			node_set_function["detailed_services"](node, detailed_service_list)
 	for node in node_list:
 		output_node_entry.append(node.output())
@@ -120,9 +123,12 @@ def NewExperiment(args):
 			pass
 		else:
 			for service in vm.get_services():
-				detailed_service_dict = cli.Services_prompt_detailed(service)
-				# print(detailed_service_dict)
-				detailed_service_list.append(detailed_service_dict)
+				if service in default.ROUGH_SERVICES:
+					detailed_service_list.append(service)
+				else:
+					detailed_service_dict = cli.Services_prompt_detailed(service)
+					# print(detailed_service_dict)
+					detailed_service_list.append(detailed_service_dict)
 			vm_set_function["detailed_services"](vm, detailed_service_list)
 	for vm in vm_list:
 		output_vm_entry.append(vm.output())
@@ -132,7 +138,7 @@ def NewExperiment(args):
 
 	yaml_parser.yaml_file_dump(output, 'output')
 	yaml_content = yaml_parser.yaml_file_load('output')
-	vms, lans, nodes, networks = yaml_parser.yaml_content_parser(yaml_content)
+	metadata, vms, lans, nodes, networks = yaml_parser.yaml_content_parser(yaml_content)
 	if default.debug:
 		print('nodes->')
 		print(nodes)
@@ -145,7 +151,7 @@ def NewExperiment(args):
 	renderer_test.vagrantfile_renderer(vms)
 	# renderer_test.hosts_renderer(vms)
 	# renderer_test.nodesfile_renderer(nodes,default.NODE_VIRTUALBOX_VERSION)
-	# renderer_test.NSfile_renderer(lans, nodes)
+	# renderer_test.NSfile_renderer(lans, nodes, metadata)
 	# renderer_test.ansiblefile_renderer(vms)
 
 
@@ -204,7 +210,7 @@ def LoadTemplateExperiment(args):
 	'''
 
 	yaml_content = yaml_parser.yaml_templatefile_load(args[0])
-	vms, lans, nodes, docker_networks = yaml_parser.yaml_content_parser(yaml_content)
+	metadata, vms, lans, nodes, docker_networks = yaml_parser.yaml_content_parser(yaml_content)
 	if default.debug:
 		print('nodes->')
 		print(nodes)
@@ -217,7 +223,7 @@ def LoadTemplateExperiment(args):
 	# renderer_test.vagrantfile_renderer(vms)
 	# renderer_test.hosts_renderer(vms)
 	# renderer_test.nodesfile_renderer(nodes,default.NODE_VIRTUALBOX_VERSION)
-	# renderer_test.NSfile_renderer(lans,nodes)
+	# renderer_test.NSfile_renderer(lans,nodes,metadata)
 	renderer_test.ansiblefile_renderer(vms)
 
 
@@ -230,21 +236,22 @@ def LoadExperiment(args):
 	'''
 	if len(args) >= 1:
 		yaml_content = yaml_parser.yaml_file_load(args[0])
-		vms, lans, nodes, networks = yaml_parser.yaml_content_parser(yaml_content)
+		metadata, vms, lans, nodes, docker_networks = yaml_parser.yaml_content_parser(yaml_content)
 		if default.debug:
 			print('nodes->')
 			print(nodes)
 			print('lans->')
 			print(lans)
-			print('networks->')
-			print(networks)
+			print('docker_networks->')
+			print(docker_networks)
 			print('vms->')
 			print(vms)
-		# renderer_test.vagrantfile_renderer(vms)
-		# renderer_test.hosts_renderer(vms)
-		# renderer_test.nodesfile_renderer(nodes,default.NODE_VIRTUALBOX_VERSION)
-		# renderer_test.NSfile_renderer(lans,nodes)
-		# renderer_test.ansiblefile_renderer(vms)
+		renderer_test.vm_configure_renderer(vms)
+		renderer_test.vagrantfile_renderer(vms)
+		renderer_test.hosts_renderer(vms)
+		renderer_test.nodesfile_renderer(nodes,default.NODE_VIRTUALBOX_VERSION)
+		renderer_test.NSfile_renderer(lans,nodes, metadata)
+		renderer_test.ansiblefile_renderer(vms)
 		renderer_test.dockerfile_renderer(vms)
 	else:
 		help_command(LoadExperiment)

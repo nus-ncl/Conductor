@@ -5,19 +5,26 @@ Vagrant.configure("2") do |config|
   config.vm.box_check_update = false
   {%- for vm in vms %}
   config.vm.define "{{ vm['hostname'] }}" do |node|
+    {%- if vm['hostname']|length %}
     node.vm.hostname = "{{ vm['hostname'] }}"
+    {%- endif %}
+    {%- if vm['os']|length %}
     node.vm.box = "{{ vm['os'] }}"
+    {%- endif %}
+    {%- if vm['hostonly_network']|length %}
     {%- for network in vm['hostonly_network'] %}
     node.vm.network "private_network", ip: "{{ network['ip'] }}", name: "{{ network['gateway'] }}"
     {%- endfor %}
+    {%- endif %}
+    {%- if vm['internal_network']|length %}
     {%- for network in vm['internal_network'] %}
     node.vm.network "private_network", ip: "{{ network['ip'] }}", virtualbox__intnet: "{{ network['gateway'] }}"
     {%- endfor %}
+    {%- endif %}
     {%- if vm['port_forwarding']|length %}
     {%- for port_forwarding in vm['port_forwarding'] %}
-    node.vm.network "forwarded_port", guest: {{ port_forwarding['guest_port'] }}, host: {{ port_forwarding['host_port'] }}
+    node.vm.network "forwarded_port", guest: {{ port_forwarding['guest_port'] }}, host: {{ port_forwarding['host_port'] }}, auto_correct: true
     {%- endfor %}
-      auto_correct: true
     {%- endif %}
     {%- if vm['provider'] == 'virtualbox' and vm['vrde'] == True %}
     node.vm.provider :virtualbox do |vb|
@@ -26,6 +33,7 @@ Vagrant.configure("2") do |config|
       vb.customize ["modifyvm", :id, "--vrdeaddress","0.0.0.0"]
     end
     {%- endif %}
+    node.vm.provision "shell", path "{{ vm['hostname'] }}.conf.sh"
   end
   {%- endfor %}
 end

@@ -1,12 +1,18 @@
 ---
 
-- hosts: vm1
+- hosts: VM1
   gather_facts: true
   vars:
     nginx_version: 1.4.0
     nginx_port: 81
   tasks:
     # service: nginx
+    # os:
+    #   type: vagrant
+    #   platform: Linux
+    #   release: ubuntu
+    #   version: '16.04'
+    #   architecture: amd64
     - name: install dependencies
       become: yes
       become_user: root
@@ -89,7 +95,11 @@
         state: restarted
         enabled: yes
 
-- hosts: vm2
+- hosts: VM2
+  gather_facts: true
+  vars: null
+  tasks:
+- hosts: VM3
   gather_facts: true
   vars: null
   tasks:

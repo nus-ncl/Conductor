@@ -21,9 +21,7 @@ cd nginx-1.4.0
 
 make
 sudo make install
-sudo update-rc.d -f nginx defaults
-# sudo update-rc.d nginx remove
-sudo service nginx restart
+
 {#
 NAME
        update-rc.d - install and remove System-V style init script links
@@ -47,8 +45,11 @@ DESCRIPTION
        Manual.
 #}
 {# put nginx_initd to /etc/init.d/ and then run
+cp nginx_initd /etc/init.d/
 sudo update-rc.d -f nginx defaults   // make nginx system-started at rc1 2 3 4(run-level: 2 3 4 5)
-#delete #
+#delete
+# sudo update-rc.d nginx remove
 sudo service nginx restart#}
 
 
+# sed -i 's/a/b/g' file

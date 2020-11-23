@@ -12,7 +12,7 @@ conductor_path = os.path.dirname(file_path)
 
 # Versioning
 VERSION = '1.0'
-NODE_VIRTUALBOX_VERSION = '6.0.16'
+NODE_VIRTUALBOX_VERSION = '5.2.12'
 
 # Logging
 LOGGING_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -41,6 +41,7 @@ HOSTS_TEST_FILE = "../outputs/test/hosts_test"
 ANSIBLE_TEST_FILE = "../outputs/test/ansible_test.yml"
 CLIENT_TEST_FILE = "../outputs/test/client_test.xml"
 NODES_TEST_PATH = "../outputs/test/"
+VM_CONFIGURE_TEST_PATH = "../outputs/test/"
 DOCKERFILE_TEST_FILE = "../outputs/test/Dockerfile"
 DOCKERCOMPOSE_TEST_FILE = "../outputs/test/docker-compose.yml"
 
@@ -119,3 +120,6 @@ DEFAULT_VRDE_PORT = '12345'
 # DEFAULT_RELEASE='[ ubuntu | centos | redhat | win7 ]'
 # DEFAULT_VERSION='[ 16.04 | 19.10 ]'
 # DEFAULT_ARCHITECTURE='[ i386 | amd64 ]'
+
+# serivces that don't need cli.Services_prompt_detailed
+ROUGH_SERVICES=['essentials_common']

@@ -1,6 +1,6 @@
 ---
 
-- hosts: VM1
+- hosts: vm1
   gather_facts: true
   vars:
     nginx_version: 1.4.0
@@ -89,7 +89,7 @@
         state: restarted
         enabled: yes
 
-- hosts: VM2
+- hosts: vm2
   gather_facts: true
   vars: null
   tasks:

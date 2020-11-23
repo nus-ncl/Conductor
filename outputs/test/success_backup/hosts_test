@@ -1,8 +1,7 @@
 
-[VM1]
+[vm1]
 #only show the first hostonly_network ip, guarantee it's accessible from ansible manager
 172.16.1.1 ansible_user=vagrant
 
-[VM2]
+[vm2]
 #only show the first hostonly_network ip, guarantee it's accessible from ansible manager
-172.16.1.102 ansible_user=vagrant

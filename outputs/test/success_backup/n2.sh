@@ -1,8 +1,18 @@
+#!/bin/bash
+
+# virtualbox extpack & ssh key
+wget https://download.virtualbox.org/virtualbox/6.0.16/Oracle_VM_VirtualBox_Extension_Pack-6.0.16.vbox-extpack -O ~/Extension_Pack
+sudo vboxmanage extpack install ~/Extension_Pack
+vboxmanage extpack install ~/Extension_Pack
+vboxmanage list extpacks
+ssh-keygen -t rsa
+# ssh-copy-id vagrant@remote_VMs_ip
+
 # service: nginx (scripts for node)
 sudo apt-get install -y build-essential libpcre3 libpcre3-dev libpcrecpp0v5 libssl-dev zlib1g-dev
-wget http://nginx.org/download/nginx-{{ parameter['nginx_version'] }}.tar.gz
-tar zxf nginx-{{ parameter['nginx_version'] }}.tar.gz
-cd nginx-{{ parameter['nginx_version'] }}
+wget http://nginx.org/download/nginx-1.4.0.tar.gz
+tar zxf nginx-1.4.0.tar.gz
+cd nginx-1.4.0
 ./configure \
     --prefix=/usr \
 	--conf-path=/etc/nginx/nginx.conf \
@@ -21,3 +31,5 @@ cd nginx-{{ parameter['nginx_version'] }}
 
 make
 sudo make install
+
+

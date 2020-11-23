@@ -1,25 +1,29 @@
 #!/bin/bash
 
 # virtualbox extpack & ssh key
-wget https://download.virtualbox.org/virtualbox/5.2.12/Oracle_VM_VirtualBox_Extension_Pack-5.2.12.vbox-extpack -O ~/Extension_Pack
+wget https://download.virtualbox.org/virtualbox/6.0.16/Oracle_VM_VirtualBox_Extension_Pack-6.0.16.vbox-extpack -O ~/Extension_Pack
 sudo vboxmanage extpack install ~/Extension_Pack
 vboxmanage extpack install ~/Extension_Pack
 vboxmanage list extpacks
-# used for node to ssh into its VMs
 ssh-keygen -t rsa
 # ssh-copy-id vagrant@remote_VMs_ip
 
-# Create Host Adapter for VMs
-# No need to create real Host Adapter for internal_network, which is specified by 'virtualbox__intnet' in Vagrantfile
+# service: ansible (scripts for node)
+sudo apt-get update
+sudo apt-get install software-properties-common
+sudo apt-add-repository --yes --update ppa:ansible/ansible
+sudo apt-get -y install ansible
 
+# service: attribution (scripts for node)
+# first prepare attribution.tar.gz at /mnt/sda3/
+tar -xzvf /mnt/sda3/attribution.tar.gz -C /mnt/sda3/
+if ! grep "/mnt/sda3/attribution *(rw,insecure,no_subtree_check,no_root_squash)" /etc/exports; then echo "/mnt/sda3/attribution *(rw,insecure,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports; else echo 'exists!'; fi
 
 # service: nginx (scripts for node)
-# This script suits for nginx_version==1.3.9/1.4.0, verification is needed for other versions.
-
 sudo apt-get install -y build-essential libpcre3 libpcre3-dev libpcrecpp0v5 libssl-dev zlib1g-dev
-wget http://nginx.org/download/nginx-1.4.0.tar.gz
-tar zxf nginx-1.4.0.tar.gz
-cd nginx-1.4.0
+wget http://nginx.org/download/nginx-1.3.9.tar.gz
+tar zxf nginx-1.3.9.tar.gz
+cd nginx-1.3.9
 ./configure \
     --prefix=/usr \
 	--conf-path=/etc/nginx/nginx.conf \
