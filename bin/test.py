@@ -4,6 +4,7 @@ sys.path.append('../defaults')
 import default
 import cli
 import math
+import yaml_parser
 import numpy as np
 
 
@@ -40,7 +41,5 @@ node = {'name': None,
                'services': ['nginx', 'nfs-client']}
 
 if __name__ == '__main__':
-	a={}
-	b={'1':1}
-	print(bool(a))
-	print(bool(b))
+	service = ['', '1', 'thttp', 'nginx']
+	yaml_parser.yaml_file_dump(service,'user_definition')

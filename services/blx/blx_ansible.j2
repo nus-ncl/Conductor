@@ -1,0 +1,25 @@
+    # Service: blx (scripts for ansible)
+    - name: copy libssl in place if missing
+      copy:
+        src: {{ conductor_path }}/services/blx/dependency/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+        dest: /home/{{ USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+        backup: yes
+
+    - name: install libssl.deb
+      become: yes
+      become_user: root
+      apt:
+        deb: /home/{{ USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+
+    - name: delete libssl from home/
+      file:
+        path: /home/{{ USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
+        state: absent
+
+    - name: unarchive blx folders
+      become: yes
+      become_user: root
+      unarchive:
+        src: {{ conductor_path }}/services/blx/blx.tar.gz
+        copy: yes
+        dest: /opt/

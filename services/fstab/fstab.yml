@@ -1,19 +1,11 @@
 ---
+# Service: fstab
 
-- service: fstab
-  include_vars:
-    file: {{ conductor_path }}/vars/fstab.yml
-    name: fstab_vars
-#  vars:
-#    - mount_src_ip
-#    - mount_src_directory
-#    - mount_dest_directory
+  service: fstab
+  parameter:
+    fstab_src_ip: 10.0.2.2
+    fstab_src_directory: /mnt/sda3/attribution
+    fstab_dest_directory: /opt/attribution
+    fstab_opt: 'nfs defaults 0 0'
   dependency:
     - nfs-common
-  source:
-  prepared:
-    dependency:
-    script:
-    bin:
-    source:
-

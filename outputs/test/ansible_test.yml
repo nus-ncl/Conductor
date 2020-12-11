@@ -3,17 +3,21 @@
 - hosts: VM1
   gather_facts: true
   vars:
-    nginx_version: 1.4.0
-    nginx_port: 81
+    user_group_username: null
+    user_group_uid: 1234
+    user_group_home: True
+    user_group_sudo: False
+    user_group_shell: /bin/bash
+    user_group_groupname: hkwany_group
+    user_group_gid: null
   tasks:
-    # service: nginx
-    # os:
-    #   type: vagrant
-    #   platform: Linux
-    #   release: ubuntu
-    #   version: '16.04'
-    #   architecture: amd64
-    - name: install dependencies
+    # Service: essentials_common (scripts for ansible)
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+    - name: install essential packages
       become: yes
       become_user: root
       apt:
@@ -21,85 +25,14 @@
         state: present
         update_cache: yes
       loop:
-        - build-essential
-        - libpcre3
-        - libpcre3-dev
-        - libpcrecpp0v5
-        - libssl-dev
-        - zlib1g-dev
+        - net-tools
+        - software-properties-common
 
-    - name: download nginx src and unarchive
-      unarchive:
-        src: http://nginx.org/download/nginx-{{ nginx_version }}.tar.gz
-        dest: /home/{{ ansible_facts['env']['USER'] }}
-        remote_src: yes
-
-    - name: configure
-      shell:
-        argv:
-          - ./configure
-          - --prefix=/usr
-          - --conf-path=/etc/nginx/nginx.conf
-          - --error-log-path=/var/log/nginx/error.log
-          - --http-log-path=/var/log/nginx/access.log
-          - --pid-path=/var/run/nginx.pid
-          - --lock-path=/var/lock/nginx.lock
-          - --with-http_ssl_module
-          - --user=www-data
-          - --group=www-data
-          - --with-http_stub_status_module
-          - --with-http_gzip_static_module
-          - --without-mail_pop3_module
-          - --without-mail_imap_module
-          - --without-mail_smtp_module
-        chdir: /home/{{ ansible_facts['env']['USER'] }}/nginx-{{ nginx_version }}/
-
-    - name: make
-      shell:
-        argv:
-          - make
-        chdir: /home/{{ ansible_facts['env']['USER'] }}/nginx-{{ nginx_version }}/
-
-    - name: make install
+    # Service: user_group (scripts for ansible)
+    - name: create new group
       become: yes
       become_user: root
-      shell:
-        argv:
-          - make
-          - install
-        chdir: /home/{{ ansible_facts['env']['USER'] }}/nginx-{{ nginx_version }}/
+      group:
+        name: {{ user_group_groupname }}
+        state: present
 
-    - name: Modify the default Nginx port to user's input
-      become: yes
-      become_user: root
-      lineinfile:
-        path: /etc/nginx/nginx.conf
-        regexp: '.{8}listen.{7}80;'
-        line: '        listen       {{ nginx_port }};'
-
-    - name: Copy nginx service file with owner and permissions
-      become: yes
-      become_user: root
-      copy:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/nginx/nginx_initd
-        dest: /etc/init.d/nginx
-        owner: root
-        group: root
-        mode: '0755'
-
-    - name: Restart & Enable the service nginx, and not touch the state
-      become: yes
-      become_user: root
-      service:
-        name: nginx
-        state: restarted
-        enabled: yes
-
-- hosts: VM2
-  gather_facts: true
-  vars: null
-  tasks:
-- hosts: VM3
-  gather_facts: true
-  vars: null
-  tasks:

@@ -1,0 +1,14 @@
+---
+# Service: user_group
+# description: currently only support one user & one group
+  service: user_group
+  parameter:
+    user_group_username: null
+    user_group_uid: null
+    user_group_home: true
+    user_group_sudo: false
+    user_group_shell: '/bin/bash'
+    # default for user_group_group : user_group_user
+    user_group_groupname: null
+    user_group_gid: null
+

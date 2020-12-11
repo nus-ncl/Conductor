@@ -99,17 +99,26 @@ def NewExperiment(args):
 	for node in node_list:
 		print(f"detailed service's parameter for {node.get_name()}")
 		detailed_service_list = []
+		print(node.get_services())
 		if node.get_services() == []:
 			pass
 		else:
 			for service in node.get_services():
-				if service in default.ROUGH_SERVICES:
-					detailed_service_list.append(service)
-				else:
-					detailed_service_dict = cli.Services_prompt_detailed(service)
-					# print(detailed_service_dict)
-					detailed_service_list.append(detailed_service_dict)
+				detailed_service_dict = cli.Services_prompt_detailed(service)
+				print(detailed_service_dict)
+				detailed_service_list.append(detailed_service_dict)
+				print(detailed_service_list)
 			node_set_function["detailed_services"](node, detailed_service_list)
+			# for service in node.get_services():
+			# 	if service in default.ROUGH_SERVICES:
+			# 		detailed_service_dict = {}
+			# 		detailed_service_dict['service'] = service
+			# 		detailed_service_list.append(detailed_service_dict)
+			# 	else:
+			# 		detailed_service_dict = cli.Services_prompt_detailed(service)
+			# 		# print(detailed_service_dict)
+			# 		detailed_service_list.append(detailed_service_dict)
+			# node_set_function["detailed_services"](node, detailed_service_list)
 	for node in node_list:
 		output_node_entry.append(node.output())
 	output_node = {'node': output_node_entry}
@@ -122,33 +131,46 @@ def NewExperiment(args):
 		if vm.get_services() == []:
 			pass
 		else:
+			print(vm.get_services())
 			for service in vm.get_services():
-				if service in default.ROUGH_SERVICES:
-					detailed_service_list.append(service)
-				else:
-					detailed_service_dict = cli.Services_prompt_detailed(service)
-					# print(detailed_service_dict)
-					detailed_service_list.append(detailed_service_dict)
+				detailed_service_dict = cli.Services_prompt_detailed(service)
+				print(detailed_service_dict)
+				detailed_service_list.append(detailed_service_dict)
+				print(detailed_service_list)
 			vm_set_function["detailed_services"](vm, detailed_service_list)
+			# for service in vm.get_services():
+			# 	if service in default.ROUGH_SERVICES:
+			# 		detailed_service_dict = {}
+			# 		detailed_service_dict['service'] = service
+			# 		detailed_service_list.append(detailed_service_dict)
+			# 		print(detailed_service_list)
+			# 	else:
+			# 		detailed_service_dict = cli.Services_prompt_detailed(service)
+			# 		print(detailed_service_dict)
+			# 		detailed_service_list.append(detailed_service_dict)
+			# 		print(detailed_service_list)
+			# vm_set_function["detailed_services"](vm, detailed_service_list)
 	for vm in vm_list:
 		output_vm_entry.append(vm.output())
 	output_vm = {'vm': output_vm_entry}
 	output.update(output_vm)
 	print(output)
-
-	yaml_parser.yaml_file_dump(output, 'output')
-	yaml_content = yaml_parser.yaml_file_load('output')
-	metadata, vms, lans, nodes, networks = yaml_parser.yaml_content_parser(yaml_content)
-	if default.debug:
-		print('nodes->')
-		print(nodes)
-		print('lans->')
-		print(lans)
-		print('networks->')
-		print(networks)
-		print('vms->')
-		print(vms)
-	renderer_test.vagrantfile_renderer(vms)
+	# with open("user_definition", 'w') as stream:
+	# 	stream.write(output)
+	yaml_parser.yaml_file_dump(output, 'hkwany')
+	# yaml_parser.yaml_file_dump(output, 'output')
+	# yaml_content = yaml_parser.yaml_file_load('output')
+	# metadata, vms, lans, nodes, networks = yaml_parser.yaml_content_parser(yaml_content)
+	# if default.debug:
+	# 	print('nodes->')
+	# 	print(nodes)
+	# 	print('lans->')
+	# 	print(lans)
+	# 	print('networks->')
+	# 	print(networks)
+	# 	print('vms->')
+	# 	print(vms)
+	# renderer_test.vagrantfile_renderer(vms)
 	# renderer_test.hosts_renderer(vms)
 	# renderer_test.nodesfile_renderer(nodes,default.NODE_VIRTUALBOX_VERSION)
 	# renderer_test.NSfile_renderer(lans, nodes, metadata)

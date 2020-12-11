@@ -1,0 +1,9 @@
+---
+# Service: unarchive
+
+  service: unarchive
+  parameter:
+    unarchive_local_file_path: /Users/hkwany/PycharmProjects/Conductor/services/binspace/binspace.tar.gz
+    # note if must being '/' in the end.
+    unarchive_remote_directory_path: /home/{{ USER }}
+

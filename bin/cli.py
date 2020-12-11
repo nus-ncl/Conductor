@@ -243,7 +243,7 @@ def Services_prompt_rough():
 def Services_prompt_detailed(service):
 	Service_key = ["service", "parameter"]
 	if service == '':
-		service_list = [None, None]
+		service_list = [None, {}]
 	else:
 		# parse the [service].yml file
 		yaml_content = yaml_parser.yaml_file_load(f"{default.conductor_path}/services/{service}/{service}")
@@ -251,6 +251,8 @@ def Services_prompt_detailed(service):
 		if not bool(yaml_content):
 			yaml_content['service']=service
 			parameters = {'Error': 'No Such Service'}
+		elif 'parameter' not in yaml_content:
+			parameters = {}
 		else:
 			parameters = copy.deepcopy(yaml_content['parameter'])
 			for key, value in yaml_content['parameter'].items():

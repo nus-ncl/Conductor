@@ -21,14 +21,15 @@ vboxmanage hostonlyif ipconfig {{ hostonly_network['name'] }} --ip {{ hostonly_n
 {%- if 'parameter' in service %}
 {#- For service that has parameter #}
 {%- if not 'Error' in service['parameter'] %}
-{% with parameter=service['parameter'] %}
+{#- MUST use 'service['parameter'], which has been customized by users, instead of using service_yml_content['parameter'] which is a configuration menu #}
+{% with parameter=service['parameter'], service_yml_content = yaml_service_load(service['name'])%}
 {%- include "%s/%s_node.j2" % (service['name'],service['name']) %}
 {%- endwith %}
 {%- endif %}
 {%- else %}
 {#- For service that doesn't have parameter #}
 {%- with service_yml_content = yaml_service_load(service['name']) %}
-{% include "%s/%s_node.j2" % (service['name'],service['name']) %}
+{%- include "%s/%s_node.j2" % (service['name'],service['name']) %}
 {%- endwith %}
 {%- endif %}
 {% endfor %}

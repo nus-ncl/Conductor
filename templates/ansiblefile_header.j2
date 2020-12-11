@@ -1,21 +1,29 @@
 - hosts: {{ vm['hostname'] }}
   gather_facts: true
-{#-vars_files:
-  {% for service in vm['service'] %}
-    - {{ conductor_path }}/vars/{{ service }}.yml
-  {% endfor %}
-#}
 {%- if vm['services']|length %}
-  vars:
+{%- set ns = namespace(vars=0) %}
 {%- for service in vm['services'] %}
-  {%- if service['parameter'] is not none and service['parameter']['Error'] is not defined %}
+  {%- if 'parameter' in service and service['parameter']['Error'] is not defined %}
+  {%- if ns.vars == 0 %}
+  vars:
+  {%- set ns.vars=1 %}
+  {%- endif %}
     {%- for key,value in service['parameter'].items() %}
+    {%- if value == None %}
+    {{ key }}: null
+    {%- else %}
     {{ key }}: {{ value }}
+    {%- endif %}
     {%- endfor %}
   {%- endif %}
 {%- endfor %}
 {%- else %}
   vars: null
 {%- endif %}
+
+{%- if vm['services']|length %}
   tasks:
+{%- else %}
+  tasks: null
+{%- endif %}
 

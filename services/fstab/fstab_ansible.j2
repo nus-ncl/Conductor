@@ -1,0 +1,41 @@
+    # Service: fstab (scripts for ansible)
+    - name: apt install dependency for fstab(nfs-common in order to use command 'mount' for NFS)
+      become: yes
+      become_user: root
+      apt:
+        {%- raw %}
+        name: "{{ item }}"
+        {%- endraw %}
+        state: present
+      loop:
+      {%- for dependency in service_yml_content['dependency'] %}
+        - {{ dependency }}
+      {%- endfor %}
+
+    - name: Create a dest directory if it does not exist
+      become: yes
+      become_user: root
+      file:
+        {%- raw %}
+        path: {{ fstab_dest_directory }}
+        {%- endraw %}
+        state: directory
+        # You must add a leading zero so that Ansible YAML parser knows it's an octal number
+        mode: '0755'
+
+    - name: add line to /etc/fstab
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/fstab
+        {%- raw %}
+        line: "{{ fstab_src_ip }}:{{ fstab_src_directory }} {{ fstab_dest_directory }} {{ fstab_opt }}"
+        {%- endraw %}
+        state: present
+
+    - name: mount /etc/fstab
+      become: yes
+      become_user: root
+      shell: mount -a
+      args:
+        executable: /usr/bin/bash

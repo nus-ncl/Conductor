@@ -1,0 +1,25 @@
+    # Service: django (scripts for ansible)
+    # Description: django using pip3
+
+    - name: apt install pip3
+      become: yes
+      become_user: root
+      apt:
+        {% raw %}
+        name: "{{ item }}"
+        {% endraw %}
+        state: present
+      loop:
+        {%- for dependency in service_yml_content['dependency'] %}
+        - {{ dependency }}
+        {%- endfor %}
+
+    - name: pip install django
+      pip:
+        {% raw %}
+        name: "{{ item }}"
+        {% endraw %}
+        extra_args: --user
+        executable: pip3
+      loop:
+        - django

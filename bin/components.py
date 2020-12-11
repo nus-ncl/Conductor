@@ -6,7 +6,7 @@
 '''
 
 '''
-Design Desciplines:
+Design Disciplines:
 For initialization for each component. 
 	If the key's value's type is simple:
 		If the key's value's type is a string, None
@@ -505,12 +505,8 @@ class node:
 		detailed_service_list = []
 		for service_dict in service_dict_list:
 			detailed_service_entry = detailed_service()
-			# if dict is not empty
-			if bool(service_dict):
-				detailed_service_entry.set_name(service_dict['service'])
-				detailed_service_entry.set_parameter(service_dict['parameter'])
-			else:
-				pass
+			detailed_service_entry.set_name(service_dict['service'])
+			detailed_service_entry.set_parameter(service_dict['parameter'])
 			detailed_service_list.append(detailed_service_entry)
 		self.services = detailed_service_list
 
@@ -744,12 +740,8 @@ class vm:
 		detailed_service_list = []
 		for service_dict in service_dict_list:
 			detailed_service_entry = detailed_service()
-			# if dict is not empty
-			if bool(service_dict):
-				detailed_service_entry.set_name(service_dict['service'])
-				detailed_service_entry.set_parameter(service_dict['parameter'])
-			else:
-				pass
+			detailed_service_entry.set_name(service_dict['service'])
+			detailed_service_entry.set_parameter(service_dict['parameter'])
 			detailed_service_list.append(detailed_service_entry)
 		self.services = detailed_service_list
 

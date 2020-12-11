@@ -1,0 +1,57 @@
+    # Service: user_group (scripts for ansible)
+
+    {%- if service['parameter']['user_group_username'] is not none or service['parameter']['user_group_groupname'] is not none %}
+    - name: create new group
+      become: yes
+      become_user: root
+      group:
+        {%- if service['parameter']['user_group_groupname'] is not none %}
+        {%- raw %}
+        name: {{ user_group_groupname }}
+        {%- endraw %}
+        {%- else %}
+        {%- raw %}
+        name: {{ user_group_username }}
+        {%- endraw %}
+        {%- endif %}
+        {%- if service['parameter']['user_group_gid'] is not none %}
+        {%- raw %}
+        gid: {{ user_group_gid }}
+        {%- endraw %}
+        {%- endif %}
+        state: present
+
+    {%- if service['parameter']['user_group_username'] is not none %}
+    - name: create new user under the groups and/or sudo
+      become: yes
+      become_user: root
+      user:
+        {%- raw %}
+        name: {{ user_group_username }}
+        {%- endraw %}
+        {%- if service['parameter']['user_group_shell'] is not none %}
+        {%- raw %}
+        shell: {{ user_group_shell }}
+        {%- endraw %}
+        {%- endif %}
+        {%- if service['parameter']['user_group_home'] == true %}
+        create_home: yes
+        {%- else %}
+        create_home: no
+        {%- endif %}
+        {%- if service['parameter']['user_group_uid'] is not none %}
+        {%- raw %}
+        uid: {{ user_group_uid }}
+        {%- endraw %}
+        {%- endif %}
+        {%- if service['parameter']['user_group_sudo'] == true %}
+        {%- raw %}
+        groups: {{ user_group_groupname }},sudo
+        {%- endraw %}
+        {%- else %}
+        {%- raw %}
+        groups: {{ user_group_groupname }}
+        {%- endraw %}
+        {%- endif %}
+    {%- endif %}
+    {%- endif %}

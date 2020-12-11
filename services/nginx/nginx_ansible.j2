@@ -7,7 +7,7 @@
     #   architecture: amd64
     {#- using raw: {{ item }}, {{ ansible_facts['env']['USER'] }}, all parameters -#}
     {#- without raw: all configurations in [service].yml file -#}
-    {%- if service['dependency'] is not none %}
+    {%- if service_yml_content['dependency'] is not none %}
     - name: install dependencies
       become: yes
       become_user: root
@@ -18,7 +18,7 @@
         state: present
         update_cache: yes
       loop:
-      {%- for dependency in service['dependency'] %}
+      {%- for dependency in service_yml_content['dependency'] %}
         - {{ dependency }}
       {%- endfor %}
     {%- endif %}
@@ -35,7 +35,7 @@
       shell:
         argv:
           - ./configure
-      {%- for configure in service['configure']%}
+      {%- for configure in service_yml_content['configure']%}
           - {{ configure }}
       {%- endfor %}
       {%- raw %}

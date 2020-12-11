@@ -1,0 +1,6 @@
+# Service: fstab (scripts for node)
+sudo apt-get install -y {{ service_yml_content['dependency']|join(" ") }}
+sudo mkdir -p {{ parameter['fstab_dest_directory'] }}
+sudo chmod 755 {{ parameter['fstab_dest_directory'] }}
+if ! grep '{{ parameter['fstab_src_ip'] }}:{{ parameter['fstab_src_directory'] }} {{ parameter['fstab_dest_directory'] }} {{ parameter['fstab_opt'] }}' /etc/fstab; then echo '{{ parameter['fstab_src_ip'] }}:{{ parameter['fstab_src_directory'] }} {{ parameter['fstab_dest_directory'] }} {{ parameter['fstab_opt'] }}' | sudo tee -a /etc/fstab; else echo 'exists!'; fi
+sudo mount -a

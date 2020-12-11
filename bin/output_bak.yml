@@ -82,9 +82,7 @@ vm:
     host_port: null
   services:
   - name: essentials_common
-  - name: null
-    parameter: null
-
+  - name: essentials_common
   - name: user_group
     parameter:
       user_group_username: null

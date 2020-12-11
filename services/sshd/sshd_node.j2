@@ -1,0 +1,4 @@
+# Service: sshd (scripts for node)
+sudo apt-get install -y {{ service_yml_content['dependency']|join(" ") }}
+
+

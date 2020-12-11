@@ -3,16 +3,11 @@ version: '1.0'
 metadata:
   teamname: null
   experimentname: null
-  lans_num: 1
+  lans_num: 0
   nodes_num: 1
   vms_num: 1
   reserved_nodes: null
-lan:
-- name: null
-  endpoints:
-  - name: null
-    ip: null
-    netmask: 255.255.255.0
+lan: []
 node:
 - name: null
   os:
@@ -22,14 +17,23 @@ node:
     version: '16.04'
     architecture: amd64
   network:
-    hostonly_network:
-    - name: null
-      ip: null
-      netmask: 255.255.255.0
+    hostonly_network: []
     internal_network: []
   services:
+  - name: essentials_common
+    parameter: {}
   - name: null
     parameter: {}
+  - name: thttp
+    parameter:
+      Error: No Such Service
+  - name: nginx
+    parameter:
+      nginx_version: 1.3.9
+      nginx_port: '81'
+  - name: b
+    parameter:
+      Error: No Such Service
 vm:
 - name: null
   node: null
@@ -40,15 +44,7 @@ vm:
     release: ubuntu
     version: '16.04'
     architecture: amd64
-  network:
-  - gateway: null
-    ip: null
-    netmask: 255.255.255.0
-    type: hostonly
-  - gateway: null
-    ip: null
-    netmask: 255.255.255.0
-    type: internal
+  network: []
   vrde:
     enabled: true
     port: '12345'
@@ -56,7 +52,14 @@ vm:
     guest_port: null
     host_port: null
   services:
-  - name: null
+  - name: essentials_common
     parameter: {}
   - name: null
     parameter: {}
+  - name: thttp
+    parameter:
+      Error: No Such Service
+  - name: nginx
+    parameter:
+      nginx_version: 1.4.1
+      nginx_port: '82'

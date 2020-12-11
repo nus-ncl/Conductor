@@ -1,0 +1,31 @@
+    # Service: mariadb (scripts for ansible)
+
+    {% raw %}
+    - name: apt install python2, python3, python-dev, python3-dev pip2 & pip3
+      become: yes
+      become_user: root
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python
+        - python-pip
+        - python-dev
+        - python3
+        - python3-pip
+        - python3-dev
+    {% endraw %}
+
+    - name: apt install
+      become: yes
+      become_user: root
+      apt:
+        {% raw %}
+        name: "{{ item }}"
+        {% endraw %}
+        state: present
+      loop:
+        {%- for dependency in service_yml_content['dependency'] %}
+        - {{ dependency }}
+        {%- endfor %}
+

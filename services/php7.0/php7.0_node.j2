@@ -1,0 +1,6 @@
+# Service: php7.0 (scripts for node)
+sudo add-apt-repository ppa:ondrej/php
+sudo apt-get update
+sudo apt-get install -y {{ service_yml_content['dependency']|join(" ") }}
+
+

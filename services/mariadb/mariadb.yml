@@ -1,0 +1,7 @@
+---
+# Service: mariadb
+
+  service: mariadb
+  dependency:
+    - libmysqlclient-dev
+    - mariadb-server

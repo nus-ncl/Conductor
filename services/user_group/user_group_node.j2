@@ -1,0 +1,35 @@
+# Service: user_group (scripts for node)
+# group
+{%- if parameter['user_group_groupname'] is not none %}
+sudo groupadd {{ parameter['user_group_groupname'] }}
+{%- if parameter['user_group_gid'] is not none %}
+sudo groupmod -g {{ parameter['user_group_gid'] }} {{ parameter['user_group_groupname'] }}
+{%- endif %}
+{%- endif %}
+
+# user
+{%- if parameter['user_group_username'] is not none %}
+{%- if parameter['user_group_home'] == true %}
+sudo useradd -m {{ parameter['user_group_username'] }}
+{%- else %}
+sudo useradd {{ parameter['user_group_username'] }}
+{%- endif %}
+{%- if parameter['user_group_shell'] is not none %}
+sudo usermod --shell {{ parameter['user_group_shell'] }} {{ parameter['user_group_username'] }}
+{%- endif %}
+{%- if parameter['user_group_uid'] is not none %}
+sudo usermod -u {{ parameter['user_group_uid'] }} {{ parameter['user_group_username'] }}
+{%- endif %}
+{%- if parameter['user_group_groupname'] is not none %}
+sudo usermod -aG {{ parameter['user_group_groupname'] }} {{ parameter['user_group_username'] }}
+{%- else %}
+sudo usermod -aG {{ parameter['user_group_username'] }} {{ parameter['user_group_username'] }}
+{%- endif %}
+{%- if parameter['user_group_sudo'] == true %}
+{%- if parameter['user_group_groupname'] is not none %}
+sudo echo "{{ parameter['user_group_username'] }}:{{ parameter['user_group_groupname'] }}" | sudo tee --append /etc/sudoers
+{%- else %}
+sudo echo "{{ parameter['user_group_username'] }}:{{ parameter['user_group_username'] }}" | sudo tee --append /etc/sudoers
+{%- endif %}
+{%- endif %}
+{%- endif %}

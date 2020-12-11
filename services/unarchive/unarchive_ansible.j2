@@ -1,0 +1,6 @@
+    # Service: unarchive (scripts for ansible)
+    - name: unarchive
+      unarchive:
+        src: {{ unarchive_local_file_path }}
+        copy: yes
+        dest: {{ unarchive_remote_directory_path }}

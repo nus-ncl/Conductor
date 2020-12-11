@@ -1,0 +1,13 @@
+# Service: apache2 (scripts for node)
+sudo apt-get install -y apache2
+sudo sed -i 's/Listen 80/Listen {{ parameter['apache2_port'] }}/g' /etc/apache2/ports.conf
+sudo sed -i 's/VirtualHost \*:80/VirtualHost \*:{{ parameter['apache2_port'] }}/g' /etc/apache2/sites-enabled/000-default.conf
+sudo service apache2 restart
+{#
+if ! grep 'Listen 2080' /etc/apache2/apache2.conf; then echo 'Listen 2080' | sudo tee -a /etc/apache2/apache2.conf; else echo 'exists!'; fi
+sudo sed -i 's/:80/:2080/g' /etc/apache2/sites-available/000-default.conf
+sudo a2dissite 000-default
+sudo a2ensite 000-default
+sudo systemctl reload apache2
+sudo systemctl restart apache2
+#}

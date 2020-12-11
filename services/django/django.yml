@@ -1,0 +1,6 @@
+---
+# Service: django
+
+  service: django
+  dependency:
+    - python3-pip

@@ -1,0 +1,34 @@
+    # Service: python (scripts for ansible)
+
+    - name: apt install python2, python3, python-dev, python3-dev pip2 & pip3
+      become: yes
+      become_user: root
+      apt:
+        {% raw %}
+        name: "{{ item }}"
+        {% endraw %}
+        state: present
+      loop:
+        {%- for dependency in service_yml_content['dependency'] %}
+        - {{ dependency }}
+        {%- endfor %}
+
+
+    - name: apt install
+      become: yes
+      become_user: root
+      apt:
+        {% raw %}
+        name: "{{ item }}"
+        {% endraw %}
+        state: present
+      loop:
+        {%- for dependency in service_yml_content['dependency'] %}
+        - {{ dependency }}
+        {%- endfor %}
+
+    - name: remove purge php7.4*
+      become: yes
+      become_user: root
+      shell:
+        cmd: apt-get -y purge php7.4*

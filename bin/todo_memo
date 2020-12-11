@@ -1,0 +1,4 @@
+sudo iptables -t nat -A POSTROUTING -s 192.168.1.0/255.255.255.0 -j MASQUERADE
+sudo route add -net 172.16.1.0/24 gw 172.16.10.101
+sudo sysctl -w net.ipv4.ip_forward=1
+ssh -fNT -L 0.0.0.0:22345:localhost:22 vagrant@192.168.1.100
