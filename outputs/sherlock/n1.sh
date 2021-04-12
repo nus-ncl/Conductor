@@ -15,12 +15,21 @@ sudo apt-get install software-properties-common
 sudo apt-add-repository --yes --update ppa:ansible/ansible
 sudo apt-get -y install ansible
 
+# nfs server & exports
+sudo apt install nfs-kernel-server
+echo "/mnt/sda3/attribution *(rw,insecure,no_subtree_check,no_root_squash)" >> /etc/exports
+sudo exportfs -a
+sudo systemctl restart nfs-kernel-server
 
 
 # attribution
 # first prepare attribution.tar.gz at /mnt/sda3/
 tar -xzvf /mnt/sda3/attribution.tar.gz -C /mnt/sda3/
 if ! grep "/mnt/sda3/attribution *(rw,insecure,no_subtree_check,no_root_squash)" /etc/exports; then echo "/mnt/sda3/attribution *(rw,insecure,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports; else echo 'exists!'; fi
+
+# hosts
+sudo echo -e "172.16.1.101\tklara.ncl.sg" >> /etc/hosts
+
 
 
 

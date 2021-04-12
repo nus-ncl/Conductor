@@ -182,7 +182,7 @@
     - name: configure apache2
       become: no
       become_user: root
-      script: /home/localuser/Conductor/services/apache2/script.sh
+      script: /home/localuser/Conductor/services/apache2/apache2_script.sh
 
     - name: reload service apache2, in all cases
       become: yes
@@ -260,7 +260,7 @@
         dest: /home/{{ ansible_env.USER }}/sherlock_VM1_all_grants.sql
 
     - name: import databases & grants
-      script: /home/localuser/Conductor/services/mariadb/script.sh
+      script: /home/localuser/Conductor/services/mariadb/mariadb_script.sh
 
     - name: decompression klara project to /var/ 
       become: yes
@@ -461,7 +461,7 @@
         - libssl-dev
         - python3-pip
 
-    # service: django2
+    # service: django
     - name: pip install django
       pip:
        name: "{{ item }}"
@@ -472,7 +472,7 @@
 
     - name: decompression django folder to home/
       unarchive:
-        src: /home/localuser/Conductor/services/django2/sherlock-website-django.tar.gz
+        src: /home/localuser/Conductor/services/django/sherlock-website-django.tar.gz
         copy: yes
         dest: /home/{{ ansible_env.USER }}/
 

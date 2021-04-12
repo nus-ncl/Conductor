@@ -162,7 +162,8 @@
       become_user: root
       apt:
         deb: /home/{{ ansible_env.USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
-
+        # sudo dpkg -i libssl
+        # if meet 'Breaks eisting package 'libssl-dev' dependency libssl1.0.0(=1.0.2g-1ubuntu4.13))'
     - name: delete libssl from home/
       file:
         path: /home/{{ ansible_env.USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
@@ -224,7 +225,7 @@
     - name: configure apache2
       become: no
       become_user: root
-      script: /Users/hkwany/PycharmProjects/Conductor/services/apache2/script.sh
+      script: /Users/hkwany/PycharmProjects/Conductor/services/apache2/apache2_script.sh
 
     - name: reload service apache2, in all cases
       become: yes
@@ -263,6 +264,8 @@
         state: present
       loop:
         - nfs-common
+        # - libssl-dev
+        # - libssl-doc
         - libmysqlclient-dev
         - python-dev
         - mariadb-server
@@ -288,6 +291,7 @@
         group: root
         state: link
 
+    # TODO
     - name: copy my_config.h in place if missing
       become: yes
       become_user: root
@@ -310,7 +314,7 @@
         dest: /home/{{ ansible_env.USER }}/sherlock_VM1_all_grants.sql
 
     - name: import databases & grants
-      script: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/script.sh
+      script: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/mariadb_script.sh
 
     - name: delete sherlock_VM1_all_databases.sql from home/
       file:
@@ -451,6 +455,7 @@
            export WORKON_HOME='~/.virtualenv'
 
            export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+           # /bin/python3
 
            . /home/projects/.local/bin/virtualenvwrapper.sh
 
@@ -526,7 +531,7 @@
         - software-properties-common
     
 
-    # service: django2 using pip3
+    # service: django using pip3
     
     - name: apt install pip3
       become: yes
@@ -548,7 +553,7 @@
 
     - name: decompression django folder to home/
       unarchive:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/django2/sherlock-website-django.tar.gz
+        src: /Users/hkwany/PycharmProjects/Conductor/services/django/sherlock-website-django.tar.gz
         copy: yes
         dest: /home/{{ ansible_env.USER }}/
 
@@ -656,7 +661,7 @@
     - name: expand swap
       become: yes
       become_user: root
-      script: /home/localuser/Conductor/services/fstab/swap.sh
+      script: /home/localuser/Conductor/services/swap/swap.sh
 
     - name: copy squirrel_framework to home/
       become: no
@@ -675,6 +680,9 @@
       file:
         path: /home/{{ ansible_env.USER }}/squirrel_framework-0.1.12-py3-none-any.whl
         state: absent
+
+#    - name: Running server
+#      shell: python3 ~/sherlock-website-django/manage.py runserver 0.0.0.0:8000
 
 
 

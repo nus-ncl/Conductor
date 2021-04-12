@@ -162,7 +162,8 @@
       become_user: root
       apt:
         deb: /home/{{ ansible_env.USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
-
+        # sudo dpkg -i libssl
+        # if meet 'Breaks eisting package 'libssl-dev' dependency libssl1.0.0(=1.0.2g-1ubuntu4.13))'
     - name: delete libssl from home/
       file:
         path: /home/{{ ansible_env.USER }}/libssl1.0.0_1.0.2g-1ubuntu4.16_amd64.deb
@@ -194,9 +195,8 @@
         copy: yes
         dest: /opt/
 
-
     # service: apache2
-
+    
     - name: apt install
       become: yes
       become_user: root
@@ -205,7 +205,7 @@
         state: present
       loop:
         - apache2
-
+    
 
     - name: Recursively remove directory
       become: yes
@@ -225,19 +225,19 @@
     - name: configure apache2
       become: no
       become_user: root
-      script: /Users/hkwany/PycharmProjects/Conductor/services/apache2/script.sh
+      script: /Users/hkwany/PycharmProjects/Conductor/services/apache2/apache2_script.sh
 
     - name: reload service apache2, in all cases
       become: yes
       become_user: root
-      systemd:
+      service:
         name: apache2
         state: reloaded
 
     - name: restart service apache2, in all cases
       become: yes
       become_user: root
-      systemd:
+      service:
         name: apache2
         state: restarted
 
@@ -248,9 +248,14 @@
       # 3. Python 2.7
       # 4. Python virtualenv package(virtualevnwrapper here)
       # 5. Yara (installed on workers)
+      #
+      # user & password:
+      #     user: user
+      #	    password: SjhX9Obv8VIgN05cRtqK
+
 
     # service: mariadb
-
+    
     - name: apt install essentials for klara
       become: yes
       become_user: root
@@ -259,10 +264,12 @@
         state: present
       loop:
         - nfs-common
+        # - libssl-dev
+        # - libssl-doc
         - libmysqlclient-dev
         - python-dev
         - mariadb-server
-
+    
 
     - name: Extract libmariadb.tar.gz into /usr/lib/x86_64-linux-gnu/
       become: yes
@@ -306,7 +313,7 @@
         dest: /home/{{ ansible_env.USER }}/sherlock_VM1_all_grants.sql
 
     - name: import databases & grants
-      script: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/script.sh
+      script: /Users/hkwany/PycharmProjects/Conductor/services/mariadb/mariadb_script.sh
 
     - name: delete sherlock_VM1_all_databases.sql from home/
       file:
@@ -409,7 +416,7 @@
         uid: 500
         groups: projects,sudo
 
-    - name: copy pip_requirements for klara in place
+    - name: copy pip_requirements for klara to /projects
       become: yes
       become_user: projects
       copy:
@@ -447,6 +454,7 @@
            export WORKON_HOME='~/.virtualenv'
 
            export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+           # /bin/python3
 
            . /home/projects/.local/bin/virtualenvwrapper.sh
 
@@ -461,6 +469,13 @@
       pip:
         requirements=~/pip_requirements.txt
         virtualenv=/home/projects/.virtualenv/klara
+
+    - name: pip_requirements from /projects
+      become: yes
+      become_user: projects
+      file:
+        path: ~/pip_requirements.txt
+        state: absent
 
     # service: supervisor
     - name: pip install supervisor
@@ -503,7 +518,7 @@
       apt:
         update_cache: yes
 
-
+    
     - name: apt install essentials
       become: yes
       become_user: root
@@ -513,9 +528,9 @@
       loop:
         - net-tools
         - software-properties-common
+    
 
-
-    # service: django2
+    # service: django using pip3
     
     - name: apt install pip3
       become: yes
@@ -537,7 +552,7 @@
 
     - name: decompression django folder to home/
       unarchive:
-        src: /Users/hkwany/PycharmProjects/Conductor/services/django2/sherlock-website-django.tar.gz
+        src: /Users/hkwany/PycharmProjects/Conductor/services/django/sherlock-website-django.tar.gz
         copy: yes
         dest: /home/{{ ansible_env.USER }}/
 
@@ -645,7 +660,7 @@
     - name: expand swap
       become: yes
       become_user: root
-      script: /home/localuser/Conductor/services/fstab/swap.sh
+      script: /home/localuser/Conductor/services/swap/swap.sh
 
     - name: copy squirrel_framework to home/
       become: no
@@ -665,5 +680,7 @@
         path: /home/{{ ansible_env.USER }}/squirrel_framework-0.1.12-py3-none-any.whl
         state: absent
 
+#    - name: Running server
+#      shell: python3 ~/sherlock-website-django/manage.py runserver 0.0.0.0:8000
 
 

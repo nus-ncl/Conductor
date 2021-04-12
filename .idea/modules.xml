@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../Client_NCL/.idea/Client.iml" filepath="$PROJECT_DIR$/../Client_NCL/.idea/Client.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Conductor.iml" filepath="$PROJECT_DIR$/.idea/Conductor.iml" />
+      <module fileurl="file://$USER_HOME$/OctoBot/Octo-Bot/upload-bot-http/.idea/download-bot.iml" filepath="$USER_HOME$/OctoBot/Octo-Bot/upload-bot-http/.idea/download-bot.iml" />
     </modules>
   </component>
 </project>
