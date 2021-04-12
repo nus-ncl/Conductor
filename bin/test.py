@@ -1,45 +1,14 @@
-import sys
-import matplotlib.pyplot as plt
-sys.path.append('../defaults')
-import default
-import cli
-import math
-import yaml_parser
 import numpy as np
 
-
-class a:
-	def output(self):
-		return 'this is a'
-
-class b:
-	def output(self):
-		return 'this is b'
-
-class metadata:
-	# def __init__(self):
-	# 	self.teamname = None
-	# 	self.experimentname = None
-	# 	self.lans_num = 0
-	# 	self.nodes_num = 0
-	# 	self.vms_num = 0
-	# 	self.reserved_nodes = None
-
-	def __init__(self, teamname=None, experimentname=None, lans_num=0, nodes_num=0, vms_num=0, reserved_nodes=None):
-		self.teamname = teamname
-		self.experimentname = experimentname
-		self.lans_num = lans_num
-		self.nodes_num = nodes_num
-		self.vms_num = vms_num
-		self.reserved_nodes = reserved_nodes
-
-node = {'name': None,
-               'os': {'type': 'node', 'platform': 'Linux', 'release': 'ubuntu', 'version': '16.04',
-                      'architecture': 'amd64'},
-               'network': {'hostonly_network': [{'name': 'vboxnet1', 'ip': '172.16.1.2', 'netmask': '255.255.255.0'}],
-                           'internal_network': [{'name': 'vboxnet2', 'ip': '172.16.2.2', 'netmask': '255.255.255.0'}]},
-               'services': ['nginx', 'nfs-client']}
+def similarity(x,y):
 
 if __name__ == '__main__':
-	service = ['', '1', 'thttp', 'nginx']
-	yaml_parser.yaml_file_dump(service,'user_definition')
+	z = [[0.53,0.85],[0.60,0.80],[-0.78,-0.62]]
+
+
+	z_exp = [math.exp(i) for i in z]
+	z_sum = sum(z_exp)
+	z_prob = [round(i/z_sum,3) for i in z_exp ]
+	all = sum(z_prob)
+	print(z_prob)
+	print(all)
