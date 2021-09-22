@@ -1,6 +1,3 @@
-"""
-Contains everything regarding conductor"s CLI.
-"""
 import sys
 sys.path.append('../defaults')
 import user_commands
