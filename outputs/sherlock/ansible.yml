@@ -393,7 +393,7 @@
       become: yes
       become_user: root
       lineinfile:
-        path: /etc/fstab
+        path: /etc/hosts
         # YAML requires escape strings('\') to be enclosed by double-quotes(" ")
         line: "127.0.0.1\tklara.ncl.sg"
         state: present

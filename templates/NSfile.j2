@@ -24,7 +24,7 @@ set lanstr ""
 append lanstr "${{ node }} "
 {%- endfor %}
 # Change the BW and delay if you want, 100Mb, 0ms by default
-set {{ lan['name'] }} [$ns make-lan "$lanstr" 100Mb 0ms]
+set {{ lan['name'] }} [$ns make-lan "$lanstr" 10Gb 0ms]
 {% endfor %}
 
 # Set node ip.
