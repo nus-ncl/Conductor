@@ -5,13 +5,27 @@ import os
 
 # debug
 debug = 1
+# specification
+PLATFORM = 'deter'
+FORMAT = 'virtual'
+# NSfile
+# lan number of an experiment
+LAN_NUMBER = 1
+# node number of an experiment
+NODE_NUMBER = 1
+# reserve node
+RESERVE_NODE = []
+# RESERVE_NODE = pc2b,pd3e
+
+IP_POOL_START = 100
+IP_POOL_END = 110
 
 # Conductor path
 file_path = os.path.dirname(os.path.realpath(__file__))
 conductor_path = os.path.dirname(file_path)
 
 # Versioning
-VERSION = '1.0'
+VERSION = 1.0
 NODE_VIRTUALBOX_VERSION = '5.2.12'
 
 # Logging
@@ -23,8 +37,8 @@ ACTIVITY_DIRECTORY = os.path.join('activity')
 TEMPLATE_DIRECTORY = os.path.join('templates', 'templates')
 
 # Files locations
-CONFIG_FILE = "../config/sherlock/configure.cfg"
-GENERATED_CONFIG_FILE = "../config/sherlock/gen_configure.cfg"
+CONFIG_FILE = "specification/sherlock/configure.cfg"
+GENERATED_CONFIG_FILE = "specification/sherlock/gen_configure.cfg"
 NS_FILE = "../outputs/sherlock/NSfile"
 VAGRANT_FILE = "../outputs/sherlock/Vagrantfile"
 HOSTS_FILE = "../outputs/sherlock/hosts"
@@ -33,8 +47,8 @@ NODES_PATH = "../outputs/sherlock/"
 CLIENT_FILE = "../outputs/sherlock/client.xml"
 DOCKER_FILE = "../outputs/sherlock/dockerfile"
 
-CONFIG_TEST_FILE = "../config/test/configure_test.cfg"
-GENERATED_TEST_CONFIG_FILE = "../config/test/gen_test_configure.cfg"
+CONFIG_TEST_FILE = "specification/test/configure_test.cfg"
+GENERATED_TEST_CONFIG_FILE = "specification/test/gen_test_configure.cfg"
 NS_TEST_FILE = "../outputs/test/NSfile_test"
 VAGRANT_TEST_FILE = "../outputs/test/Vagrantfile_test"
 HOSTS_TEST_FILE = "../outputs/test/hosts_test"

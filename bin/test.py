@@ -1,14 +1,26 @@
-import numpy as np
+import sys
+import os
 
-def similarity(x,y):
+class Student(object):
+	def __init__(self):
+		self.__score=None
+		self._score=None
+		self.score=1
+
+	def get_score(self):
+		return self.__score
+
+	def set_score(self, value):
+		if not isinstance(value, int):
+			raise ValueError('score must be an integer!')
+		if value < 0 or value > 100:
+			raise ValueError('score must between 0 ~ 100!')
+		self._score = value
 
 if __name__ == '__main__':
-	z = [[0.53,0.85],[0.60,0.80],[-0.78,-0.62]]
-
-
-	z_exp = [math.exp(i) for i in z]
-	z_sum = sum(z_exp)
-	z_prob = [round(i/z_sum,3) for i in z_exp ]
-	all = sum(z_prob)
-	print(z_prob)
-	print(all)
+	# print(sys.path)
+	# print('Python %s on %s' % (sys.version, sys.platform))
+	# print(default.DEFAULT_VM_OS)
+	print(os.environ['PYTHONPATH'])
+	print('--')
+	print(sys.path)
