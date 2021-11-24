@@ -1,0 +1,20 @@
+set ns [new Simulator]
+
+source tb_compat.tcl
+
+# Add nodes
+set n1 [$ns node]
+
+# Set node OS from saved image
+tb-set-node-os $n1 Ubuntu1604-64-STD
+
+set lan0 [$ns make-lan "$n1" 10Gb 0ms]
+
+# Set node ip.
+tb-set-ip-lan $n1 $lan0 172.16.10.101
+
+# Set route and adjust configure.
+$ns rtproto Static
+
+# Go!
+$ns run

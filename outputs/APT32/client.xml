@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Client>
+  <VM>
+    <Machine name="attacker_and_victim" uuid="{1d201bff-d69d-46d6-bd60-4d768bd244a7}" OSType="Windows" Node="n1" ExperimentName="malware" TeamName="TechDemo">
+      <RemoteDisplay enabled="true">
+        <VRDEProperties>
+          <Property name="TCP/Address" value="0.0.0.0"/>
+          <Property name="TCP/Ports" value="12345"/>
+        </VRDEProperties>
+      </RemoteDisplay>
+      <Network>
+        <Adapter slot="0" enabled="true" MACAddress="0800275F82B1">
+  <!--        Port Forwarding is default to NAT-->
+          <NAT enabled="true">
+            <ForwardingNum>1</ForwardingNum>
+            <Forwarding name="ssh" proto="1" hostip="0.0.0.0" hostport="2201" guestport="22"/>
+          </NAT>
+        </Adapter>
+      </Network>
+    </Machine>
+  </VM>
+  <NODES>
+    <Node name="n1" OSType="Ubuntu1604-64-STD" ExperimentName="malware" TeamName="TechDemo">
+      <VNC enabled="true">
+        <VNCPort>5901</VNCPort>
+      </VNC>
+    </Node>
+  </NODES>
+</Client>
+

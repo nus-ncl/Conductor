@@ -1,0 +1,72 @@
+---
+  version: 1.0
+  properties:
+    platform: deter
+    format: virtual
+  metadata:
+    teamname: TechDemo
+    experimentname: APT32
+    lan_num: 1
+    node_num: 1
+    vm_num: 1
+    reserve_node: null
+  lan:
+    - name: lan1
+      endpoints:
+        - name: n1
+          ip: 172.16.10.101
+          netmask: 255.255.255.0
+  node:
+    - name: n1
+      connectivity: null
+      os:
+        platform: Linux
+        release: ubuntu
+        version: 16.04
+        bit: 64
+      hostonly_network:
+        - name: vboxnet0
+          ip: 192.168.56.100
+          netmask: 255.255.255.0
+      internal_network: null
+      prerequisite:
+        - ansible
+        - attribution
+      event: null
+
+  vm:
+    - name: attacker_and_victim
+      node: n1
+      provider: virtualbox
+      os:
+        platform: Windows # Linux
+        release: Windows # Ubuntu/CentOS
+        version: 10
+        bit: 64
+      network:
+        - name: vboxnet0
+          type: hostonly
+          ip: 192.168.56.100
+          netmask: 255.255.255.0
+          gateway: 192.168.56.1
+      vrde:
+        enabled: True
+        port: 12345
+      port_forwarding:
+        guest_port: 22,80
+        host_port: 2202,8080
+      prerequisite:
+        - essentials_common
+      event:
+        - apache install
+        - python3 install
+        - apache2 run
+        - download flash_update.zip
+        - unzip flash_update.zip
+        - python3 system.py
+        - webpage data.html
+  file:
+    - CVE/APT32/flash_update.zip
+    - CVE/APT32/news.zip
+
+

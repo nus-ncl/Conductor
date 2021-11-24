@@ -1,0 +1,8 @@
+[attacker_and_victim]
+192.168.56.100
+[apt_attacker:vars]
+ansible_connection=winrm
+ansible_password=vagrant
+ansible_user=vagrant
+ansible_port=5985
+ansible_python_interpreter=/usr/bin/python3

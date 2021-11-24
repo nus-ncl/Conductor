@@ -1,0 +1,14 @@
+---
+
+- hosts: apt_victim
+  gather_facts: no
+  tasks:
+#  - name: Open article.html
+#    ansible.windows.win_powershell:
+#      script: |
+#        explorer "http://localhost/news/article.html"
+#
+  - name: Decompress flash_update.zip
+    community.windows.win_unzip:
+      src: C:\Users\vagrant\Downloads\flash_update.zip
+      dest: C:\Users\vagrant\Downloads\

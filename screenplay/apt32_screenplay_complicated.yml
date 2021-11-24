@@ -1,0 +1,87 @@
+---
+# Assumptions: 1 lan, 1 node, deter, virtual
+metadata:
+  teamname: TechDemo
+  experimentname: APT32
+  host_num: 3
+  network_num: 2
+
+host:
+  - name: attacker_and_victim
+    #    properties:
+    #      platform: deter
+    #      machine: virtual
+    os: windows_10_64 # system_version_bit
+    service:
+      - apache2
+      - python3
+    objects:
+      - news.zip
+      - flash_update.zip
+
+  - name: test1
+    os: windowserver_9_32
+
+  - name: test2
+    os: ubuntu_14_32
+
+network:
+# currently not support describing lan on more than 1 nodes.
+  lan:
+    - name: lan1
+      endpoints:
+        # one node in various lans meaning gateway
+        - attacker_and_victim
+        - test1
+    - name: lan2
+      endpoints:
+        - attacker_and_victim
+        - test2
+activity:
+  - timestamp: t + 0 + 0s
+    description: "Configure the webserver, install the services"
+    subject: attacker_and_victim
+    object: attacker_and_victim
+    event:
+      - install [service]
+      - run apache2
+
+  - timestamp: t + 1 + 0s
+    description: "Open the malicious webpage article.html"
+    subject: attacker_and_victim
+    object: article.html
+    event:
+      - openwebpage object
+
+  - timestamp: t + 1 + 15s
+    description: "Once the video player fails to load and the pop-up asks to update your flash player,
+  Click the picture of the Adobe flash upgrade to trigger the download of flash_update.zip"
+    subject: attacker_and_victim
+    object: flash_update.zip
+    event:
+      - download object
+
+  - timestamp: t + 2 + 15s
+    description: "Decompress flash_update.zip to release the system.py"
+    subject: attacker_and_victim
+    object: flash_update.zip
+    event:
+      - unzip object
+
+  - timestamp: t + 3 + 15s
+    description: "Run system.py via Python3 to generate dataexfil.txt"
+    subject: attacker_and_victim
+    object: system.py
+    event:
+      - python3 object
+
+  - timestamp: t + 3 + 30s
+    description: "Open data.html to view the infiltrated data captured by the python file"
+    subject: attacker_and_victim
+    object: data.html
+    event:
+      - openwebpage object
+      - printwebpage object
+  
+
+

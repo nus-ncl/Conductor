@@ -1,0 +1,103 @@
+---
+
+- hosts: apt_victim
+  gather_facts: no
+  tasks:
+  - name: Run system.py to generate dataexfil.txt
+    ansible.windows.win_powershell: 
+      script: |
+        python C:\Users\vagrant\Downloads\system.py
+      #chdir: \Users\vagrant\AppData\Local\Programs\Python\Python39\
+
+#  - name: Open data.html
+#    ansible.windows.win_powershell: 
+#      script: |
+#        explorer "https://localhost/news/data.html"
+
+#  - name: Uninstall the service of Apache 2.2.4
+#    ansible.windows.win_powershell: 
+#      script: |
+#        httpd -k uninstall -n "Apache2.2.4"
+#    register: command_out
+
+#  - name: Stop Apache 2.2.4
+#    ansible.windows.win_powershell: 
+#      script: |
+#        httpd -k stop -n "Apache2.2.4"
+#    register: command_out
+
+
+#  - name: Print Register
+#    debug:
+#      var: command_out
+
+#  - name: Copy File
+#    win_copy:
+#      src: C:\Users\vagrant\src.txt
+#      dest: C:\dst.txt
+#      remote_src: yes
+
+#  - name: CMD is installed
+#    debug:
+#      msg="{{ command }} is installed"
+#    when: command_out.output|length > 0
+
+
+#    debug:
+#      msg="{{ command }} is not installed"
+#      var: command_out
+#    when: command_out.error|length > 0
+
+
+#  - name: Print Check Result
+#    debug:
+#      msg="{{ command_out.error|length }}"
+#    when: command_out.error|length > 0
+
+#  - name: Print Check Result
+#    debug:
+#      msg="{{ python_out }}"
+#  - name: Run httpd
+#    ansible.windows.win_command: httpd.exe
+#    args:
+#        chdir: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\bin\
+#
+  
+    
+#  - name: set environment variable
+#    ansible.windows.win_path:
+#      name: PATH
+#      elements: 
+#      - C:\Users\vagrant\AppData\Local\Programs\Python\Python39\
+#      state: present
+#      scope: machine
+
+#  - name: (optional)Delete user PATH environment variable
+#    ansible.windows.win_environment:
+#      name: PATH
+#      state: absent
+#      level: user
+
+#  - name: Check python version
+#    ansible.windows.win_powershell: 
+#      script: |
+#        python -V
+#      chdir: \Users\vagrant\AppData\Local\Programs\Python\Python39\
+#    register: command_out
+#
+#
+#  - name: Print Register
+#    debug:
+#      var: command_out
+
+#  - name: Check pip version
+#    ansible.windows.win_powershell: 
+#      script: |
+#        .\pip.exe -V
+#      chdir: \Users\vagrant\AppData\Local\Programs\Python\Python39\Scripts\
+#    register: command_out
+#
+#  - name: Print Register
+#    debug:
+#      var: command_out
+
