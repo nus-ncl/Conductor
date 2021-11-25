@@ -3,17 +3,17 @@ set ns [new Simulator]
 source tb_compat.tcl
 
 # Add nodes
-{%- set reserved_nodes = metadata['reserved_nodes'].split(',') %}
-{%- for i in range(nodes|length) %}
-set {{ nodes[i]['name'] }} [$ns node]
-tb-fix-node ${{ nodes[i]['name'] }} {{ reserved_nodes[i] }}
+{#- set reserved_nodes = metadata['reserved_nodes'].split(',') #}
+{%- for index in range(metadata['node_num']) %}
+set {{ nodes[index]['name'] }} [$ns node]
+{%- if metadata['reserved_node'][index] is defined  %}
+tb-fix-node ${{ nodes[index]['name'] }} {{ metadata['reserved_node'][index] }}
+{%- endif %}
 {%- endfor %}
-
-
 
 # Set node OS from saved image, Ubuntu1604-64-STD by default
 {%- for node in nodes %}
-tb-set-node-os ${{ node['name'] }} {{ node['os'] }}
+tb-set-node-os ${{ node['name'] }} Ubuntu1604-64-STD
 {%- endfor %}
 
 
@@ -21,23 +21,21 @@ tb-set-node-os ${{ node['name'] }} {{ node['os'] }}
 {% for lan in lans %}
 set lanstr ""
 {%- for node in lan['endpoints'] %}
-append lanstr "${{ node }} "
+append lanstr "${{ node['name'] }} "
 {%- endfor %}
 # Change the BW and delay if you want, 100Mb, 0ms by default
 set {{ lan['name'] }} [$ns make-lan "$lanstr" 10Gb 0ms]
 {% endfor %}
 
-# Set node ip.
-{%- for node in nodes %}
-{%- for lan in node['lan'] %}
-tb-set-ip-lan ${{ node['name'] }} ${{ lan['lan'] }} {{ lan['ip'] }}
+# Set node ip
+{%- for lan in lans %}
+{%- for endpoint in lan['endpoints'] %}
+tb-set-ip-lan ${{ endpoint['name'] }} ${{ lan['name'] }} {{ endpoint['ip'] }}
 {%- endfor %}
 {%- endfor %}
-
 
 # Set route and adjust configure.
 $ns rtproto Static
-
 
 # Go!
 $ns run

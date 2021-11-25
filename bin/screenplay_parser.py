@@ -1,6 +1,6 @@
 '''
 input: screenplay.yml
-output: specification.yml
+output: specification.yml & activity.yml
 '''
 import os
 import yaml
@@ -22,7 +22,7 @@ def yaml_load_from_screenplay(filename):
 
 
 def yaml_templatefile_load(filename):
-	with open(f"{default.conductor_path}/template/{filename}", 'r') as stream:
+	with open(f"{default.CONDUCTOR_PATH}/template/{filename}", 'r') as stream:
 		return yaml.safe_load(stream)
 
 
@@ -120,6 +120,8 @@ def generate_specification_vm_event(screenplay):
 	vm_event = []
 	pass
 
+def generate_specification_files(screenplay):
+	pass
 
 def vm_ip_allocation(specification):
 	node_lan_network_ip = {}
@@ -139,6 +141,7 @@ def vm_ip_allocation(specification):
 		# node_affiliation = vm['node']
 		for vm_network in vm['network']:
 			vm_network['ip'] = f"{node_lan_network_ip[vm['node']][vm_network['name']][:-1]}{node_lan_ip_pool[vm['node']][vm_network['name']].pop(0)}"
+			vm_network['gateway'] = f"{node_lan_network_ip[vm['node']][vm_network['name']][:-1]}1"
 
 def get_teamname(content):
 	return content['metadata']['teamname']
@@ -281,7 +284,7 @@ def get_vms_names(content):
 
 
 def yaml_service_load(filename):
-	with open(f"{default.conductor_path}/services/{filename}/{filename}.yml", 'r') as stream:
+	with open(f"{default.CONDUCTOR_PATH}/services/{filename}/{filename}.yml", 'r') as stream:
 		return yaml.safe_load(stream)
 
 
@@ -290,6 +293,29 @@ def yaml_dump_to_specification(content, filename):
 		yaml.safe_dump(content, stream, default_flow_style=False, explicit_start=True, allow_unicode=True,
 		               sort_keys=False)
 
+def yaml_dump_to_activity(content):
+	activity_directory = f"{root_path}/activity/{content['metadata']['experimentname']}"
+	for index in range(len(content['file'])):
+		content['file'][index] = f"{activity_directory}/{content['file'][index]}"
+
+	for activity in content['activity']:
+		for event in activity['event']:
+			if '[' in event:
+				# print(event) -> install [service]
+				# print(event.split(' ')) -> ['install', '[service]']
+				for host in content['host']:
+					if host['name'] == activity['subject']:
+						print(host[event.split(' ')[1][1:-1]])
+						# print(host[event.split(' ')[1][1:-1]]) -> print('service')
+
+	output = {'file': content['file'],'activity': content['activity']}
+
+	if not os.path.exists(activity_directory):
+		print('Not existed!')
+		os.mkdir(activity_directory)
+	with open(f"{activity_directory}/activity.yml", 'w') as stream:
+		yaml.safe_dump(output, stream, default_flow_style=False, explicit_start=True, allow_unicode=True,
+		               sort_keys=False)
 
 def yaml_content_parser(content):
 	metadata = get_metadata(content)
@@ -323,22 +349,20 @@ if __name__ == '__main__':
 	specification_output['version'] = generate_specification_version()
 	# screenplay_content = yaml_load_from_screenplay('apt32_screenplay.yml')
 	screenplay_content = yaml_load_from_screenplay('apt32_screenplay_complicated.yml')
-	# print(generate_specification_os(screenplay_content['host'][0]['os']))
-	# print(get_vms_names(screenplay_content))
-	# network_num = get_network_num(screenplay_content)
-	specification_output['properties'] = generate_specification_properties()
-	specification_output['metadata'] = generate_specification_metadata(screenplay_content)
-	specification_output['lan'] = generate_specification_lan()
-	specification_output['node'] = generate_specification_node(screenplay_content['network'])
-	if specification_output['properties']['format'] == 'virtual':
-		specification_output['vm'] = generate_specification_vm(screenplay_content['host'],
-		                                                       screenplay_content['network'])
-	specification_output['file'] = {}
-	# print(specification_output)
-	# yaml_dump_to_specification(specification_output, 'test.yml')
-	# specification_output = yaml_load_from_screenplay('test1.yml')
-	vm_ip_allocation(specification_output)
-	yaml_dump_to_specification(specification_output, 'test1.yml')
-# for lan in vm['network']:
-# 	print(lan['ip'])
-# 	print(lan['gateway'])
+
+	# activity
+	yaml_dump_to_activity(screenplay_content)
+	# activity
+
+	# specification
+	# specification_output['properties'] = generate_specification_properties()
+	# specification_output['metadata'] = generate_specification_metadata(screenplay_content)
+	# specification_output['lan'] = generate_specification_lan()
+	# specification_output['node'] = generate_specification_node(screenplay_content['network'])
+	# if specification_output['properties']['format'] == 'virtual':
+	# 	specification_output['vm'] = generate_specification_vm(screenplay_content['host'],
+	# 	                                                       screenplay_content['network'])
+	# vm_ip_allocation(specification_output)
+	# # yaml_dump_to_specification(specification_output, 'apt32_specification.yml')
+	# yaml_dump_to_specification(specification_output, 'apt32_specification_complicated.yml')
+	# specification

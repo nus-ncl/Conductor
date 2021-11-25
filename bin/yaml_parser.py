@@ -10,19 +10,19 @@ import default
 
 
 def yaml_templatefile_load(filename):
-	with open(f"{default.conductor_path}/template/{filename}.yml", 'r') as stream:
+	with open(f"{default.CONDUCTOR_PATH}/template/{filename}.yml", 'r') as stream:
 		return yaml.safe_load(stream)
 
 def yaml_service_load(filename):
-	with open(f"{default.conductor_path}/services/{filename}/{filename}.yml", 'r') as stream:
+	with open(f"{default.CONDUCTOR_PATH}/services/{filename}/{filename}.yml", 'r') as stream:
 		return yaml.safe_load(stream)
 
 def yaml_file_load(filename):
 	try:
-		with open(f"{filename}.yml", 'r') as stream:
+		with open(filename, 'r') as stream:
 			return yaml.safe_load(stream)
 	except OSError:
-		print(f"No Such Service File: {filename}.yml")
+		print(f"No Such Service File: {filename}")
 		return {}
 
 

@@ -1,0 +1,52 @@
+---
+version: 1.0
+properties:
+  platform: deter
+  format: virtual
+metadata:
+  teamname: TechDemo
+  experimentname: APT32
+  lan_num: 1
+  node_num: 1
+  vm_num: 1
+  reserved_node: []
+lan:
+- name: lan1
+  endpoints:
+  - name: n1
+    ip: 172.16.10.101
+    netmask: 255.255.255.0
+node:
+- name: n1
+  connectivity: null
+  hostonly_network:
+  - name: lan1
+    ip: 192.168.56.0
+    netmask: 255.255.255.0
+  internal_network: []
+  prerequisite:
+  - ansible
+  event: []
+vm:
+- name: attacker_and_victim
+  node: n1
+  provider: virtualbox
+  os:
+    platform: Windows
+    release: windows
+    version: '10'
+    bit: '64'
+  network:
+  - name: lan1
+    type: hostonly
+    ip: 192.168.56.100
+    netmask: 255.255.255.0
+    gateway: 192.168.56.1
+  vrde:
+    enabled: false
+    port: null
+  port_forwarding:
+    guest_port: null
+    host_port: null
+  prerequisite:
+  - essentials_common

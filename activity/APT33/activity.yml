@@ -1,0 +1,46 @@
+---
+file:
+- news.zip
+- flash_update.zip
+activity:
+- timestamp: t + 0 + 0s
+  description: Configure the webserver, install the services
+  subject: attacker_and_victim
+  object: attacker_and_victim
+  event:
+  - install [service]
+  - run apache2
+- timestamp: t + 1 + 0s
+  description: Open the malicious webpage article.html
+  subject: attacker_and_victim
+  object: article.html
+  event:
+  - openwebpage object
+- timestamp: t + 1 + 15s
+  description: Once the video player fails to load and the pop-up asks to update your
+    flash player, Click the picture of the Adobe flash upgrade to trigger the download
+    of flash_update.zip
+  subject: attacker_and_victim
+  object: flash_update.zip
+  event:
+  - download object
+- timestamp: t + 2 + 15s
+  description: Decompress flash_update.zip to release the system.py
+  subject: attacker_and_victim
+  object: flash_update.zip
+  event:
+  - unzip object
+- timestamp: t + 3 + 15s
+  description: Run system.py via Python3 to generate dataexfil.txt
+  subject: attacker_and_victim
+  object: system.py
+  event:
+  - python3 object
+- timestamp: t + 3 + 30s
+  description: Open data.html to view the infiltrated data captured by the python
+    file
+  subject: attacker_and_victim
+  object: data.html
+  event:
+  - openwebpage object
+  - printwebpage object

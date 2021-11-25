@@ -19,25 +19,27 @@ os = {
 			'test': {}
 		}
 	},
-	'vagrant': {
+	'virtualbox': {
 		'Linux': {
 			'ubuntu': {
-				'19.10': {
-					'i386': None,
-					'amd64': 'generic/ubuntu1910'
+				'19': {
+					'32': None,
+					'64': 'generic/ubuntu1910'
 				},
-				'16.04': {
-					'i386': None,
-					'amd64': 'bento/ubuntu-16.04'
+				'16': {
+					'32': None,
+					'64': 'bento/ubuntu-16.04'
 				}
 			},
 			'centos': {},
 			'redhat': {}
 		},
 		'Windows': {
-			'win7': {},
-			'ptq': {},
-			'xhq': {},
+			'windows': {
+				'10': {
+					'64': 'gusztavvargadr/windows-10-enterprise'
+				}
+			},
 		},
 		'Darwin': {
 			'test': {}

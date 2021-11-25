@@ -1,102 +1,53 @@
-import sys
+'''
+input: specification.yml
+output: various configuration files
+'''
+
+import os
 import copy
-sys.path.append('../defaults')
 import yaml
 import jinja2
 from jinja2 import Environment, PackageLoader
 import default
 import yaml_parser
+import operating_system
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+root_path = os.path.dirname(dir_path)
+templates_path = f"{root_path}/templates"
+specification_path = f"{root_path}/specification"
+outputs_path = f"{root_path}/outputs"
+
+def os_parser(vm):
+	provider = vm['provider']
+	platform = vm['os']['platform']
+	release = vm['os']['release']
+	version = vm['os']['version']
+	bit = vm['os']['bit']
+	return operating_system.os[provider][platform][release][version][bit]
 
 def vagrantfile_renderer(vms):
-	template_dir = [f"{default.CONDUCTOR_PATH}/templates"]
-	loader = jinja2.FileSystemLoader(template_dir)
-	with open(default.VAGRANT_TEST_FILE, 'w') as file:
+	loader = jinja2.FileSystemLoader(templates_path)
+	with open(f"{outputs_path}/Vagrantfile", 'w') as file:
 		env = Environment(loader=loader)
 		Vagrantfile = env.get_template('Vagrantfile.j2')
-		content = Vagrantfile.render(vms=vms)
+		content = Vagrantfile.render(vms=vms, os_parser=os_parser)
 		file.write(content)
 
-
 def hosts_renderer(vms):
-	template_dir = [f"{default.CONDUCTOR_PATH}/templates"]
-	loader = jinja2.FileSystemLoader(template_dir)
-	with open(default.HOSTS_TEST_FILE, 'w') as file:
+	loader = jinja2.FileSystemLoader(templates_path)
+	with open(f"{outputs_path}/hosts", 'w') as file:
 		env = Environment(loader=loader)
 		hostsfile = env.get_template('hosts.j2')
 		content = hostsfile.render(vms=vms)
 		file.write(content)
 
-
-def ansiblefile_renderer(vms):
-	#
-	# For ansible
-	# Output: ansible.yml, like:
-
-	# - hosts: VM1
-	# gather_facts: true
-	# vars:
-	#   nginx_version: 1.4.0
-	#   nginx_port: 81
-	# tasks:
-	#
-	# - hosts: VM2
-	# gather_facts: true
-	# vars: null
-	# tasks:
-
-	# which consists of many entries of ansiblefile_header.j2 & [service]_ansible.j2
-
-	ROOT_DIR = default.CONDUCTOR_PATH
-	template_dir = [f"{default.CONDUCTOR_PATH}/templates", f"{default.CONDUCTOR_PATH}/services"]
-	loader = jinja2.FileSystemLoader(template_dir)
-	with open(default.ANSIBLE_TEST_FILE, 'w') as file:
-		# ansible file header '---'
-		file.write("---\n\n")
-		env = Environment(loader=loader)
-		# For one vm entry:
-		for vm in vms:
-			# First, ansiblefile_header.j2, with vm as input
-			# ansiblefile_header.j2 will traverse vm['services'], all services for one vm, get all their parameters customized by users,
-			# list then under 'vars:' or no parameter like 'vars: null'
-			# so that the [service]_ansible.j2 under 'tasks' can
-			# access their own service parameter directly by {{ [service]_[option] }}
-			ansiblefile = env.get_template('ansiblefile_header.j2')
-			content = ansiblefile.render(vm=vm)
-			file.write(content)
-			if vm['services']:
-				# Second, [service]_ansible.j2, with vm,service_yml_content as input
-				# For each service for one vm
-				# [service]_ansible.j2 will get this [service] configured
-				# It will access their own service users' parameter input via {{ [service]_[option] }} enclosed by {% raw %}-{% endraw %} block
-				# provided by ansiblefile_header.j2(if no parameter, no such reference)
-				# and
-				# use service['parameter']['service_option'] in jinja2 template
-				# and
-				# access their own service other configurations info by service_yml_content['*configuration_key*'], no need to enclose by {% raw %}-{% endraw %} blcok
-				# provided by [service].yml
-
-				for service in vm['services']:
-					# get ansible template file of specific service
-					# if 'parameter' in service:
-					ansiblefile = env.get_template(f"{service['name']}/{service['name']}_ansible.j2")
-					# load specification(YAML-style) file of specific service
-					service_yml_content = yaml_parser.yaml_service_load(service['name'])
-					# print('service->')
-					# print(service)
-					# the ansible file after rendering
-					content = ansiblefile.render(service=service, conductor_path=ROOT_DIR, service_yml_content=service_yml_content)
-					# content = ansiblefile.render(vm=vm, USER='{{ ansible_env.USER }}', conductor_path=ROOT_DIR, service=service)
-					file.write(content)
-					file.write('\n\n')
-
-
-def NSfile_renderer(lans, nodes, metadata):
-	template_dir = [f"{default.CONDUCTOR_PATH}/templates"]
-	loader = jinja2.FileSystemLoader(template_dir)
-	with open(default.NS_TEST_FILE, 'w') as file:
+def NSfile_renderer(lans, metadata, nodes):
+	loader = jinja2.FileSystemLoader(templates_path)
+	with open(f"{outputs_path}/NSfile", 'w') as file:
 		env = Environment(loader=loader)
 		NSfile = env.get_template('NSfile.j2')
-		content = NSfile.render(lans=lans, nodes=nodes, metadata=metadata)
+		content = NSfile.render(lans=lans,metadata=metadata,nodes=nodes)
 		file.write(content)
 
 
@@ -106,8 +57,8 @@ def nodesfile_renderer(nodes,node_virtualbox_version):
 	# Output: n1.sh(n2.sh...)
 	# which consists of many entries of the rendered result of [service]_ansible.j2
 
-	template_dir = [f"{default.CONDUCTOR_PATH}/templates", f"{default.CONDUCTOR_PATH}/services"]
-	loader = jinja2.FileSystemLoader(template_dir)
+	templates_path = [f"{default.CONDUCTOR_PATH}/templates", f"{default.CONDUCTOR_PATH}/services"]
+	loader = jinja2.FileSystemLoader(templates_path)
 	env = Environment(loader=loader)
 	# node.j2 with node, yaml_service_load(which is a function) as inputs
 	# First, it will complete pre-defined common tasks
@@ -129,8 +80,8 @@ def nodesfile_renderer(nodes,node_virtualbox_version):
 			file.write(content)
 
 def vm_configure_renderer(vms):
-	template_dir = [f"{default.CONDUCTOR_PATH}/templates"]
-	loader = jinja2.FileSystemLoader(template_dir)
+	templates_path = [f"{default.CONDUCTOR_PATH}/templates"]
+	loader = jinja2.FileSystemLoader(templates_path)
 	env = Environment(loader=loader)
 	vm_configure = env.get_template('vm_configure.j2')
 	for vm in vms:
@@ -152,8 +103,8 @@ def dockerfile_renderer(vms):
 	header=0
 	services={}
 	ROOT_DIR = default.CONDUCTOR_PATH
-	template_dir = [f"{default.CONDUCTOR_PATH}/templates", f"{default.CONDUCTOR_PATH}/services"]
-	loader = jinja2.FileSystemLoader(template_dir)
+	templates_path = [f"{default.CONDUCTOR_PATH}/templates", f"{default.CONDUCTOR_PATH}/services"]
+	loader = jinja2.FileSystemLoader(templates_path)
 	env = Environment(loader=loader)
 	# output Dockerfile
 	for vm in vms:
@@ -204,14 +155,17 @@ def dockerfile_renderer(vms):
 			pass
 
 if __name__ == "__main__":
-	yaml_content = yaml_parser.yaml_file_load('output')
-	# json_content = yaml_parser.yaml_file_load('output')
-	print(yaml_content)
-	yaml_parser.yaml_file_dump(yaml_content,'hkwany')
+	specification_content = yaml_parser.yaml_file_load(f"{specification_path}/apt32_specification_complicated.yml")
+	# print(specification_content)
+	# vagrantfile_renderer(specification_content['vm'])
+	# hosts_renderer(specification_content['vm'])
+	NSfile_renderer(specification_content['lan'], specification_content['metadata'],specification_content['node'])
 
-	metadata, vms, lans, nodes, docker_networks = yaml_parser.yaml_content_parser(yaml_content)
-	if default.debug:
-		pass
+
+	# yaml_parser.yaml_file_dump(yaml_content,'hkwany')
+	# metadata, vms, lans, nodes, docker_networks = yaml_parser.yaml_content_parser(yaml_content)
+	# if default.debug:
+	# 	pass
 		# print('metadata->')
 		# print(metadata)
 		# print('nodes->')

@@ -3,9 +3,12 @@ set ns [new Simulator]
 source tb_compat.tcl
 
 # Add nodes
-{%- for node in nodes %}
-set {{ node['name'] }} [$ns node]
+{%- set reserved_nodes = metadata['reserved_nodes'].split(',') %}
+{%- for i in range(nodes|length) %}
+set {{ nodes[i]['name'] }} [$ns node]
+tb-fix-node ${{ nodes[i]['name'] }} {{ reserved_nodes[i] }}
 {%- endfor %}
+
 
 
 # Set node OS from saved image, Ubuntu1604-64-STD by default
@@ -15,22 +18,19 @@ tb-set-node-os ${{ node['name'] }} {{ node['os'] }}
 
 
 # Set LAN
-{%- for lan in lans %}
+{% for lan in lans %}
 set lanstr ""
 {%- for node in lan['endpoints'] %}
 append lanstr "${{ node }} "
 {%- endfor %}
-
-
 # Change the BW and delay if you want, 100Mb, 0ms by default
 set {{ lan['name'] }} [$ns make-lan "$lanstr" 10Gb 0ms]
-{%- endfor %}
-
+{% endfor %}
 
 # Set node ip.
 {%- for node in nodes %}
-{%- for index in range(node.lan|length) %}
-tb-set-ip-lan ${{ node.name }} ${{ node.lan[index] }} {{ node.lan_node_ip[index] }}
+{%- for lan in node['lan'] %}
+tb-set-ip-lan ${{ node['name'] }} ${{ lan['lan'] }} {{ lan['ip'] }}
 {%- endfor %}
 {%- endfor %}
 

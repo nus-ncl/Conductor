@@ -243,7 +243,7 @@ def Services_prompt_detailed(service):
 		service_list = [None, {}]
 	else:
 		# parse the [service].yml file
-		yaml_content = yaml_parser.yaml_file_load(f"{default.conductor_path}/services/{service}/{service}")
+		yaml_content = yaml_parser.yaml_file_load(f"{default.CONDUCTOR_PATH}/services/{service}/{service}")
 		# hard copy, one used as default, one updated by user input
 		if not bool(yaml_content):
 			yaml_content['service']=service

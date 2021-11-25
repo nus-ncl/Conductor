@@ -21,8 +21,8 @@ IP_POOL_START = 100
 IP_POOL_END = 110
 
 # Conductor path
-file_path = os.path.dirname(os.path.realpath(__file__))
-conductor_path = os.path.dirname(file_path)
+FILE_PATH = os.path.dirname(os.path.realpath(__file__))
+CONDUCTOR_PATH = os.path.dirname(FILE_PATH)
 
 # Versioning
 VERSION = 1.0

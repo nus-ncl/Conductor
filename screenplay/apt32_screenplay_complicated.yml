@@ -15,15 +15,14 @@ host:
     service:
       - apache2
       - python3
-    objects:
-      - news.zip
-      - flash_update.zip
 
   - name: test1
-    os: windowserver_9_32
+    os: ubuntu_16_64
+    service: []
 
   - name: test2
-    os: ubuntu_14_32
+    os: ubuntu_19_64
+    service: []
 
 network:
 # currently not support describing lan on more than 1 nodes.
@@ -37,6 +36,11 @@ network:
       endpoints:
         - attacker_and_victim
         - test2
+
+file:
+  - news.zip
+  - flash_update.zip
+
 activity:
   - timestamp: t + 0 + 0s
     description: "Configure the webserver, install the services"

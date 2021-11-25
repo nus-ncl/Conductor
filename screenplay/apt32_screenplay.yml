@@ -15,10 +15,6 @@ host:
     service:
       - apache2
       - python3
-    objects:
-      - news.zip
-      - flash_update.zip
-
 
 network:
 # currently not support describing lan on more than 1 nodes.
@@ -27,6 +23,10 @@ network:
       endpoints:
         # one node in various lans meaning gateway
         - attacker_and_victim
+
+files:
+  - news.zip
+  - flash_update.zip
 
 activity:
   - timestamp: t + 0 + 0s
