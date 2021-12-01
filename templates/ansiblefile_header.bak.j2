@@ -1,14 +1,14 @@
-- hosts: {{ host['subject'] }}
+- hosts: {{ vm['hostname'] }}
   gather_facts: true
-{%- if host['event']|length %}
+{%- if vm['services']|length %}
 {%- set ns = namespace(vars=0) %}
-{%- for event_entry in host['event'] %}
-  {%- if 'parameter' in event_entry and event_entry['parameter']['Error'] is not defined %}
+{%- for service in vm['services'] %}
+  {%- if 'parameter' in service and service['parameter']['Error'] is not defined %}
   {%- if ns.vars == 0 %}
   vars:
   {%- set ns.vars=1 %}
   {%- endif %}
-    {%- for key,value in event_entry['parameter'].items() %}
+    {%- for key,value in service['parameter'].items() %}
     {%- if value == None %}
     {{ key }}: null
     {%- else %}
@@ -21,7 +21,7 @@
   vars: null
 {%- endif %}
 
-{%- if host['event']|length %}
+{%- if vm['services']|length %}
   tasks:
 {%- else %}
   tasks: null

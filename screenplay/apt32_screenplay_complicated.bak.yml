@@ -3,7 +3,7 @@
 metadata:
   teamname: TechDemo
   experimentname: APT32
-  host_num: 1
+  host_num: 3
   network_num: 2
 
 host:
@@ -16,13 +16,26 @@ host:
       - apache2
       - python3
 
+  - name: test1
+    os: ubuntu_16_64
+    service: []
+
+  - name: test2
+    os: ubuntu_19_64
+    service: []
+
 network:
-  # currently not support describing lan on more than 1 nodes.
+# currently not support describing lan on more than 1 nodes.
   lan:
     - name: lan1
       endpoints:
         # one node in various lans meaning gateway
         - attacker_and_victim
+        - test1
+    - name: lan2
+      endpoints:
+        - attacker_and_victim
+        - test2
 
 file:
   - news.zip

@@ -1,0 +1,144 @@
+---
+
+- hosts: attacker_and_victim
+  gather_facts: true
+  tasks:
+  # Service: install apache2 (scripts for ansible)
+  - name: Download Apache2.2.4
+    win_get_url:
+      url: https://archive.apache.org/dist/httpd/binaries/win32/apache_2.2.4-win32-x86-no_ssl.msi
+      dest: C:\Users\vagrant\apache_2.2.4.msi
+
+  - name: Install Apache2.2.4
+    win_package:
+      path: C:\Users\vagrant\apache_2.2.4.msi
+      state: present
+  
+  - name: set Apache 2.2.4 environment variable
+    ansible.windows.win_path:
+      name: PATH
+      elements:
+      - C:\Program Files (x86)\Apache Software Foundation\Apache2.2\bin\
+      - C:\Program Files (x86)\Apache Software Foundation\
+      state: present
+      scope: machine
+
+  - name: Check Apache Version
+    ansible.windows.win_powershell:
+      script: |
+        httpd -v
+    register: command_out
+
+  - name: Show Apache Version
+    debug:
+      var: command_out
+
+  - name: Install Apache2.2.4 as a service
+    ansible.windows.win_powershell:
+      script: |
+        httpd -k install -n "Apache2.2.4"
+
+  - name: Modify Apache2.2.4 Configuration file
+    community.windows.win_lineinfile:
+      path: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\conf\httpd.conf
+      regex: '^ServerAdmin'
+      line: '#ServerAdmin'
+
+
+
+  # Service: install python3 (scripts for ansible)
+  - name: Download Python 3.9.9
+      win_get_url:
+        url: https://www.python.org/ftp/python/3.9.9/python-3.9.9-amd64.exe
+        dest: C:\Users\vagrant\python-3.9.9.exe
+
+  - name: Install Python3.9.9
+    ansible.windows.win_package:
+      path: C:\Users\vagrant\python-3.9.9.exe
+      arguments:
+      - /quiet
+      - InstallAllUsers=1
+      - PrependPath=1
+
+  - name: Check Python Version
+    ansible.windows.win_powershell:
+      script: |
+        python -V
+    register: command_out
+
+  - name: Show Python Version
+    debug:
+      var: command_out
+
+  - name: Check Pip Version
+    ansible.windows.win_powershell:
+      script: |
+        pip -V
+    register: command_out
+
+  - name: Show Pip Version
+    debug:
+      var: command_out
+
+
+
+  # Service: configure apache2 (scripts for ansible)
+
+  - name: Copy news.zip
+    win_copy:
+      src: /home/localuser/news.zip
+      dest: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\news.zip
+
+  - name: Decompress news.zip
+    community.windows.win_unzip:
+      src: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\news.zip
+      dest: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\
+      delete_archive: yes
+
+  - name: Copy flash_update.zip
+    win_copy:
+      src: /home/localuser/flash_update.zip
+      dest: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\news\flash_update.zip
+
+  - name: Decompress flash_update.zip
+    community.windows.win_unzip:
+      src: C:\Users\vagrant\Downloads\flash_update.zip
+      dest: C:\Users\vagrant\Downloads\
+
+
+  # Service: configure apache2 (scripts for ansible)
+
+  - name: Copy news.zip
+    win_copy:
+      src: /home/localuser/news.zip
+      dest: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\news.zip
+
+  - name: Decompress news.zip
+    community.windows.win_unzip:
+      src: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\news.zip
+      dest: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\
+      delete_archive: yes
+
+  - name: Copy flash_update.zip
+    win_copy:
+      src: /home/localuser/flash_update.zip
+      dest: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\news\flash_update.zip
+
+  - name: Decompress flash_update.zip
+    community.windows.win_unzip:
+      src: C:\Users\vagrant\Downloads\flash_update.zip
+      dest: C:\Users\vagrant\Downloads\
+
+
+  # Service: run apache2 (scripts for ansible)
+  - name: Run Apache 2.2.4
+    ansible.windows.win_powershell:
+      script: |
+        httpd -k start -n "Apache2.2.4"
+
+
+  # Service: pip install requirements (scripts for ansible)
+  - name: Install pip requirements.txt
+    ansible.windows.win_powershell:
+      script: |
+        pip install -r "C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\news\requirements.txt"

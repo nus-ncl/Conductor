@@ -4,13 +4,7 @@
 # python2, python3, python-dev, python3-dev pip2 & pip3
 # For Ubuntu, python-dev and python3-dev
 # For CentOS, python-devel and python3-devel
-  service: python
+  service: python3
   parameter:
-      version: 2.2.4
-  dependency:
-    - python
-    - python-pip
-    - python-dev
-    - python3
-    - python3-pip
-    - python3-dev
+      version: 3.9.9
+  dependency: []

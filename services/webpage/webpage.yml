@@ -1,0 +1,7 @@
+---
+# Service: apache2
+
+  service: apache2
+  parameter:
+    apache2_port: 80
+    version: 2.2.4

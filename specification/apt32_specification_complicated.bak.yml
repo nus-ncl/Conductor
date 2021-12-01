@@ -14,102 +14,108 @@ metadata:
     - pc2b
     - pc3c
 lan:
-- name: lan1
-  endpoints:
-  - name: n1
-    ip: 172.16.10.101
-    netmask: 255.255.255.0
-  - name: n2
-    ip: 172.16.10.102
-    netmask: 255.255.255.0
-  - name: n3
-    ip: 172.16.10.103
-    netmask: 255.255.255.0
+  - name: lan1
+    endpoints:
+      - name: n2
+        ip: 172.16.10.100
+        netmask: 255.255.255.0
+      - name: n3
+        ip: 172.16.10.101
+        netmask: 255.255.255.0
+  - name: lan2
+    endpoints:
+      - name: n1
+        ip: 172.16.11.101
+        netmask: 255.255.255.0
+      - name: n2
+        ip: 172.16.11.102
+        netmask: 255.255.255.0
+
 node:
-- name: n1
-  connectivity: null
-  hostonly_network:
-  - name: lan1
-    ip: 192.168.56.0
-    netmask: 255.255.255.0
-  - name: lan2
-    ip: 192.168.57.0
-    netmask: 255.255.255.0
-  internal_network: []
-  prerequisite:
-  - ansible
-  event: []
-- name: n2
-- name: n3
+  - name: n1
+    connectivity: null
+    hostonly_network:
+      - name: lan1
+        ip: 192.168.56.0
+        netmask: 255.255.255.0
+      - name: lan2
+        ip: 192.168.57.0
+        netmask: 255.255.255.0
+    internal_network: []
+    prerequisite:
+      - ansible
+    event: []
+  - name: n2
+  - name: n3
 vm:
-- name: attacker_and_victim
-  node: n1
-  provider: virtualbox
-  os:
-    platform: Windows
-    release: windows
-    version: '10'
-    bit: '64'
-  network:
-  - name: lan1
-    type: hostonly
-    ip: 192.168.56.100
-    netmask: 255.255.255.0
-    gateway: 192.168.56.1
-  - name: lan2
-    type: hostonly
-    ip: 192.168.57.100
-    netmask: 255.255.255.0
-    gateway: 192.168.57.1
-  vrde:
-    enabled: true
-    port: 12345
-  port_forwarding:
-    guest_port: null
-    host_port: null
-  prerequisite:
-  - essentials_common
-- name: test1
-  node: n1
-  provider: virtualbox
-  os:
-    platform: Linux
-    release: ubuntu
-    version: '16'
-    bit: '64'
-  network:
-  - name: lan1
-    type: hostonly
-    ip: 192.168.56.101
-    netmask: 255.255.255.0
-    gateway: 192.168.56.1
-  vrde:
-    enabled: true
-    port: 12346
-  port_forwarding:
-    guest_port: null
-    host_port: null
-  prerequisite:
-  - essentials_common
-- name: test2
-  node: n1
-  provider: virtualbox
-  os:
-    platform: Linux
-    release: ubuntu
-    version: '19'
-    bit: '64'
-  network:
-  - name: lan2
-    type: hostonly
-    ip: 192.168.57.101
-    netmask: 255.255.255.0
-    gateway: 192.168.57.1
-  vrde:
-    enabled: true
-    port: 12347
-  port_forwarding:
-    guest_port: null
-    host_port: null
-  prerequisite:
-  - essentials_common
+  - name: attacker_and_victim
+    node: n1
+    provider: virtualbox
+    os:
+      platform: Windows
+      release: windows
+      version: '10'
+      bit: '64'
+    network:
+      - name: lan1
+        type: hostonly
+        ip: 192.168.56.100
+        netmask: 255.255.255.0
+        gateway: 192.168.56.1
+      - name: lan2
+        type: hostonly
+        ip: 192.168.57.100
+        netmask: 255.255.255.0
+        gateway: 192.168.57.1
+    vrde:
+      enabled: true
+      port: 12345
+    port_forwarding:
+      guest_port: null
+      host_port: null
+    prerequisite:
+      - essentials_common
+  - name: test1
+    node: n1
+    provider: virtualbox
+    os:
+      platform: Linux
+      release: ubuntu
+      version: '16'
+      bit: '64'
+    network:
+      - name: lan1
+        type: hostonly
+        ip: 192.168.56.101
+        netmask: 255.255.255.0
+        gateway: 192.168.56.1
+    vrde:
+      enabled: true
+      port: 12346
+    port_forwarding:
+      guest_port: null
+      host_port: null
+    prerequisite:
+      - essentials_common
+  - name: test2
+    node: n1
+    provider: virtualbox
+    os:
+      platform: Linux
+      release: ubuntu
+      version: '19'
+      bit: '64'
+    network:
+      - name: lan2
+        type: hostonly
+        ip: 192.168.57.101
+        netmask: 255.255.255.0
+        gateway: 192.168.57.1
+    vrde:
+      enabled: true
+      port: 12347
+    port_forwarding:
+      guest_port: null
+      host_port: null
+    prerequisite:
+      - essentials_common

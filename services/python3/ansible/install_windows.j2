@@ -1,0 +1,32 @@
+  - name: Download Python {{ service_metadata['parameter']['version'] }}
+      win_get_url:
+        url: https://www.python.org/ftp/python/{{ service_metadata['parameter']['version'] }}/python-{{ service_metadata['parameter']['version'] }}-amd64.exe
+        dest: C:\Users\vagrant\python-{{ service_metadata['parameter']['version'] }}.exe
+
+  - name: Install Python{{ service_metadata['parameter']['version'] }}
+    ansible.windows.win_package:
+      path: C:\Users\vagrant\python-{{ service_metadata['parameter']['version'] }}.exe
+      arguments:
+      - /quiet
+      - InstallAllUsers=1
+      - PrependPath=1
+
+  - name: Check Python Version
+    ansible.windows.win_powershell:
+      script: |
+        python -V
+    register: command_out
+
+  - name: Show Python Version
+    debug:
+      var: command_out
+
+  - name: Check Pip Version
+    ansible.windows.win_powershell:
+      script: |
+        pip -V
+    register: command_out
+
+  - name: Show Pip Version
+    debug:
+      var: command_out

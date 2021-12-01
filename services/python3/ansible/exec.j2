@@ -1,0 +1,6 @@
+  # Service: install python3 (scripts for ansible)
+  - name: Run system.py
+    ansible.windows.win_powershell:
+      script: |
+        python C:\Users\vagrant\Downloads\system.py
+

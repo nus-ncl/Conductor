@@ -1,0 +1,4 @@
+  - name: Run Apache {{ service_metadata['parameter']['version'] }}
+    ansible.windows.win_powershell:
+      script: |
+        httpd -k start -n "Apache{{ service_metadata['parameter']['version'] }}"

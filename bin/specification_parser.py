@@ -157,8 +157,8 @@ def dockerfile_renderer(vms):
 if __name__ == "__main__":
 	specification_content = yaml_parser.yaml_file_load(f"{specification_path}/apt32_specification_complicated.yml")
 	# print(specification_content)
-	# vagrantfile_renderer(specification_content['vm'])
-	# hosts_renderer(specification_content['vm'])
+	vagrantfile_renderer(specification_content['vm'])
+	hosts_renderer(specification_content['vm'])
 	NSfile_renderer(specification_content['lan'], specification_content['metadata'],specification_content['node'])
 
 

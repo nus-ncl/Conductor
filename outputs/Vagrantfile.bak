@@ -8,18 +8,33 @@ Vagrant.configure("2") do |config|
     node.vm.box = "gusztavvargadr/windows-10-enterprise"
     node.vm.network "private_network", ip: "192.168.56.100", name: "lan1"
     node.vm.network "private_network", ip: "192.168.57.100", name: "lan2"
+    node.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--vrde","on"]
+	  vb.customize ["modifyvm", :id, "--vrdeport","12345"]
+      vb.customize ["modifyvm", :id, "--vrdeaddress","0.0.0.0"]
+    end
     node.vm.provision "shell", path "attacker_and_victim.conf.sh"
   end
   config.vm.define "test1" do |node|
     node.vm.hostname = "test1"
     node.vm.box = "bento/ubuntu-16.04"
     node.vm.network "private_network", ip: "192.168.56.101", name: "lan1"
+    node.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--vrde","on"]
+	  vb.customize ["modifyvm", :id, "--vrdeport","12346"]
+      vb.customize ["modifyvm", :id, "--vrdeaddress","0.0.0.0"]
+    end
     node.vm.provision "shell", path "test1.conf.sh"
   end
   config.vm.define "test2" do |node|
     node.vm.hostname = "test2"
     node.vm.box = "generic/ubuntu1910"
     node.vm.network "private_network", ip: "192.168.57.101", name: "lan2"
+    node.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--vrde","on"]
+	  vb.customize ["modifyvm", :id, "--vrdeport","12347"]
+      vb.customize ["modifyvm", :id, "--vrdeaddress","0.0.0.0"]
+    end
     node.vm.provision "shell", path "test2.conf.sh"
   end
 end

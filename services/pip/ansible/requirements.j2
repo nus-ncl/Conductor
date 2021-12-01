@@ -1,0 +1,5 @@
+  # Service: pip install requirements (scripts for ansible)
+  - name: Install pip requirements.txt
+    ansible.windows.win_powershell:
+      script: |
+        pip install -r "C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\news\requirements.txt"

@@ -1,4 +1,4 @@
-  # Service: install apache2 (scripts for ansible)
+  # Service: install python3 (scripts for ansible)
 {% for vm in specification['vm'] %}
 {%- if vm['name'] == subject %}
   {%- include service + '/ansible/install_' + vm['os']['release'] + '.j2' %}

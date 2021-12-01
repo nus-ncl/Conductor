@@ -1,0 +1,15 @@
+  # Service: open webpage (scripts for ansible)
+  - name: Login to a webpage
+    uri:
+      url: http://localhost/news/article.html
+      method: GET
+      body_format: raw
+      body:
+      {#-
+      - [ name, your_username ]
+      - [ password, your_password ]
+      - [ enter, Sign in ]
+      #}
+      status_code: 200
+    register: open
+

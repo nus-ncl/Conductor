@@ -1,0 +1,36 @@
+
+[attacker_and_victim]
+#only show the first hostonly_network ip, guarantee it's accessible from ansible manager
+192.168.56.100
+
+[test1]
+#only show the first hostonly_network ip, guarantee it's accessible from ansible manager
+192.168.56.101
+
+[test2]
+#only show the first hostonly_network ip, guarantee it's accessible from ansible manager
+192.168.57.101
+
+
+
+[attacker_and_victim:vars]
+ansible_connection=winrm
+ansible_port=5985
+ansible_password=vagrant
+ansible_user=vagrant
+ansible_python_interpreter=/usr/bin/python3
+
+[test1:vars]
+ansible_connection=ssh
+ansible_port=22
+ansible_password=vagrant
+ansible_user=vagrant
+ansible_python_interpreter=/usr/bin/python3
+
+[test2:vars]
+ansible_connection=ssh
+ansible_port=22
+ansible_password=vagrant
+ansible_user=vagrant
+ansible_python_interpreter=/usr/bin/python3
+

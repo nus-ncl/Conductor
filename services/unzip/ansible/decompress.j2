@@ -1,0 +1,5 @@
+  # Service: unzip (scripts for ansible)
+  - name: Decompress flash_update.zip
+    community.windows.win_unzip:
+      src: C:\Users\vagrant\Downloads\flash_update.zip
+      dest: C:\Users\vagrant\Downloads\

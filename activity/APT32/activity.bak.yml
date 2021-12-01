@@ -1,0 +1,49 @@
+---
+file:
+  - /Users/hkwany/Pycharm_Projects/nus-ncl/Conductor/activity/APT32/news.zip
+  - /Users/hkwany/Pycharm_Projects/nus-ncl/Conductor/activity/APT32/flash_update.zip
+activity:
+  - timestamp: t + 0 + 0s
+    description: Configure the webserver, install the services
+    subject: attacker_and_victim
+    object: attacker_and_victim
+    event:
+      - install apache2
+      - install python3
+      - configure apache2 UnzipToPath [news.zip]
+      - configure apache2 UnzipToPath [flash_update.zip]
+      - run apache2
+      - requirements pip [htdocs\news\requirements.txt]
+  - timestamp: t + 1 + 0s
+    description: Open the malicious webpage article.html
+    subject: attacker_and_victim
+    object: attacker_and_victim
+    event:
+      - open webpage http://localhost/news/article.html
+  - timestamp: t + 1 + 15s
+    description: Once the video player fails to load and the pop-up asks to update your
+      flash player, Click the picture of the Adobe flash upgrade to trigger the download
+      of flash_update.zip
+    subject: attacker_and_victim
+    object: attacker_and_victim
+    event:
+      - download flash_update.zip
+  - timestamp: t + 2 + 15s
+    description: Decompress flash_update.zip to release the system.py
+    subject: attacker_and_victim
+    object: attacker_and_victim
+    event:
+      - decompress unzip flash_update.zip
+  - timestamp: t + 3 + 15s
+    description: Run system.py via Python3 to generate dataexfil.txt
+    subject: attacker_and_victim
+    object: attacker_and_victim
+    event:
+      - exec python3 system.py
+  - timestamp: t + 3 + 30s
+    description: Open data.html to view the infiltrated data captured by the python
+      file
+    subject: attacker_and_victim
+    object: attacker_and_victim
+    event:
+      - open webpage http://localhost/news/data.html

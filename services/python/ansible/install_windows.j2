@@ -1,0 +1,47 @@
+  - name: Download Apache{{ service_metadata['parameter']['version'] }}
+    win_get_url:
+      url: https://archive.apache.org/dist/httpd/binaries/win32/apache_{{ service_metadata['parameter']['version'] }}-win32-x86-no_ssl.msi
+      dest: C:\Users\vagrant\apache_2.2.4.msi
+
+  - name: Install Apache{{ service_metadata['parameter']['version'] }}
+    win_package:
+      path: C:\Users\vagrant\apache_{{ service_metadata['parameter']['version'] }}.msi
+      state: present
+  {% set version_list = ['2.2.4'] %}
+  - name: set Apache {{ service_metadata['parameter']['version'] }} environment variable
+    ansible.windows.win_path:
+      name: PATH
+      elements:
+      {%- if service_metadata['parameter']['version'] in version_list %}
+      - C:\Program Files (x86)\Apache Software Foundation\Apache{{ service_metadata['parameter']['version'][0:3] }}\bin\
+      {%- else %}
+      - C:\Program Files (x86)\Apache Group\Apache{{ service_metadata['parameter']['version'][0:1] }}\bin\
+      {%- endif %}
+      - C:\Program Files (x86)\Apache Software Foundation\
+      state: present
+      scope: machine
+
+  - name: Check Apache Version
+    ansible.windows.win_powershell:
+      script: |
+        httpd -v
+    register: command_out
+
+  - name: Show Apache Version
+    debug:
+      var: command_out
+
+  - name: Install Apache2.2.4 as a service
+    ansible.windows.win_powershell:
+      script: |
+        httpd -k install -n "Apache{{ service_metadata['parameter']['version'] }}"
+
+  - name: Modify Apache2.2.4 Configuration file
+    community.windows.win_lineinfile:
+      {%- if service_metadata['parameter']['version'] in version_list %}
+      path: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\conf\httpd.conf
+      {%- else %}
+      path: C:\Program Files (x86)\Apache Group\Apache{{ service_metadata['parameter']['version'][0:1] }}\conf\httpd.conf
+      {%- endif %}
+      regex: '^ServerAdmin'
+      line: '#ServerAdmin'
