@@ -1,7 +1,7 @@
 ---
 # Assumptions: 1 lan, 1 node, deter, virtual
 metadata:
-  teamname: TechDemo
+  resource_location: [vindex_database]
   experimentname: APT32
   host_num: 3
   network_num: 2
