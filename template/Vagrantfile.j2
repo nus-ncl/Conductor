@@ -1,0 +1,56 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box_check_update = false
+  config.vm.synced_folder "/share/ven/esys", "/share/ven/esys", mount_options: ['rw', 'exec'], create: true, disabled: true
+  # vagrant plugin install vagrant-disksize
+  # config.disksize.size = '40GB'
+  {%- for vm in virtual_env['instance'] %}
+  config.vm.define "{{ vm['name'] }}" do |node|
+    {%- if vm['name']|length %}
+    node.vm.hostname = "{{ vm['name'] }}"
+    {%- endif %}
+    {%- if vm['image']|length %}
+    node.vm.box = "{{ os_dict[vm['image']['format']][vm['image']['platform']][vm['image']['release']][vm['image']['version']][vm['image']['bit']] }}"
+    {%- endif %}
+    {%- if vm['network']|length %}
+    {%- for network in vm['network'] %}
+    {%- if network['type'] == 'hostonly' %}
+    node.vm.network "private_network", ip: "{{ network['ip'] }}", name: "{{ network['name'] }}"
+    {%- endif %}
+    {%- if network['type'] == 'internal' %}
+    node.vm.network "internal_network", ip: "{{ network['ip'] }}", virtualbox__intnet: "{{ network['name'] }}"
+    {%- endif %}
+    {%- endfor %}
+    {%- endif %}
+    {%- if (vm['port_forwarding']['guest_port'] is not none) and (vm['port_forwarding']['host_port'] is not none) %}
+    {%- set guest_port_list = (vm['port_forwarding']['guest_port']|string).split(',') %}
+    {%- set host_port_list = (vm['port_forwarding']['host_port']|string).split(',') %}
+    {%- if guest_port_list|length != host_port_list|length %}
+    # port forwarding error! lengths of guest_port and host_port don't match
+    {% else %}
+    {%- for index in range(guest_port_list|length) %}
+    node.vm.network "forwarded_port", guest: {{ guest_port_list[index] }}, host: {{ host_port_list[index] }}, auto_correct: true
+    {%- endfor %}
+    {%- endif %}
+    {%- endif %}
+    {%- if (vm['flavor'] is not none) or (vm['vrde'] is not none) and (virtual_env['provider'] is not none)%}
+    node.vm.provider :{{ virtual_env['provider'] }} do |provider|
+    {%- if virtual_env['provider'] == 'virtualbox' %}
+    {%- if vm['flavor'] is not none %}
+      provider.customize ["modifyvm", :id, "--cpus", "{{ vm['flavor']['cpu'] }}"]
+      provider.customize ["modifyvm", :id, "--memory", "{{ vm['flavor']['ram'] }}"]
+    {%- endif %}
+    {%- if vm['vrde']['enabled'] == True %}
+      provider.customize ["modifyvm", :id, "--vrde", "on"]
+	  provider.customize ["modifyvm", :id, "--vrdeport", "{{ vm['vrde']['port'] }}"]
+      provider.customize ["modifyvm", :id, "--vrdeaddress", "0.0.0.0"]
+    {%- endif %}
+    {%- endif %}
+    end
+    {%- endif %}
+    # node.vm.provision "shell", path "{{ vm['name'] }}.conf.sh"
+  end
+  {%- endfor %}
+end

@@ -1,0 +1,162 @@
+---
+version: 1.0
+properties:
+  platform: deter
+metadata:
+  project_name: ARPDemo
+  baremetal_instance_num: 1
+  virtual_instance_num: 0
+  instance_name:
+    baremetal:
+      - log4shell
+    virtual: [ ]
+  baremetal_reserved:
+    - pc1a
+instance:
+  - name: log4shell
+    lan_num: 1
+    node_num: 1
+    vm_num: 1
+    network:
+      - name: lan1
+        cidr: 172.16.10.0/24
+        gateway: 172.16.10.1
+    node:
+      - name: n1
+        fix: pc1a
+        image:
+          format: deter
+          platform: Linux
+          release: ubuntu
+          version: '16.04'
+          bit: 'amd64'
+        network:
+          - name: lan1
+            type: deter
+            ip: 172.16.10.100
+        prerequisite:
+          - default_for_deter_node
+        virtual_env:
+          provider: virtualbox
+          network:
+            - name: lan1
+              type: hostonly
+              cidr: 192.168.56.0/24
+              gateway: 192.168.56.1
+          instance:
+            - name: log4shell
+              image:
+                format: vagrant
+                platform: Linux
+                release: ubuntu
+                version: '20.04'
+                bit: 'amd64'
+              flavor:
+                type: virtual
+                cpu: 1
+                ram: 4096
+                disk: 40
+              network:
+                - name: lan1
+                  type: hostonly
+                  ip: 192.168.56.100
+                  netmask: 255.255.255.0
+                  gateway: 192.168.56.1
+              vrde:
+                enabled: true
+                port: 12345
+              port_forwarding:
+                guest_port: 22,80
+                host_port: 2202,8080
+              prerequisite:
+                - default_for_virtual_machine
+  - name: log4shell2
+    lan_num: 1
+    node_num: 1
+    vm_num: 1
+    network:
+      - name: lan1
+        cidr: 172.16.10.0/24
+        gateway: 172.16.10.1
+    node:
+      - name: n1
+        fix: null
+        image:
+          format: deter
+          platform: Linux
+          release: ubuntu
+          version: '16.04'
+          bit: 'amd64'
+        network:
+          - name: lan1
+            type: deter
+            ip: 172.16.10.100
+        prerequisite:
+          - default_for_deter_node
+        virtual_env:
+          provider: virtualbox
+          network:
+            - name: lan1
+              type: hostonly
+              cidr: 192.168.56.0/24
+              gateway: 192.168.56.1
+              dhcp:
+                enabled: true
+                ip_pool_start: 192.168.56.101
+                ip_pool_end: 192.168.56.253
+              DNS:
+                - 192.168.56.10
+                - 8.8.8.8
+          instance:
+            - name: log4shell2
+              image:
+                format: vagrant
+                platform: Linux
+                release: ubuntu
+                version: '20.04'
+                bit: 'amd64'
+              flavor:
+                type: virtual
+                cpu: 1
+                ram: 4096
+                disk: 40
+              network:
+                - name: lan1
+                  type: hostonly
+                  ip: 192.168.56.100
+                  netmask: 255.255.255.0
+                  gateway: 192.168.56.1
+              vrde:
+                enabled: true
+                port: 12345
+              port_forwarding:
+                guest_port: 22,33
+                host_port: 33
+              prerequisite:
+                - default_for_virtual_machine
+            - name: log4shell3
+              image:
+                format: vagrant
+                platform: Linux
+                release: ubuntu
+                version: '20.04'
+                bit: 'amd64'
+              flavor:
+                type: virtual
+                cpu: 1
+                ram: 4096
+                disk: 40
+              network:
+                - name: lan1
+                  type: hostonly
+                  ip: 192.168.57.100
+                  netmask: 255.255.255.0
+                  gateway: 192.168.56.1
+              vrde:
+                enabled: false
+                port: 12347
+              port_forwarding:
+                guest_port: 22,33
+                host_port: 22,33
+              prerequisite:
+                - default_for_virtual_machine

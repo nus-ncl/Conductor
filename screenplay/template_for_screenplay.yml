@@ -1,0 +1,92 @@
+---
+# Assumptions: 1 lan, 1 node, deter, virtual
+metadata:
+  resource_location: [vindex_database]
+  experimentname: APT32
+  host_num: 3
+  network_num: 2
+
+host:
+  - name: attacker_and_victim
+    #    properties:
+    #      platform: deter
+    #      machine: virtual
+    os: windows_10_64 # system_version_bit
+    service:
+      - apache2
+      - python3
+
+  - name: test1
+    os: ubuntu_16_64
+    service: []
+
+  - name: test2
+    os: ubuntu_19_64
+    service: []
+
+network:
+# currently not support describing lan on more than 1 nodes.
+  lan:
+    - name: lan1
+      endpoints:
+        # one node in various lans meaning gateway
+        - attacker_and_victim
+        - test1
+    - name: lan2
+      endpoints:
+        - attacker_and_victim
+        - test2
+
+file:
+  - news.zip
+  - flash_update.zip
+
+activity:
+  - timestamp: t + 0 + 0s
+    description: "Configure the webserver, install the services"
+    subject: attacker_and_victim
+    object: attacker_and_victim
+    event:
+      - install [apache2,python3]
+      - configure apache2 UnzipToPath [news.zip]
+      - configure apache2 UnzipToPath [flash_update.zip]
+      - run [apache2]
+      - requirements pip [htdocs\news\requirements.txt]
+
+  - timestamp: t + 1 + 0s
+    description: "Open the malicious webpage article.html"
+    subject: attacker_and_victim
+    object: attacker_and_victim
+    event:
+      - open webpage http://localhost/news/article.html
+
+  - timestamp: t + 1 + 15s
+    description: "Once the video player fails to load and the pop-up asks to update your flash player,
+  Click the picture of the Adobe flash upgrade to trigger the download of flash_update.zip"
+    subject: attacker_and_victim
+    object: attacker_and_victim
+    event:
+      - download flash_update.zip
+
+  - timestamp: t + 2 + 15s
+    description: "Decompress flash_update.zip to release the system.py"
+    subject: attacker_and_victim
+    object: attacker_and_victim
+    event:
+      - decompress unzip flash_update.zip
+
+  - timestamp: t + 3 + 15s
+    description: "Run system.py via Python3 to generate dataexfil.txt"
+    subject: attacker_and_victim
+    object: attacker_and_victim
+    event:
+      - exec python3 [system.py]
+
+  - timestamp: t + 3 + 30s
+    description: "Open data.html to view the infiltrated data captured by the python file"
+    subject: attacker_and_victim
+    object: attacker_and_victim
+    event:
+      - open webpage http://localhost/news/data.html
+
+

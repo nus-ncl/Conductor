@@ -1,0 +1,110 @@
+---
+# specification language version section
+version: 1.0
+# specification language properties section
+properties:
+  # platform to deploy
+  platform: openstack
+# environment metadata section
+metadata:
+  # project in openstack
+  project_name: ARPDemo
+  # of all instances, how many are bare metal(ironic), how many are virtual
+  baremetal_instance_num: 1
+  # of all instances, how many are virtual compute(nova)
+  virtual_instance_num: 0
+  # specify lists of instance names in each category
+  instance_name:
+    # a list of instance names of openstack bare metal
+    baremetal:
+      - log4shell
+    # a list of instance names of openstack virtual compute
+    virtual: [ ]
+  # number of networks associated with instances
+  network_num: 1
+  # a bare metal reservation list
+  baremetal_reserved: [ ]
+# network section
+network:
+  # a list of associated network
+  - name: provider
+    subnets:
+      - name: provider
+        version: 4
+        cidr: 10.10.0.0/22
+        gateway: 10.10.0.1
+        dhcp:
+          # 'true' by default
+          enabled: true
+          # avoid .1 .2 .10 .100 .254 .255
+          ip_pool_start: 10.10.0.101
+          ip_pool_end: 10.10.3.250
+        DNS:
+          - 10.10.0.1
+          - 8.8.8.8
+    router: [ ]
+    port: [ ]
+# running instance section
+instance:
+  # a list of running openstack instances
+  - name: log4shell
+    # chosen image
+    image:
+      format: vmdk
+      platform: Linux
+      release: ubuntu
+      version: '20.04'
+      bit: 'amd64'
+    # chosen flavor, created if not existed
+    flavor:
+      # for 'baremetal' flavor
+      # 'cpu' & 'ram' not used
+      # 'disk' used to determine the root partition size.
+      type: baremetal
+  # valid when type == 'baremetal'
+  resource_class: baremetal_small
+    name: my-baremetal-flavor
+    # unit: no unit
+    cpu: 0
+    # unit: MB
+    ram: 0
+    # unit: GB
+    disk: 0
+    # network(s) this instance belongs to
+    network:
+      - name: provider
+        # network type could be VLAN, VxLAN, Flat.
+        type: flat
+        # ip from the dhcp pool instead of static
+        ip: dhcp
+    # security group section
+    security_group:
+      - name: default
+        rule:
+          - protocol: tcp
+            version: ipv4
+            direction: ingress
+            # port range:[port_start:port_end]
+            port_start: 5901
+            port_end: 5901
+            # '0.0.0.0/0' works for every outside host by default
+            remote_ip: 0.0.0.0/0
+          - protocol: tcp
+            version: ipv4
+            direction: ingress
+            port_start: 22
+            port_end: 22
+            remote_ip: 0.0.0.0/0
+    # only one key pair can be added
+    # users specify their own
+    # or a non-login general account in openstack gateway
+    key_pair: hkwany-openstack
+    # a list of consistent necessary workflow, runs first for every instance.
+    prerequisite:
+      - default_for_openstack_instance
+    # a list of user-provided workflow which will be copied to the instance
+    requisite:
+      file: [ ]
+      script: [ ]
+    # empty if no virtual machines in the instance
+    virtual_env: [ ]

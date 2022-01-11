@@ -9,10 +9,7 @@ metadata:
   lan_num: 2
   node_num: 3
   vm_num: 3
-  reserved_node:
-    - pc1a
-    - pc2b
-    - pc3c
+  reserved_node: []
 lan:
   - name: lan1
     endpoints:

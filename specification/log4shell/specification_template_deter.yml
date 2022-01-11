@@ -1,0 +1,88 @@
+---
+# specification language version section
+version: 1.0
+# specification language properties section
+properties:
+  # platform to deploy
+  platform: deter
+metadata:
+  # team name in deter
+  project_name: ARPDemo
+  # the list of experiment names in deter
+  instance_name:
+    - log4shell
+  # a bare metal reservation list
+  baremetal_reserved:
+    - pc1a
+# experiments
+instance:
+  # a list of experiments
+  - name: log4shell
+    lan_num: 1
+    node_num: 1
+    # number of virtual machines in the experiment
+    vm_num: 1
+    # deter node networks
+    network:
+      # a list of deter node networks
+      - name: lan1
+        cidr: 172.16.10.0/24
+        gateway: 172.16.10.1
+    # deter node
+    node:
+      # a list of deter nodes
+      - name: n1
+        # deter node image
+        image:
+          format: deter
+          platform: Linux
+          release: ubuntu
+          version: '16.04'
+          bit: 'amd64'
+        network:
+          - name: lan1
+            # deter node network
+            type: deter
+            ip: 172.16.10.100
+        # a list of consistent necessary workflow, runs first for deter node
+        prerequisite:
+          - default_for_deter_node
+        # virtual env in a node.
+        virtual_env:
+          provider: virtualbox
+          network:
+            - name: lan1
+              type: hostonly
+              cidr: 192.168.56.0/24
+              gateway: 192.168.56.1
+              dhcp:
+                enabled: true
+                # avoid .1 .2 .10 .100 .254 .255
+                ip_pool_start: 192.168.56.101
+                ip_pool_end: 192.168.56.253
+              DNS:
+                - 192.168.56.10
+                - 8.8.8.8
+          instance:
+            - name: log4shell
+              image:
+                format: vagrant
+                platform: Linux
+                release: ubuntu
+                version: '20.04'
+                bit: 'amd64'
+              network:
+                - name: lan1
+                  type: hostonly
+                  ip: 192.168.56.100
+                  netmask: 255.255.255.0
+                  gateway: 192.168.56.1
+              vrde:
+                enabled: true
+                port: 12345
+              port_forwarding:
+                guest_port: null
+                host_port: null
+              # a list of consistent necessary workflow, runs first for every virtual machine.
+              prerequisite:
+                - default_for_virtual_machine

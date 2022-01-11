@@ -1,0 +1,40 @@
+heat_template_version: rocky
+
+description: HOT template to deploy log4shell in the openstack
+
+parameters:
+  image:
+    type: string
+    label: image name
+    description: the image for log4shell
+    default: log4shell-image
+  flavor:
+    type: string
+    label: flavor name
+    description: the flavor for log4shell
+    default: my-baremetal-flavor/1C_4G_40G
+  network:
+    type: string
+    label: network name
+    description: the network for log4shell
+    default: provider
+  security_group:
+    type: string
+    label: security group name
+    description: the security group for log4shell
+    default: default
+  key_pair:
+    type: string
+    label: key pair name
+    description: the key pair group for log4shell
+    default: nologin
+resources:
+  log4shell:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      networks:
+        - network: { get_param: network }
+      security_group: { get_param: security_group }
+      key_pair: { get_param: key_pair }

@@ -6,4 +6,5 @@ templates/__pycache__/
 /temp
 *.tar.gz
 *.sql
-/venv
+*.pyc
+/venv/

@@ -3,12 +3,9 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/bin" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/defaults" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/specification" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.10 (Conductor)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (Conductor)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Client" />
     <orderEntry type="module" module-name="download-bot" />

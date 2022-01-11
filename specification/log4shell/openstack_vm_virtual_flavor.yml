@@ -1,0 +1,112 @@
+---
+version: 1.0
+properties:
+  platform: openstack
+metadata:
+  project_name: ARPDemo
+  baremetal_instance_num: 1
+  virtual_instance_num: 0
+  instance_name:
+    baremetal: [ ]
+    virtual:
+      - log4shell
+  network_num: 1
+  baremetal_reserved: [ ]
+network:
+  - name: provider
+    subnets:
+      - name: provider
+        version: 4
+        cidr: 10.10.0.0/22
+        gateway: 10.10.0.1
+        dhcp:
+          enabled: true
+          ip_pool_start: 10.10.0.101
+          ip_pool_end: 10.10.3.250
+        DNS:
+          - 10.10.0.1
+          - 8.8.8.8
+    router: [ ]
+    port: [ ]
+instance:
+  - name: log4shell
+    image:
+      format: vmdk
+      platform: Linux
+      release: ubuntu
+      version: '20.04'
+      bit: 'amd64'
+    flavor:
+      type: virtual
+      resource_class: null
+      name: 1C_4G_40G
+      cpu: 1
+      ram: 4096
+      disk: 40
+    network:
+      - name: provider
+        type: flat
+        ip: dhcp
+    security_group:
+      - name: default
+        rule:
+          - protocol: tcp
+            version: ipv4
+            direction: ingress
+            port_start: 5901
+            port_end: 5901
+            remote_ip: 0.0.0.0/0
+          - protocol: tcp
+            version: ipv4
+            direction: ingress
+            port_start: 22
+            port_end: 22
+            remote_ip: 0.0.0.0/0
+    key_pair: hkwany-openstack
+    prerequisite:
+      - default_for_openstack_instance
+    requisite:
+      file: [ ]
+      script: [ ]
+    virtual_env:
+      provider: virtualbox
+      network:
+        - name: lan1
+          type: hostonly
+          cidr: 192.168.56.0/24
+          gateway: 192.168.56.1
+          dhcp:
+            enabled: true
+            ip_pool_start: 192.168.56.101
+            ip_pool_end: 192.168.56.253
+          DNS:
+            - 192.168.56.10
+            - 8.8.8.8
+      instance:
+        - name: log4shell
+          image:
+            format: vagrant
+            platform: Linux
+            release: ubuntu
+            version: '20.04'
+            bit: 'amd64'
+          flavor:
+            type: virtual
+            name: 1C_2G_40G
+            cpu_core: 1
+            ram: 2
+            storage: 40
+          network:
+            - name: lan1
+              type: hostonly
+              ip: 192.168.56.101
+              gateway: 192.168.56.1
+              netmask: 255.255.255.0
+          vrde:
+            enabled: true
+            port: 12345
+          port_forwarding:
+            guest_port: null
+            host_port: null
+          prerequisite:
+            - default_for_virtual_machine

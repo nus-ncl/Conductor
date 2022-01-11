@@ -1,0 +1,36 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box_check_update = false
+  config.vm.synced_folder "/share/ven/esys", "/share/ven/esys", mount_options: ['rw', 'exec'], create: true, disabled: true
+  # vagrant plugin install vagrant-disksize
+  # config.disksize.size = '40GB'
+  config.vm.define "log4shell2" do |node|
+    node.vm.hostname = "log4shell2"
+    node.vm.box = "ubuntu/focal64"
+    node.vm.network "private_network", ip: "192.168.56.100", name: "lan1"
+    # port forwarding error! lengths of guest_port and host_port don't match
+    
+    node.vm.provider :virtualbox do |provider|
+      provider.customize ["modifyvm", :id, "--cpus", "1"]
+      provider.customize ["modifyvm", :id, "--memory", "4096"]
+      provider.customize ["modifyvm", :id, "--vrde", "on"]
+	  provider.customize ["modifyvm", :id, "--vrdeport", "12345"]
+      provider.customize ["modifyvm", :id, "--vrdeaddress", "0.0.0.0"]
+    end
+    # node.vm.provision "shell", path "log4shell2.conf.sh"
+  end
+  config.vm.define "log4shell3" do |node|
+    node.vm.hostname = "log4shell3"
+    node.vm.box = "ubuntu/focal64"
+    node.vm.network "private_network", ip: "192.168.57.100", name: "lan1"
+    node.vm.network "forwarded_port", guest: 22, host: 22, auto_correct: true
+    node.vm.network "forwarded_port", guest: 33, host: 33, auto_correct: true
+    node.vm.provider :virtualbox do |provider|
+      provider.customize ["modifyvm", :id, "--cpus", "1"]
+      provider.customize ["modifyvm", :id, "--memory", "4096"]
+    end
+    # node.vm.provision "shell", path "log4shell3.conf.sh"
+  end
+end

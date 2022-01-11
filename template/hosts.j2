@@ -1,0 +1,26 @@
+{% for vm in virtual_env['instance'] %}
+[{{ vm['name'] }}]
+#only show the first hostonly_network ip, guarantee it's accessible from ansible manager
+{%- if vm['network']|length %}
+{%- for network in vm['network'] %}
+{%- if network['type'] == 'hostonly' %}
+{{ network['ip'] }}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+{% endfor %}
+
+{% for vm in virtual_env['instance'] %}
+[{{ vm['name'] }}:vars]
+{%- if vm['image']['platform'] == 'Windows' %}
+ansible_connection=winrm
+ansible_port=5985
+{%- else %}
+ansible_connection=ssh
+ansible_port=22
+{%- endif %}
+ansible_password=vagrant
+ansible_user=vagrant
+ansible_python_interpreter=/usr/bin/python3
+{% endfor %}
+

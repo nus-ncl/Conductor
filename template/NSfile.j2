@@ -1,0 +1,43 @@
+set ns [new Simulator]
+
+source tb_compat.tcl
+
+# Add nodes
+{%- for node in experiment['node'] %}
+set {{ node['name'] }} [$ns node]
+{%- if node['fix'] is not none  %}
+tb-fix-node ${{ node['name'] }} {{ node['fix'] }}
+{%- endif %}
+{%- endfor %}
+
+# Set Node OS from saved image, {{ deter_node_os }} by default
+{%- for node in experiment['node'] %}
+tb-set-node-os ${{ node['name'] }} {{ deter_node_os }}
+{%- endfor %}
+
+# Set Node Lans
+{%- for lan in experiment['network'] %}
+set lanstr ""
+{%- for node in experiment['node'] %}
+{%- for network in node['network'] %}
+{%- if network['name'] == lan['name']  %}
+append lanstr "${{ node['name'] }} "
+{%- endif %}
+{%- endfor %}
+{%- endfor %}
+# Change the BW and delay if you want, {{ deter_node_bandwidth }}, {{ deter_node_delay }} respectively by default
+set {{ lan['name'] }} [$ns make-lan "$lanstr" {{ deter_node_bandwidth }} {{ deter_node_delay }}]
+{% endfor %}
+
+# Set Node IP
+{%- for node in experiment['node'] %}
+{%- for network in node['network'] %}
+tb-set-ip-lan ${{ node['name'] }} ${{ network['name'] }} {{ network['ip'] }}
+{%- endfor %}
+{%- endfor %}
+
+# Set route and adjust configure.
+$ns rtproto Static
+
+# Go!
+$ns run
