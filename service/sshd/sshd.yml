@@ -1,7 +1,0 @@
----
-# Service: sshd
-# description:
-# To enable ssh access, PasswordAuthentication yes
-  service: sshd
-  dependency:
-    - openssh-server

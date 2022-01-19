@@ -1,0 +1,5 @@
+#!/usr/bin/env bash -x
+# Donot change. Auto-generated file.
+{%- for node in experiment['node'] %}
+ssh {{ node['name'] }}.{{ experiment['name'] }}.{{ project_name }}.ncl.sg '/proj/{{ project_name }}/{{ experiment['name'] }}/{{ node['name'] }}/node.sh'
+{%- endfor %}

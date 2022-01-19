@@ -1,0 +1,22 @@
+  {%- if subtask == 'UnzipToPath' %}
+  - name: Copy news.zip
+    win_copy:
+      src: /home/localuser/news.zip
+      dest: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\news.zip
+
+  - name: Decompress news.zip
+    community.windows.win_unzip:
+      src: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\news.zip
+      dest: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\
+      delete_archive: yes
+
+  - name: Copy flash_update.zip
+    win_copy:
+      src: /home/localuser/flash_update.zip
+      dest: C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\news\flash_update.zip
+
+  - name: Decompress flash_update.zip
+    community.windows.win_unzip:
+      src: C:\Users\vagrant\Downloads\flash_update.zip
+      dest: C:\Users\vagrant\Downloads\
+  {%- endif %}

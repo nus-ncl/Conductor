@@ -1,0 +1,37 @@
+    # Service: sshd (scripts for ansible)
+    - name: Check if listed package is installed
+      {%- raw %}
+      command: dpkg-query -l "{{ item }}"
+      {%- endraw %}
+      loop:
+        - openssh-server
+      register: package_check
+
+    - name: Print execution results
+      debug:
+        msg: "Package is installed"
+      when: package_check is succeeded
+
+    - name: Print execution results
+      debug:
+        msg: "Package is uninstalled"
+      when: package_check is failed
+
+    - name: apt install openssh-server
+      become: yes
+      become_user: root
+      apt:
+        {%- raw %}
+        name: "{{ item }}"
+        {%- endraw %}
+        state: present
+      loop:
+        - openssh-server
+
+    - name: enable & restart openssh-server
+      become: yes
+      become_user: root
+      systemd:
+        name: ssh
+        state: restarted
+        enabled: yes

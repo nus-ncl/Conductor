@@ -1,0 +1,8 @@
+
+
+    # Service: copy (scripts for ansible)
+    - name: Copy file with permissions
+      ansible.builtin.copy:
+        src: {{ directory }}/{{ filename }}
+        dest: /tmp/{{ filename }}
+        mode: '0644'

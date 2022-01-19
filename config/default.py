@@ -10,6 +10,7 @@ from operating_system import operating_system
 # path
 CONDUCTOR_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_PATH = f"{CONDUCTOR_PATH}/template"
+SERVICE_PATH = f"{CONDUCTOR_PATH}/service"
 SPECIFICATION_PATH = f"{CONDUCTOR_PATH}/specification"
 OUTPUT_PATH = f"{CONDUCTOR_PATH}/output"
 

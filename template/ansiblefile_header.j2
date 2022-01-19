@@ -1,29 +1,10 @@
-- hosts: {{ host['subject'] }}
-  gather_facts: true
-{%- if host['event']|length %}
-{%- set ns = namespace(vars=0) %}
-{%- for event_entry in host['event'] %}
-  {%- if 'parameter' in event_entry and event_entry['parameter']['Error'] is not defined %}
-  {%- if ns.vars == 0 %}
-  vars:
-  {%- set ns.vars=1 %}
-  {%- endif %}
-    {%- for key,value in event_entry['parameter'].items() %}
-    {%- if value == None %}
-    {{ key }}: null
-    {%- else %}
-    {{ key }}: {{ value }}
-    {%- endif %}
-    {%- endfor %}
-  {%- endif %}
-{%- endfor %}
-{%- else %}
-  vars: null
-{%- endif %}
 
-{%- if host['event']|length %}
+
+- hosts: {{ vm['name'] }}
+  gather_facts: true
+{%- if vm['dependency']|length %}
   tasks:
 {%- else %}
-  tasks: null
+  tasks: []
 {%- endif %}
 

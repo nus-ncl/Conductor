@@ -1,0 +1,25 @@
+
+
+    # Service: python (scripts for ansible)
+    - name: Add python deadsnakes repository from PPA and install its signing key on Ubuntu target
+      become: yes
+      become_user: root
+      ansible.builtin.apt_repository:
+        repo: ppa:deadsnakes/ppa
+
+    - name: import vars
+      include_vars:
+        file: {{ vars_file_path }}/python3.yml
+        name: python3_vars
+
+    - name: apt install python3
+      become: yes
+      become_user: root
+      apt:
+      {%- raw %}
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - {{ python3_vars['parameter']['version'] }}
+      {%- endraw %}

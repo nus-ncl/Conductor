@@ -1,0 +1,6 @@
+  # Service: configure apache2 (scripts for ansible)
+{% for vm in specification['vm'] %}
+{%- if vm['name'] == subject %}
+  {%- include service + '/ansible/configure_' + vm['os']['release'] + '.j2' %}
+{%- endif %}
+{% endfor %}

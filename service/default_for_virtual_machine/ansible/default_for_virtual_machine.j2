@@ -1,0 +1,38 @@
+    # Service: apache2 (scripts for ansible)
+    - name: apt install
+      become: yes
+      become_user: root
+      apt:
+        {%- raw %}
+        name: "{{ item }}"
+        {%- endraw %}
+        state: present
+      loop:
+        - apache2
+
+    - name: Modify the default apache2 port to user's input, ports.conf
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/apache2/ports.conf
+        regexp: 'Listen 80'
+        {%- raw %}
+        line: 'Listen {{ apache2_port }}'
+        {%- endraw %}
+
+    - name: Modify the default apache2 port to user's input, 000-default.conf
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/apache2/sites-enabled/000-default.conf
+        regexp: 'VirtualHost \*:80'
+        {%- raw %}
+        line: 'VirtualHost \*:{{ apache2_port }}'
+        {%- endraw %}
+
+    - name: restart service apache2, in all cases
+      become: yes
+      become_user: root
+      service:
+        name: apache2
+        state: restarted

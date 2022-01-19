@@ -2,10 +2,14 @@
 import sys
 
 sys.path.append('../operating_system')
+# sys.path.append('../../config')
 import operating_system
 import yaml
 import copy
+# print(sys.path)
 from config import default
+
+# import default
 
 
 def yaml_file_load(filename):
