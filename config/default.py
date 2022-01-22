@@ -4,8 +4,8 @@ Default configurations for conductor.
 import os
 import sys
 # from ..bin.operating_system import operating_system
-sys.path.append('../bin/operating_system')
-from operating_system import operating_system
+sys.path.append('./bin/operating_system')
+import operating_system
 
 # path
 CONDUCTOR_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

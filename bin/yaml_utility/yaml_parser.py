@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 import sys
 
-sys.path.append('../operating_system')
+# sys.path.append('../operating_system')
 # sys.path.append('../../config')
-import operating_system
+# sys.path.append('../../config')
+from ..operating_system import operating_system
 import yaml
 import copy
-# print(sys.path)
-from config import default
-
 # import default
+from config import default
 
 
 def yaml_file_load(filename):

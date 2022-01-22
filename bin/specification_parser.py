@@ -2,19 +2,19 @@
 input: specification.yml
 output: various configuration files
 '''
-
+import sys
 import os
 import copy
-import sys
 # sys.path.append('/Users/kanghuang/PycharmProjects/Conductor/config')
 import yaml
 import jinja2
 from jinja2 import Environment, PackageLoader
-from yaml_utility import yaml_parser
+from .yaml_utility import yaml_parser
 import operating_system
-from config import customization
+# from config import customization
 from config import default
-from renderer import NSfile_renderer, Vagrantfile_renderer, hosts_renderer, deter_exp_bootstrap, deter_node_bootstrap, ansible_playbook_renderer
+sys.path.append('./bin/renderer')
+import NSfile_renderer, Vagrantfile_renderer, hosts_renderer, deter_exp_bootstrap, deter_node_bootstrap, ansible_playbook_renderer
 
 
 def os_parser(vm):

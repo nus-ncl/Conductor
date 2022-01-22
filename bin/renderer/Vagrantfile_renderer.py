@@ -1,9 +1,9 @@
 import sys
-sys.path.append('../operating_system')
+# sys.path.append('../operating_system')
 import jinja2
 from jinja2 import Environment
 from config import default
-from operating_system import operating_system
+import operating_system
 
 def renderer(output_dir, virtual_env):
     loader = jinja2.FileSystemLoader(default.TEMPLATE_PATH)
