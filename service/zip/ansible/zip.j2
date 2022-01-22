@@ -1,0 +1,17 @@
+    # Service: zip (scripts for ansible)
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+
+    - name: apt install zip unzip
+      become: yes
+      become_user: root
+      apt:
+        {%- raw %}
+        name: "{{ item }}"
+        {%- endraw %}
+        state: present
+      loop:
+        - zip

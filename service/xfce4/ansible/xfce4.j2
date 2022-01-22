@@ -1,0 +1,22 @@
+    # Service: xfce4 (scripts for ansible)
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+
+    - name: apt install xfce4
+      become: yes
+      become_user: root
+      apt:
+        {%- raw %}
+        name: "{{ item }}"
+        {%- endraw %}
+        state: present
+      loop:
+        - xfce4
+
+{#-
+    - name: Unconditionally reboot the machine with all defaults
+      reboot:
+-#}

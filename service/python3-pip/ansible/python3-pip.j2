@@ -1,0 +1,17 @@
+    # Service: python3-pip (scripts for ansible)
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+
+    - name: apt install python3-pip
+      become: yes
+      become_user: root
+      apt:
+        {%- raw %}
+        name: "{{ item }}"
+        {%- endraw %}
+        state: present
+      loop:
+        - python3-pip

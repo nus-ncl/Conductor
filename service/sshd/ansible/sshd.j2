@@ -3,6 +3,7 @@
       {%- raw %}
       command: dpkg-query -l "{{ item }}"
       {%- endraw %}
+      ignore_errors: True
       loop:
         - openssh-server
       register: package_check
@@ -17,6 +18,13 @@
         msg: "Package is uninstalled"
       when: package_check is failed
 
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+      when: package_check is failed
+
     - name: apt install openssh-server
       become: yes
       become_user: root
@@ -27,6 +35,7 @@
         state: present
       loop:
         - openssh-server
+      when: package_check is failed
 
     - name: enable & restart openssh-server
       become: yes
@@ -35,3 +44,4 @@
         name: ssh
         state: restarted
         enabled: yes
+      when: package_check is failed

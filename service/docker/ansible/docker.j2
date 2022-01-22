@@ -1,0 +1,84 @@
+    # Service: docker (scripts for ansible)
+    - name: apt uninstall docker collections
+      become: yes
+      become_user: root
+      apt:
+        {%- raw %}
+        name: "{{ item }}"
+        {%- endraw %}
+        state: absent
+      loop:
+        - docker
+        - docker-engine
+        - docker.io
+        - containerd
+        - runc
+
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+
+    - name: apt install packages to allow apt to use a repository over HTTPS
+      become: yes
+      become_user: root
+      apt:
+        {%- raw %}
+        name: "{{ item }}"
+        {%- endraw %}
+        state: present
+      loop:
+        - ca-certificates
+        - curl
+        - gnupg
+        - lsb-release
+
+    - name: Add Docker official GPG key
+      become: yes
+      become_user: root
+      shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+    - name: Add Docker official GPG key
+      become: yes
+      become_user: root
+      shell: echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    - name: apt-get update
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+
+    - name: apt install docker
+      become: yes
+      become_user: root
+      apt:
+        {%- raw %}
+        name: "{{ item }}"
+        {%- endraw %}
+        state: present
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+
+    - name: create docker group
+      become: yes
+      become_user: root
+      group:
+        name: docker
+        state: present
+
+    - name: add
+      become: yes
+      become_user: root
+      user:
+        name: vagrant
+        groups: docker
+        append: yes
+
+    - name: Unconditionally reboot the machine with all defaults
+      become: yes
+      become_user: root
+      reboot:

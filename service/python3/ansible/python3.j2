@@ -1,16 +1,35 @@
-
-
     # Service: python (scripts for ansible)
+    - name: Check if listed package is installed
+      {%- raw %}
+      command: dpkg-query -l "{{ item }}"
+      {%- endraw %}
+      ignore_errors: True
+      loop:
+        - python3
+      register: package_check
+
+    - name: Print execution results
+      debug:
+        msg: "Package is installed"
+      when: package_check is succeeded
+
+    - name: Print execution results
+      debug:
+        msg: "Package is uninstalled"
+      when: package_check is failed
+
     - name: Add python deadsnakes repository from PPA and install its signing key on Ubuntu target
       become: yes
       become_user: root
       ansible.builtin.apt_repository:
         repo: ppa:deadsnakes/ppa
+      when: package_check is failed
 
     - name: import vars
       include_vars:
         file: {{ vars_file_path }}/python3.yml
         name: python3_vars
+      when: package_check is failed
 
     - name: apt install python3
       become: yes
@@ -21,5 +40,6 @@
         state: present
         update_cache: yes
       loop:
-        - {{ python3_vars['parameter']['version'] }}
+        - "{{ python3_vars['parameter']['version'] }}"
       {%- endraw %}
+      when: package_check is failed

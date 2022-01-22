@@ -167,8 +167,8 @@ def parser(path_to_file):
                 for vm in node['virtual_env']['instance']:
                     if not os.path.isdir(f"{output_dir}/{experiment['name']}/{node['name']}/{vm['name']}_vars"):
                         os.mkdir(f"{output_dir}/{experiment['name']}/{node['name']}/{vm['name']}_vars")
-                # Vagrantfile_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node['virtual_env'])
-                # hosts_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node['virtual_env'])
+                Vagrantfile_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node['virtual_env'])
+                hosts_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node['virtual_env'])
                 # currently only supports 1 node lan
                 # deter_node_bootstrap.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", project_name, experiment['name'], node['name'], experiment['network'][0]['gateway'])
                 ansible_playbook_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node['virtual_env'], project_name, experiment['name'], node['name'])

@@ -59,18 +59,20 @@ def renderer(output_dir, virtual_env, project_name, experiment_name, node_name):
                     else:
                         content = ansiblefile.render()
                     file.write(content)
+                    file.write('\n\n')
             else:
                 continue
             if vm['resource']:
                 # conductor download resources to output_dir
-                download_url(f"{vm['resource'][0]}/deploy.zip",
+                download_url(f"{vm['resource'][0]}",
                              f"{output_dir}/deploy.zip")
                 # if os.path.isfile(f"{default.SERVICE_PATH}/{dependency}/{dependency}.yml"):
                 #     copyfile(f"{default.SERVICE_PATH}/{dependency}/{dependency}.yml",
                 #              f"{output_dir}/{vm['name']}_vars/{dependency}.yml")
                 # and then complement the playbook with 'ansible.builtin.copy'
                 ansiblefile = env.get_template(f"unarchive/ansible/unarchive.j2")
-                content = ansiblefile.render(unarchive_local_file_path=f"/proj/{project_name}/{experiment_name}/{node_name}/deploy.zip", unarchive_remote_directory_path='/tmp')
+                # content = ansiblefile.render(unarchive_local_file_path=f"/proj/{project_name}/{experiment_name}/{node_name}/deploy.zip", unarchive_remote_directory_path='/tmp')
+                content = ansiblefile.render(unarchive_local_file_path=f"/proj/{project_name}/{experiment_name}/{node_name}/deploy.zip", unarchive_remote_directory_path='"{{ ansible_facts[\'user_dir\'] }}/Desktop"')
                 file.write(content)
             else:
                 continue
