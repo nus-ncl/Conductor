@@ -179,10 +179,10 @@ def parser(path_to_file):
         pass
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     # for index, value in sys.argv:
     #     print(f"{index}->{value}")
-    parser(f"{default.SPECIFICATION_PATH}/log4shell/deter_vm_baremetal_flavor.yml")
+    # parser(f"{default.SPECIFICATION_PATH}/log4shell/deter_vm_baremetal_flavor.yml")
 # specification_content = yaml_parser.yaml_file_load(f"{specification_path}/apt32_specification_complicated.yml")
 # print(specification_content)
 # vagrantfile_renderer(specification_content['vm'])
