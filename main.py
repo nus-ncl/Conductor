@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     # print(f'Hello {args.specification_file}')
     # specification_parser.parser(f"{default.SPECIFICATION_PATH}/log4shell/deter_vm_baremetal_flavor.yml")
-    # specification_parser.parser(f"{args.specification_file}")
+    specification_parser.parser(f"{args.specification_file}")
     # vagrant_cwd_cmd = "export VAGRANT_CWD=/home/hkwany/PycharmProjects/Conductor/output/conductor/log4shell/n1"
     # os.environ["VAGRANT_CWD"]="export VAGRANT_CWD=/home/hkwany/PycharmProjects/Conductor/output/conductor/log4shell/n1"
     # print(os.environ["VAGRANT_CWD"])
