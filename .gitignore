@@ -9,3 +9,5 @@ venv/
 output/
 test/
 vars/
+.DS_Store
+.idea/
