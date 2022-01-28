@@ -1,10 +1,11 @@
 /.idea
-/* *test.* */
 defaults/__pycache__/
 services/__pycache__/
 templates/__pycache__/
-/temp
 *.tar.gz
 *.sql
 *.pyc
-/venv/
+venv/
+output/
+test/
+vars/
