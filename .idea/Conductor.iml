@@ -4,6 +4,9 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/output/conductor_bak/log4shell/n1/log4shell_vars" />
+      <excludeFolder url="file://$MODULE_DIR$/output/conductor_bak/log4shell/n2" />
+      <excludeFolder url="file://$MODULE_DIR$/output/conductor" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (Conductor)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
