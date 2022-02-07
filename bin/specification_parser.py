@@ -5,16 +5,15 @@ output: various configuration files
 import sys
 import os
 import copy
-# sys.path.append('/Users/kanghuang/PycharmProjects/Conductor/config')
 import yaml
 import jinja2
 from jinja2 import Environment, PackageLoader
 from .yaml_utility import yaml_parser
 import operating_system
-# from config import customization
 from config import default
 sys.path.append('./bin/renderer')
-import NSfile_renderer, Vagrantfile_renderer, hosts_renderer, deter_exp_bootstrap, deter_node_bootstrap, ansible_playbook_renderer
+# from renderer import *
+import NSfile_renderer, Vagrantfile_renderer, hosts_renderer, deter_exp_bootstrap, deter_node_bootstrap, ansible_playbook_renderer, node_script_renderer
 
 
 def os_parser(vm):
@@ -163,15 +162,19 @@ def parser(path_to_file):
             for node in experiment['node']:
                 if not os.path.isdir(f"{output_dir}/{experiment['name']}/{node['name']}"):
                     os.mkdir(f"{output_dir}/{experiment['name']}/{node['name']}")
-
+                else:
+                    print(f"{output_dir}/{experiment['name']}/{node['name']} already exists!")
+                # node_script_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node)
                 for vm in node['virtual_env']['instance']:
                     if not os.path.isdir(f"{output_dir}/{experiment['name']}/{node['name']}/{vm['name']}_vars"):
                         os.mkdir(f"{output_dir}/{experiment['name']}/{node['name']}/{vm['name']}_vars")
-                Vagrantfile_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node['virtual_env'])
-                hosts_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node['virtual_env'])
+                    else:
+                        print(f"{output_dir}/{experiment['name']}/{node['name']}/{vm['name']}_vars already exists!")
+                # Vagrantfile_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node['virtual_env'])
+                # hosts_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node['virtual_env'])
                 # currently only supports 1 node lan
                 # deter_node_bootstrap.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", project_name, experiment['name'], node['name'], experiment['network'][0]['gateway'])
-                ansible_playbook_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node['virtual_env'], project_name, experiment['name'], node['name'])
+                ansible_playbook_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node, project_name, experiment['name'], node['name'])
 
             print(f"All Done! Plz Check Directory: {output_dir}/{experiment['name']}/")
 

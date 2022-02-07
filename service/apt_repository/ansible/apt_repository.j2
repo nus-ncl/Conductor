@@ -1,0 +1,9 @@
+    # add to APT source list
+    - name: Add specified repository into sources list using specified filename
+      become: yes
+      become_user: root
+      ansible.builtin.apt_repository:
+        repo: {{ dependency_repo['uri'] }}
+        state: present
+        filename: {{ dependency_repo['id'] }}
+

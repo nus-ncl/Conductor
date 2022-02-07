@@ -34,6 +34,26 @@ instance:
           - name: lan1
             type: deter
             ip: 172.16.10.100
+        repositories:
+          dependency:
+            - id: dependency_1
+              uri: deb http://archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse
+            - id: dependency_2
+              uri: deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse
+
+          package:
+            - id: pack_1
+              uri: nfs://github.com/hkwany/VIndex/releases/download/v1.0/packages-pool/
+            - id: pack_2
+              uri: ftp://mirror.nus.edu.sg/packages-pool/
+
+          artifact:
+            - id: artif_1
+              uri: nfs://github.com/hkwany/VIndex/releases/download/v1.0/artifacts-pool/
+            - id: artif_2
+              uri: ftp://mirror.nus.edu.sg/artifacts-pool/
+#                   https://github.com/hkwany/VIndex/releases/download/v1.0/
+
         prerequisite:
           - default_for_deter_node
         virtual_env:
@@ -62,15 +82,24 @@ instance:
                   ip: 192.168.56.100
                   netmask: 255.255.255.0
                   gateway: 192.168.56.1
+#                - name: vboxnet1
+#                  type: hostonly
+#                  ip: 192.168.57.100
+#                  netmask: 255.255.255.0
+#                  gateway: 192.168.57.1
               vrde:
                 enabled: true
                 port: 12345
               port_forwarding:
                 guest_port: 22,80
                 host_port: 2202,8080
-              resource:
-                - https://github.com/hkwany/VIndex/releases/download/v1.0/deploy.zip
-              dependency:
+#              resource:
+#                - deploy.zip
+              package_items:
+                - firefox.deb
+              artifact_items:
+                - log4shell
+              dependency_items:
                 - sshd
                 - xfce4
                 - zip
@@ -79,4 +108,4 @@ instance:
                 - python3-pip
                 - xterm
                 - netcat
-                - firefox
+#                - firefox

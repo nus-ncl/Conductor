@@ -1,9 +1,6 @@
 ---
 
   service: nfs-client
-#  include_vars:
-#    file: {{ conductor_path }}/vars/nfs-client.yml
-#    name: nfs-client_vars
   vars:
 #    - mount_src_ip: "10.0.2.2"
 #    - mount_src_directory: "/mnt/sda3/attribution"

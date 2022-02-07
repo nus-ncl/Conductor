@@ -13,7 +13,6 @@ TEMPLATE_PATH = f"{CONDUCTOR_PATH}/template"
 SERVICE_PATH = f"{CONDUCTOR_PATH}/service"
 SPECIFICATION_PATH = f"{CONDUCTOR_PATH}/specification"
 OUTPUT_PATH = f"{CONDUCTOR_PATH}/output"
-
 # DETER
 DETER_NODE_OS = operating_system.os_dict['deter']['Linux']['ubuntu']['16.04']['amd64']
 DETER_BANDWIDTH = '10Gb'
@@ -40,7 +39,7 @@ IP_POOL_END = 110
 
 # Versioning
 VERSION = 1.0
-NODE_VIRTUALBOX_VERSION = '5.2.12'
+NODE_VIRTUALBOX_VERSION = f"6.1.32"
 
 # Logging
 LOGGING_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

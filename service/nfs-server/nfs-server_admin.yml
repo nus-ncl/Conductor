@@ -6,7 +6,7 @@
 #    name: nfs-server_vars
   vars:
     - mount_src_directory: "/mnt/sda3/attribution"
-    - exports_attributes: "*(rw, insecure, no_subtree_check, no_root_squash)"
+    - exports_attributes: "*(ro, insecure, no_subtree_check)"
 
   dependency:
     - nfs-kernel-server

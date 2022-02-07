@@ -38,9 +38,4 @@ def main():
     # elif (len(sys.argv) == 3) and (sys.argv[1] == "project"):
 
 if __name__ == '__main__':
-    main()
-    a=1
-    if (a==1):
-        a
-    else:
-        b
+    print(sys.path)

@@ -11,13 +11,13 @@ def download_url(url, save_path, chunk_size=128):
         for chunk in r.iter_content(chunk_size=chunk_size):
             fd.write(chunk)
 
-def renderer(output_dir, virtual_env, project_name, experiment_name, node_name):
+def renderer(output_dir, node, project_name, experiment_name, node_name):
     loader = jinja2.FileSystemLoader([default.TEMPLATE_PATH, default.SERVICE_PATH])
     with open(f"{output_dir}/playbook.yml", 'w') as file:
+        env = Environment(loader=loader)
         # ansible file header '---'
         file.write("---\n")
-        env = Environment(loader=loader)
-        for vm in virtual_env['instance']:
+        for vm in node['virtual_env']['instance']:
             # For one vm entry:
 
             # First, ansiblefile_header.j2, with vm as input
@@ -39,41 +39,50 @@ def renderer(output_dir, virtual_env, project_name, experiment_name, node_name):
             # 	# access their own service other configurations info by service_yml_content['*configuration_key*'], no need to enclose by {% raw %}-{% endraw %} blcok
             # 	# provided by [service].yml
             #
-            if vm['dependency']:
-                for dependency in vm['dependency']:
+            if node['repositories']['dependency']:
+                ansiblefile = env.get_template(f"apt_repository/ansible/apt_repository.j2")
+                for dependency_repo in node['repositories']['dependency']:
+                    # add apt repository
+                    content = ansiblefile.render(dependency_repo=dependency_repo)
+                    file.write(content)
+                    file.write('\n\n')
+            if vm['dependency_items']:
+                for dependency in vm['dependency_items']:
                     ansiblefile = env.get_template(f"{dependency}/ansible/{dependency}.j2")
                     # if the dependency has parameter file [dependency].yml
                     if os.path.isfile(f"{default.SERVICE_PATH}/{dependency}/{dependency}.yml"):
                         copyfile(f"{default.SERVICE_PATH}/{dependency}/{dependency}.yml",
                                  f"{output_dir}/{vm['name']}_vars/{dependency}.yml")
                         content = ansiblefile.render(vars_file_path=f"/proj/{project_name}/{experiment_name}/{node_name}/{vm['name']}_vars")
-                    # get ansible template file of specific service
-                    # if 'parameter' in service:
 
-                    # load specification(YAML-style) file of specific service the configuration/parameter/metadata yaml file of the service
-
-                    # service_metadata = yaml_parser.yaml_file_load(
-                    #     f"{root_path}/services/{service}/{service}.yml")
-
-                    # the ansible file after rendering
+                    # if the dependency has no parameter file [dependency].yml
                     else:
                         content = ansiblefile.render()
                     file.write(content)
                     file.write('\n\n')
             else:
-                continue
-            if vm['resource']:
-                # conductor download resources to output_dir
-                download_url(f"{vm['resource'][0]}",
-                             f"{output_dir}/deploy.zip")
-                # if os.path.isfile(f"{default.SERVICE_PATH}/{dependency}/{dependency}.yml"):
-                #     copyfile(f"{default.SERVICE_PATH}/{dependency}/{dependency}.yml",
-                #              f"{output_dir}/{vm['name']}_vars/{dependency}.yml")
-                # and then complement the playbook with 'ansible.builtin.copy'
-                ansiblefile = env.get_template(f"unarchive/ansible/unarchive.j2")
-                # content = ansiblefile.render(unarchive_local_file_path=f"/proj/{project_name}/{experiment_name}/{node_name}/deploy.zip", unarchive_remote_directory_path='/tmp')
-                content = ansiblefile.render(unarchive_local_file_path=f"/proj/{project_name}/{experiment_name}/{node_name}/deploy.zip", unarchive_remote_directory_path='"{{ ansible_facts[\'user_dir\'] }}/Desktop"')
-                file.write(content)
-            else:
-                continue
+                print(f"no any 'dependency_items' listed!")
+            # if vm['package_items']:
+            #     # conductor download resources to output_dir
+            #     download_url(f"{vm['resource'][0]}",
+            #                  f"{output_dir}/deploy.zip")
+            #     ansiblefile = env.get_template(f"unarchive/ansible/unarchive.j2")
+            #     content = ansiblefile.render(unarchive_local_file_path=f"/proj/{project_name}/{experiment_name}/{node_name}/deploy.zip", unarchive_remote_directory_path='"{{ ansible_facts[\'user_dir\'] }}/Desktop"')
+            #     file.write(content)
+            # else:
+            #     print(f"no any 'artifact_items' listed!")
+            # if vm['artifact_items']:
+            #     # conductor download resources to output_dir
+            #     download_url(f"{vm['resource'][0]}",
+            #                  f"{output_dir}/deploy.zip")
+            #     # if os.path.isfile(f"{default.SERVICE_PATH}/{dependency}/{dependency}.yml"):
+            #     #     copyfile(f"{default.SERVICE_PATH}/{dependency}/{dependency}.yml",
+            #     #              f"{output_dir}/{vm['name']}_vars/{dependency}.yml")
+            #     # and then complement the playbook with 'ansible.builtin.copy'
+            #     ansiblefile = env.get_template(f"unarchive/ansible/unarchive.j2")
+            #     # content = ansiblefile.render(unarchive_local_file_path=f"/proj/{project_name}/{experiment_name}/{node_name}/deploy.zip", unarchive_remote_directory_path='/tmp')
+            #     content = ansiblefile.render(unarchive_local_file_path=f"/proj/{project_name}/{experiment_name}/{node_name}/deploy.zip", unarchive_remote_directory_path='"{{ ansible_facts[\'user_dir\'] }}/Desktop"')
+            #     file.write(content)
+            # else:
+            #     print(f"no any 'artifact_items' listed!")
     print('playbook done!')

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# virtualbox extpack & ssh key
+wget https://download.virtualbox.org/virtualbox/{{ NODE_VIRTUALBOX_VERSION }}/Oracle_VM_VirtualBox_Extension_Pack-{{ NODE_VIRTUALBOX_VERSION }}.vbox-extpack -O ~/Extension_Pack
+sudo vboxmanage extpack install ~/Extension_Pack
+vboxmanage extpack install ~/Extension_Pack
+vboxmanage list extpacks
+# used for node to ssh into its VMs
+# ssh-keygen -t rsa
+# ssh-copy-id vagrant@remote_VMs_ip
+
+# Create Host Adapter for VMs
+# No need to create real Host Adapter for internal_network, which is specified by 'virtualbox__intnet' in Vagrantfile
+{%- for network in node['virtual_env']['network'] %}
+{%- if network['type']=='hostonly' %}
+VBoxManage hostonlyif create
+VBoxManage hostonlyif ipconfig {{ network['name'] }} --ip {{ network['gateway'] }} --netmask 255.255.255.0
+{%- endif %}
+{%- endfor %}
+
+

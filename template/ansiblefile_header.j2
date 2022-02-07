@@ -2,9 +2,6 @@
 
 - hosts: {{ vm['name'] }}
   gather_facts: true
-{%- if vm['dependency']|length %}
   tasks:
-{%- else %}
-  tasks: []
-{%- endif %}
+
 

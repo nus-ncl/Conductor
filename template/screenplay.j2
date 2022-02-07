@@ -8,6 +8,10 @@ metadata:
     - id: pack_{{ loop.index }}
       uri: repo
   {% endfor %}
+  {% for repo in repositories['dependency'] %}
+    - id: dependency_{{ loop.index }}
+      uri: repo
+  {% endfor %}
   experiment_name: {{ experiment_name }}
 
 {% instance template
