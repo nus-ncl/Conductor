@@ -2,11 +2,14 @@ import jinja2
 from jinja2 import Environment
 from config import default
 
-def renderer(output_dir, experiment):
+
+def renderer(output_dir, instance, project_name, platform):
     loader = jinja2.FileSystemLoader(default.TEMPLATE_PATH)
-    with open(f"{output_dir}/NSfile", 'w') as file:
+    with open(f"{output_dir}/client.xml", 'w') as file:
         env = Environment(loader=loader)
-        NSfile = env.get_template('NSfile.j2')
-        content = NSfile.render(experiment=experiment, deter_node_os=default.DETER_NODE_OS, deter_node_bandwidth=default.DETER_BANDWIDTH, deter_node_delay=default.DETER_DELAY)
+        client = env.get_template(f"client_{platform}.j2")
+        print(instance)
+        print(project_name)
+        content = client.render(instance=instance, project_name=project_name, deter_node_delay=default.DETER_NODE_OS)
         file.write(content)
-    print('NSfile done!')
+    print('client.xml done!')

@@ -35,6 +35,23 @@ def yaml_service_load(filename):
     with open(f"{default.CONDUCTOR_PATH}/services/{filename}/{filename}.yml", 'r') as stream:
         return yaml.safe_load(stream)
 
+def get_instances_name_list(instances_content):
+    names_list=[]
+    for instance in instances_content:
+        names_list.append(instance['name'])
+    return names_list
+
+def get_instance_package_name_list(package_content):
+    names_list=[]
+    for package in package_content:
+        names_list.append(package['name'])
+    return names_list
+
+def get_instance_artifact_name_list(artifact_content):
+    names_list=[]
+    for artifact in artifact_content:
+        names_list.append(artifact['name'])
+    return names_list
 
 def get_version(content):
     return content['version']

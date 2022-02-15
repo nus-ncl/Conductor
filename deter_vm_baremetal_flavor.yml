@@ -40,22 +40,22 @@ instance:
               uri: deb http://archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse
             - id: dependency_2
               uri: deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse
-
           package:
             - id: pack_1
-              uri: nfs://github.com/hkwany/VIndex/releases/download/v1.0/packages-pool/
+              uri: nfs users.ncl.sg:/big/public_share/packages-pool
             - id: pack_2
               uri: ftp://mirror.nus.edu.sg/packages-pool/
-
           artifact:
             - id: artif_1
-              uri: nfs://github.com/hkwany/VIndex/releases/download/v1.0/artifacts-pool/
+              uri: nfs users.ncl.sg:/big/public_share/artifacts-pool
             - id: artif_2
               uri: ftp://mirror.nus.edu.sg/artifacts-pool/
 #                   https://github.com/hkwany/VIndex/releases/download/v1.0/
-
         prerequisite:
           - default_for_deter_node
+        vnc:
+          enabled: true
+          port: 5901
         virtual_env:
           provider: virtualbox
           network:
@@ -108,4 +108,447 @@ instance:
                 - python3-pip
                 - xterm
                 - netcat
+#            - name: log4shell2
+#              image:
+#                format: vagrant
+#                platform: Linux
+#                release: ubuntu
+#                version: '20.04'
+#                bit: 'amd64'
+#              flavor:
+#                type: virtual
+#                cpu: 1
+#                ram: 4096
+#                disk: 40
+#              network:
+#                - name: vboxnet0
+#                  type: hostonly
+#                  ip: 192.168.56.100
+#                  netmask: 255.255.255.0
+#                  gateway: 192.168.56.1
+##                - name: vboxnet1
+##                  type: hostonly
+##                  ip: 192.168.57.100
+##                  netmask: 255.255.255.0
+##                  gateway: 192.168.57.1
+#              vrde:
+#                enabled: true
+#                port: 12345
+#              port_forwarding:
+#                guest_port: 22,80
+#                host_port: 2202,8080
+##              resource:
+##                - deploy.zip
+#              package_items:
+#                - firefox.deb
+#              artifact_items:
+#                - log4shell
+#              dependency_items:
+#                - sshd
+#                - xfce4
+#                - zip
+#                - docker
+#                - python3
+#                - python3-pip
+#                - xterm
+#                - netcat
+#            - name: log4shell3
+#              image:
+#                format: vagrant
+#                platform: Linux
+#                release: ubuntu
+#                version: '20.04'
+#                bit: 'amd64'
+#              flavor:
+#                type: virtual
+#                cpu: 1
+#                ram: 4096
+#                disk: 40
+#              network:
+#                - name: vboxnet0
+#                  type: hostonly
+#                  ip: 192.168.56.100
+#                  netmask: 255.255.255.0
+#                  gateway: 192.168.56.1
+##                - name: vboxnet1
+##                  type: hostonly
+##                  ip: 192.168.57.100
+##                  netmask: 255.255.255.0
+##                  gateway: 192.168.57.1
+#              vrde:
+#                enabled: true
+#                port: 12345
+#              port_forwarding:
+#                guest_port: 22,80
+#                host_port: 2202,8080
+##              resource:
+##                - deploy.zip
+#              package_items:
+#                - firefox.deb
+#              artifact_items:
+#                - log4shell
+#              dependency_items:
+#                - sshd
+#                - xfce4
+#                - zip
+#                - docker
+#                - python3
+#                - python3-pip
+#                - xterm
+#                - netcat
+#      - name: n2
+#        fix: pc19c
+#        image:
+#          format: deter
+#          platform: Linux
+#          release: ubuntu
+#          version: '16.04'
+#          bit: 'amd64'
+#        network:
+#          - name: lan1
+#            type: deter
+#            ip: 172.16.10.100
+#        repositories:
+#          dependency:
+#            - id: dependency_1
+#              uri: deb http://archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse
+#            - id: dependency_2
+#              uri: deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse
+#          package:
+#            - id: pack_1
+#              uri: nfs users.ncl.sg:/big/public_share/packages-pool
+#            - id: pack_2
+#              uri: ftp://mirror.nus.edu.sg/packages-pool/
+#          artifact:
+#            - id: artif_1
+#              uri: nfs users.ncl.sg:/big/public_share/artifacts-pool
+#            - id: artif_2
+#              uri: ftp://mirror.nus.edu.sg/artifacts-pool/
+##                   https://github.com/hkwany/VIndex/releases/download/v1.0/
+#        prerequisite:
+#          - default_for_deter_node
+#        vnc:
+#          enabled: true
+#          port: 5901
+#        virtual_env:
+#          provider: virtualbox
+#          network:
+#            - name: vboxnet0
+#              type: hostonly
+#              cidr: 192.168.56.0/24
+#              gateway: 192.168.56.1
+#          instance:
+#            - name: log4shell4
+#              image:
+#                format: vagrant
+#                platform: Linux
+#                release: ubuntu
+#                version: '20.04'
+#                bit: 'amd64'
+#              flavor:
+#                type: virtual
+#                cpu: 1
+#                ram: 4096
+#                disk: 40
+#              network:
+#                - name: vboxnet0
+#                  type: hostonly
+#                  ip: 192.168.56.100
+#                  netmask: 255.255.255.0
+#                  gateway: 192.168.56.1
+##                - name: vboxnet1
+##                  type: hostonly
+##                  ip: 192.168.57.100
+##                  netmask: 255.255.255.0
+##                  gateway: 192.168.57.1
+#              vrde:
+#                enabled: true
+#                port: 12345
+#              port_forwarding:
+#                guest_port: 22,80
+#                host_port: 2202,8080
+##              resource:
+##                - deploy.zip
+#              package_items:
+#                - firefox.deb
+#              artifact_items:
+#                - log4shell
+#              dependency_items:
+#                - sshd
+#                - xfce4
+#                - zip
+#                - docker
+#                - python3
+#                - python3-pip
+#                - xterm
+#                - netcat
+#            - name: log4shell5
+#              image:
+#                format: vagrant
+#                platform: Linux
+#                release: ubuntu
+#                version: '20.04'
+#                bit: 'amd64'
+#              flavor:
+#                type: virtual
+#                cpu: 1
+#                ram: 4096
+#                disk: 40
+#              network:
+#                - name: vboxnet0
+#                  type: hostonly
+#                  ip: 192.168.56.100
+#                  netmask: 255.255.255.0
+#                  gateway: 192.168.56.1
+##                - name: vboxnet1
+##                  type: hostonly
+##                  ip: 192.168.57.100
+##                  netmask: 255.255.255.0
+##                  gateway: 192.168.57.1
+#              vrde:
+#                enabled: true
+#                port: 12345
+#              port_forwarding:
+#                guest_port: 22,80
+#                host_port: 2202,8080
+##              resource:
+##                - deploy.zip
+#              package_items:
+#                - firefox.deb
+#              artifact_items:
+#                - log4shell
+#              dependency_items:
+#                - sshd
+#                - xfce4
+#                - zip
+#                - docker
+#                - python3
+#                - python3-pip
+#                - xterm
+#                - netcat
+#  - name: log4shell2
+#    lan_num: 1
+#    node_num: 1
+#    vm_num: 1
+#    network:
+#      - name: lan1
+#        cidr: 172.16.10.0/24
+#        gateway: 172.16.10.100
+#    node:
+#      - name: n1
+#        fix: pc19c
+#        image:
+#          format: deter
+#          platform: Linux
+#          release: ubuntu
+#          version: '16.04'
+#          bit: 'amd64'
+#        network:
+#          - name: lan1
+#            type: deter
+#            ip: 172.16.10.100
+#        repositories:
+#          dependency:
+#            - id: dependency_1
+#              uri: deb http://archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse
+#            - id: dependency_2
+#              uri: deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse
+#          package:
+#            - id: pack_1
+#              uri: nfs users.ncl.sg:/big/public_share/packages-pool
+#            - id: pack_2
+#              uri: ftp://mirror.nus.edu.sg/packages-pool/
+#          artifact:
+#            - id: artif_1
+#              uri: nfs users.ncl.sg:/big/public_share/artifacts-pool
+#            - id: artif_2
+#              uri: ftp://mirror.nus.edu.sg/artifacts-pool/
+##                   https://github.com/hkwany/VIndex/releases/download/v1.0/
+#        prerequisite:
+#          - default_for_deter_node
+#        vnc:
+#          enabled: true
+#          port: 5901
+#        virtual_env:
+#          provider: virtualbox
+#          network:
+#            - name: vboxnet0
+#              type: hostonly
+#              cidr: 192.168.56.0/24
+#              gateway: 192.168.56.1
+#          instance:
+#            - name: log4shell
+#              image:
+#                format: vagrant
+#                platform: Linux
+#                release: ubuntu
+#                version: '20.04'
+#                bit: 'amd64'
+#              flavor:
+#                type: virtual
+#                cpu: 1
+#                ram: 4096
+#                disk: 40
+#              network:
+#                - name: vboxnet0
+#                  type: hostonly
+#                  ip: 192.168.56.100
+#                  netmask: 255.255.255.0
+#                  gateway: 192.168.56.1
+##                - name: vboxnet1
+##                  type: hostonly
+##                  ip: 192.168.57.100
+##                  netmask: 255.255.255.0
+##                  gateway: 192.168.57.1
+#              vrde:
+#                enabled: true
+#                port: 12345
+#              port_forwarding:
+#                guest_port: 22,80
+#                host_port: 2202,8080
+##              resource:
+##                - deploy.zip
+#              package_items:
+#                - firefox.deb
+#              artifact_items:
+#                - log4shell
+#              dependency_items:
+#                - sshd
+#                - xfce4
+#                - zip
+#                - docker
+#                - python3
+#                - python3-pip
+#                - xterm
+#                - netcat
+#      - name: n3
+#        fix: pc19c
+#        image:
+#          format: deter
+#          platform: Linux
+#          release: ubuntu
+#          version: '16.04'
+#          bit: 'amd64'
+#        network:
+#          - name: lan1
+#            type: deter
+#            ip: 172.16.10.100
+#        repositories:
+#          dependency:
+#            - id: dependency_1
+#              uri: deb http://archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse
+#            - id: dependency_2
+#              uri: deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse
+#          package:
+#            - id: pack_1
+#              uri: nfs users.ncl.sg:/big/public_share/packages-pool
+#            - id: pack_2
+#              uri: ftp://mirror.nus.edu.sg/packages-pool/
+#          artifact:
+#            - id: artif_1
+#              uri: nfs users.ncl.sg:/big/public_share/artifacts-pool
+#            - id: artif_2
+#              uri: ftp://mirror.nus.edu.sg/artifacts-pool/
+##                   https://github.com/hkwany/VIndex/releases/download/v1.0/
+#        prerequisite:
+#          - default_for_deter_node
+#        vnc:
+#          enabled: true
+#          port: 5901
+#        virtual_env:
+#          provider: virtualbox
+#          network:
+#            - name: vboxnet0
+#              type: hostonly
+#              cidr: 192.168.56.0/24
+#              gateway: 192.168.56.1
+#          instance:
+#            - name: log4shell
+#              image:
+#                format: vagrant
+#                platform: Linux
+#                release: ubuntu
+#                version: '20.04'
+#                bit: 'amd64'
+#              flavor:
+#                type: virtual
+#                cpu: 1
+#                ram: 4096
+#                disk: 40
+#              network:
+#                - name: vboxnet0
+#                  type: hostonly
+#                  ip: 192.168.56.100
+#                  netmask: 255.255.255.0
+#                  gateway: 192.168.56.1
+##                - name: vboxnet1
+##                  type: hostonly
+##                  ip: 192.168.57.100
+##                  netmask: 255.255.255.0
+##                  gateway: 192.168.57.1
+#              vrde:
+#                enabled: true
+#                port: 12345
+#              port_forwarding:
+#                guest_port: 22,80
+#                host_port: 2202,8080
+##              resource:
+##                - deploy.zip
+#              package_items:
+#                - firefox.deb
+#              artifact_items:
+#                - log4shell
+#              dependency_items:
+#                - sshd
+#                - xfce4
+#                - zip
+#                - docker
+#                - python3
+#                - python3-pip
+#                - xterm
+#                - netcat
+#            - name: log4shell2
+#              image:
+#                format: vagrant
+#                platform: Linux
+#                release: ubuntu
+#                version: '20.04'
+#                bit: 'amd64'
+#              flavor:
+#                type: virtual
+#                cpu: 1
+#                ram: 4096
+#                disk: 40
+#              network:
+#                - name: vboxnet0
+#                  type: hostonly
+#                  ip: 192.168.56.100
+#                  netmask: 255.255.255.0
+#                  gateway: 192.168.56.1
+##                - name: vboxnet1
+##                  type: hostonly
+##                  ip: 192.168.57.100
+##                  netmask: 255.255.255.0
+##                  gateway: 192.168.57.1
+#              vrde:
+#                enabled: true
+#                port: 12345
+#              port_forwarding:
+#                guest_port: 22,80
+#                host_port: 2202,8080
+##              resource:
+##                - deploy.zip
+#              package_items:
+#                - firefox.deb
+#              artifact_items:
+#                - log4shell
+#              dependency_items:
+#                - sshd
+#                - xfce4
+#                - zip
+#                - docker
+#                - python3
+#                - python3-pip
+#                - xterm
+#                - netcat
 #                - firefox

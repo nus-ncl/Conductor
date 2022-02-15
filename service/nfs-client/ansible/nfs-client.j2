@@ -1,0 +1,57 @@
+    # Service: nfs-client (scripts for ansible)
+    - name: Check if listed package is installed
+      {%- raw %}
+      command: dpkg-query -l "{{ item }}"
+      {%- endraw %}
+      ignore_errors: True
+      loop:
+        - nfs-common
+      register: package_check
+
+    - name: Print execution results
+      debug:
+        msg: "Package is installed"
+      when: package_check is succeeded
+
+    - name: Print execution results
+      debug:
+        msg: "Package is uninstalled"
+      when: package_check is failed
+
+{#-
+    - name: import vars
+      include_vars:
+        file: {{ vars_file_path }}/nfs-client.yml
+        name: nfs-client_vars
+#}
+
+    - name: apt install nfs-client
+      become: yes
+      become_user: root
+      apt:
+        name: nfs-common
+        state: present
+        update_cache: yes
+      when: package_check is failed
+
+    - name: create a mountable directory if not existed
+      file:
+        path: "{{ mount_dest_directory }}"
+        state: directory
+
+    - name: configure nfs mount at /etc/fstab
+      become: yes
+      become_user: root
+      lineinfile:
+        path: /etc/fstab
+        line: "{{ mount_src_ip }}:{% raw %}{{ item }}{% endraw %}\t{{ mount_dest_directory }}\t{{ fstab_attribution }}"
+        create: yes
+      loop:
+      {%- for item in mount_src_directory %}
+        - {{ item }}
+      {%- endfor %}
+
+    - name: reload /etc/fstab
+      become: yes
+      become_user: root
+      shell: mount -a

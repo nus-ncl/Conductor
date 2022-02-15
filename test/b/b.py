@@ -1,2 +1,0 @@
-def funb():
-    print('b')

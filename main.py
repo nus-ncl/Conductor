@@ -3,11 +3,10 @@ import sys
 
 file_dir = os.path.dirname(__file__)
 sys.path.append(file_dir)
-from bin import specification_parser
+from bin import specification_parser, screenplay_writer
 from config import default
 import argparse
 import subprocess
-
 
 if __name__ == '__main__':
     # parser = argparse.ArgumentParser()
@@ -18,8 +17,9 @@ if __name__ == '__main__':
     # specification_parser.parser(f"{default.SPECIFICATION_PATH}/log4shell/deter_vm_baremetal_flavor.yml")
 
     # specification_parser.parser(f"{args.specification_file}")
-    specification_parser.parser(f"{file_dir}/deter_vm_baremetal_flavor.yml")
-
+    # specification_parser.parser(f"{file_dir}/deter_vm_baremetal_flavor.yml")
+    screenplay_writer.writer('log4shell', f"{default.CONDUCTOR_PATH}/log4shell_repositories.yml",
+                             f"{default.CONDUCTOR_PATH}/log4shell_events_description.yml")
     # vagrant_cwd_cmd = "export VAGRANT_CWD=/home/hkwany/PycharmProjects/Conductor/output/conductor/log4shell/n1"
     # os.environ["VAGRANT_CWD"]="export VAGRANT_CWD=/home/hkwany/PycharmProjects/Conductor/output/conductor/log4shell/n1"
     # print(os.environ["VAGRANT_CWD"])

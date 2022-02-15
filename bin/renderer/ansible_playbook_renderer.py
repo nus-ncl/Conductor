@@ -1,15 +1,18 @@
 import os
 import requests
+import re
 from shutil import copyfile
 import jinja2
 from jinja2 import Environment
 from config import default
+
 
 def download_url(url, save_path, chunk_size=128):
     r = requests.get(url, stream=True)
     with open(save_path, 'wb') as fd:
         for chunk in r.iter_content(chunk_size=chunk_size):
             fd.write(chunk)
+
 
 def renderer(output_dir, node, project_name, experiment_name, node_name):
     loader = jinja2.FileSystemLoader([default.TEMPLATE_PATH, default.SERVICE_PATH])
@@ -53,7 +56,8 @@ def renderer(output_dir, node, project_name, experiment_name, node_name):
                     if os.path.isfile(f"{default.SERVICE_PATH}/{dependency}/{dependency}.yml"):
                         copyfile(f"{default.SERVICE_PATH}/{dependency}/{dependency}.yml",
                                  f"{output_dir}/{vm['name']}_vars/{dependency}.yml")
-                        content = ansiblefile.render(vars_file_path=f"/proj/{project_name}/{experiment_name}/{node_name}/{vm['name']}_vars")
+                        content = ansiblefile.render(
+                            vars_file_path=f"/proj/{project_name}/{experiment_name}/{node_name}/{vm['name']}_vars")
 
                     # if the dependency has no parameter file [dependency].yml
                     else:
@@ -62,6 +66,51 @@ def renderer(output_dir, node, project_name, experiment_name, node_name):
                     file.write('\n\n')
             else:
                 print(f"no any 'dependency_items' listed!")
+
+            if node['repositories']['package']:
+                # print('mounting package repository')
+                for package_repo in node['repositories']['package']:
+                    # nfs mount
+                    if package_repo['uri'][0:3] == 'nfs':
+                        ansiblefile = env.get_template(f"nfs-client/ansible/nfs-client.j2")
+                        mount_src_ip = re.split(r'[ :]', package_repo['uri'])[1]
+                        mount_src_directory = re.split(r'[ :]', package_repo['uri'])[2]
+                    elif package_repo['uri'][0:3] == 'ftp':
+                        pass
+                        continue
+                    else:
+                        print(f"unsupported protocol uri:{package_repo['uri']}")
+                        continue
+                    # print('package')
+                    content = ansiblefile.render(mount_src_ip=mount_src_ip,
+                                                 mount_src_directory=[f"{mount_src_directory}"],
+                                                 mount_dest_directory="{{ ansible_facts['env']['HOME'] }}/package",
+                                                 fstab_attribution="nfs\tdefaults\t0\t0")
+                    file.write(content)
+                    file.write('\n\n')
+
+            if node['repositories']['artifact']:
+                # print('mounting artifact repository')
+                for artifact_repo in node['repositories']['artifact']:
+                    # nfs mount
+                    if artifact_repo['uri'][0:3] == 'nfs':
+                        ansiblefile = env.get_template(f"nfs-client/ansible/nfs-client.j2")
+                        mount_src_ip = re.split(r'[ :]', artifact_repo['uri'])[1]
+                        mount_src_directory = re.split(r'[ :]', artifact_repo['uri'])[2]
+                    elif artifact_repo['uri'][0:3] == 'ftp':
+                        pass
+                        continue
+                    else:
+                        print(f"unsupported protocol uri:{artifact_repo['uri']}")
+                        continue
+                    # print('artifact')
+                    content = ansiblefile.render(mount_src_ip=mount_src_ip,
+                                                 mount_src_directory=[f"{mount_src_directory}/{artifact_item}" for
+                                                                      artifact_item in vm['artifact_items']],
+                                                 mount_dest_directory="{{ ansible_facts['env']['HOME'] }}/artifact",
+                                                 fstab_attribution="nfs\tdefaults\t0\t0")
+                    file.write(content)
+                    file.write('\n\n')
             # if vm['package_items']:
             #     # conductor download resources to output_dir
             #     download_url(f"{vm['resource'][0]}",

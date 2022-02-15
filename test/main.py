@@ -1,5 +1,8 @@
 import sys
+import uuid
+
 import wget
+import re
 
 def download_url(url, save_path, chunk_size=128):
     r = requests.get(url, stream=True)
@@ -8,8 +11,17 @@ def download_url(url, save_path, chunk_size=128):
             fd.write(chunk)
 def main():
 
-    url = 'https://github.com/hkwany/VIndex/blob/dev/VIndex/log4shell/deploy/deploy.zip'
-    wget.download(url)
+    # artifact=f"https:/128.30.52.100/TR/PNG/iso_8859-1.txt"
+    artifact=f"https://128.30.52.101/TR/PNG/iso_8859-1.txt"
+    # protocol=artifact.split('//')[0][:4]
+    # IP=artifact.split('//')[1].split('/')[0]
+    # index=artifact.split('//')[1].index('/')
+    # file_path=artifact.split('//')[1][index:]
+    # print(protocol)
+    # print(IP)
+    # print(file_path)
+    print(artifact.split('/'))
+    print(artifact.split('/')[-1])
     # download_url("https://github.com/hkwany/VIndex/blob/dev/VIndex/log4shell/deploy/deploy.zip", "deploy.zip")
     # urllib.request.urlretrieve("https://github.com/hkwany/VIndex/tree/dev/VIndex/log4shell/deploy/deploy.zip", "deploy.zip")
     # if (len(sys.argv) == 2) and (sys.argv[1] == "test"):
@@ -38,4 +50,4 @@ def main():
     # elif (len(sys.argv) == 3) and (sys.argv[1] == "project"):
 
 if __name__ == '__main__':
-    print(sys.path)
+    main()

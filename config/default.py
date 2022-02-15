@@ -3,9 +3,18 @@ Default configurations for conductor.
 """
 import os
 import sys
+
 # from ..bin.operating_system import operating_system
 sys.path.append('./bin/operating_system')
 import operating_system
+
+# repository
+DEPENDENCY = [f"deb http://archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse",
+              f"deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse",
+              f"deb https://download.nus.edu.sg/mirror/ubuntu/dists/ trusty main multiverse restricted universe",
+              f"deb-src https://download.nus.edu.sg/mirror/ubuntu/dists/ trusty main multiverse restricted universe"]
+# type
+TYPE_DICT= {'sh':'exec','exe':'exec','txt':'file'}
 
 # path
 CONDUCTOR_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -13,6 +22,7 @@ TEMPLATE_PATH = f"{CONDUCTOR_PATH}/template"
 SERVICE_PATH = f"{CONDUCTOR_PATH}/service"
 SPECIFICATION_PATH = f"{CONDUCTOR_PATH}/specification"
 OUTPUT_PATH = f"{CONDUCTOR_PATH}/output"
+SCREENPLAY_PATH = f"{CONDUCTOR_PATH}/screenplay"
 # DETER
 DETER_NODE_OS = operating_system.os_dict['deter']['Linux']['ubuntu']['16.04']['amd64']
 DETER_BANDWIDTH = '10Gb'
@@ -124,7 +134,8 @@ TIPS = {'metadata': {'teamname': '', 'experimentname': '', 'lans_num': '', 'node
                            'gateway': TIP_VM_NETWORK_GATEWAY, 'ip': '', 'netmask': TIP_NETMASK,
                            'type': TIP_VM_NETWORK_TYPE},
                'vrde': {'enabled': TIP_VRDE_ENABLED, 'port': TIP_VRDE_PORT},
-               'port_forwarding': {'inquiry': TIP_PORT_FORWARDING_INQUIRY,'guest_port': TIP_PORT_FORWARDING, 'host_port': TIP_PORT_FORWARDING},
+               'port_forwarding': {'inquiry': TIP_PORT_FORWARDING_INQUIRY, 'guest_port': TIP_PORT_FORWARDING,
+                                   'host_port': TIP_PORT_FORWARDING},
                'services': {'inquiry': TIP_SERVICE_INQUIRY}},
         'os': {'inquiry': TIP_NODE_OS, 'type': TIP_OS_TYPE, 'platform': TIP_OS_PLATFORM,
                'release': TIP_OS_RELEASE, 'version': TIP_OS_VERSION,
@@ -149,4 +160,4 @@ DEFAULT_VRDE_PORT = '12345'
 # DEFAULT_ARCHITECTURE='[ i386 | amd64 ]'
 
 # serivces that don't need cli.Services_prompt_detailed
-ROUGH_SERVICES=['essentials_common']
+ROUGH_SERVICES = ['essentials_common']

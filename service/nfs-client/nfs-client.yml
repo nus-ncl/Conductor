@@ -1,27 +1,11 @@
 ---
 
   service: nfs-client
-  parameter: {}
-#  include_vars:
-#    file: {{ conductor_path }}/vars/nfs-client.yml
-#    name: nfs-client_vars
-  vars:
+  parameter:
 #    - mount_src_ip: "10.0.2.2"
 #    - mount_src_directory: "/mnt/sda3/attribution"
-#    - fstab_attribution: "nfs defaults 0 0"
-    - mount_src_ip: "10.0.2.2"
-    - mount_dest_directory: "/opt/attribution"
-    - mount_src_directory: "/mnt/sda3/attribution"
-
-  dependency:
-    - nfs-common
-  source:
-  prepared:
-    dependency:
-    script:
-      - script.sh
-    bin:
-    source:
+#    - mount_dest_directory: "/home/{{ USER }}/"
+    - fstab_attribution: "nfs\tdefaults\t0\t0"
 
 
 

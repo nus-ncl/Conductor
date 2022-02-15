@@ -11,9 +11,11 @@ from jinja2 import Environment, PackageLoader
 from .yaml_utility import yaml_parser
 import operating_system
 from config import default
+
 sys.path.append('./bin/renderer')
 # from renderer import *
-import NSfile_renderer, Vagrantfile_renderer, hosts_renderer, deter_exp_bootstrap, deter_node_bootstrap, ansible_playbook_renderer, node_script_renderer
+import NSfile_renderer, Vagrantfile_renderer, hosts_renderer, deter_exp_bootstrap, deter_node_bootstrap, \
+    ansible_playbook_renderer, node_script_renderer, client_renderer
 
 
 def os_parser(vm):
@@ -23,7 +25,6 @@ def os_parser(vm):
     version = vm['os']['version']
     bit = vm['os']['bit']
     return operating_system.os[provider][platform][release][version][bit]
-
 
 
 # TODO: specify pack version and 'route add -net' & 'hostonlyif'
@@ -174,18 +175,18 @@ def parser(path_to_file):
                 # hosts_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node['virtual_env'])
                 # currently only supports 1 node lan
                 # deter_node_bootstrap.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", project_name, experiment['name'], node['name'], experiment['network'][0]['gateway'])
-                ansible_playbook_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node, project_name, experiment['name'], node['name'])
+                # ansible_playbook_renderer.renderer(f"{output_dir}/{experiment['name']}/{node['name']}", node, project_name, experiment['name'], node['name'])
+            # client_renderer.renderer(f"{output_dir}/{experiment['name']}", experiment, project_name, platform)
 
             print(f"All Done! Plz Check Directory: {output_dir}/{experiment['name']}/")
 
     elif yaml_parser.get_platform(content) == 'openstack':
         pass
 
-
 # if __name__ == "__main__":
-    # for index, value in sys.argv:
-    #     print(f"{index}->{value}")
-    # parser(f"{default.SPECIFICATION_PATH}/log4shell/deter_vm_baremetal_flavor.yml")
+# for index, value in sys.argv:
+#     print(f"{index}->{value}")
+# parser(f"{default.SPECIFICATION_PATH}/log4shell/deter_vm_baremetal_flavor.yml")
 # specification_content = yaml_parser.yaml_file_load(f"{specification_path}/apt32_specification_complicated.yml")
 # print(specification_content)
 # vagrantfile_renderer(specification_content['vm'])

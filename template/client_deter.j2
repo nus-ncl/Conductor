@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Client platform="deter" url="tutorial.html">
+  <VM>
+  {%- for node in instance['node'] %}
+  {%- for vm in node['virtual_env']['instance'] %}
+    <Machine username="vagrant" password="vagrant" name="{{ vm['name'] }}" OSType="{{ vm['image']['release'] }}_{{ vm['image']['version'] }}_{{ vm['image']['bit'] }}" Node="{{ node['name'] }}" ExperimentName="{{ instance['name'] }}" TeamName="{{ project_name }}">
+      <Network>
+        <NAT enabled="true">
+  {%- if (vm['port_forwarding']['guest_port'] is not none) and (vm['port_forwarding']['host_port'] is not none) %}
+  {%- set guest_port_list = (vm['port_forwarding']['guest_port']|string).split(',') %}
+  {%- set host_port_list = (vm['port_forwarding']['host_port']|string).split(',') %}
+  {%- if guest_port_list|length != host_port_list|length %}
+          # port forwarding error! lengths of guest_port and host_port don't match
+  {%- else %}
+          <ForwardingNum>{{ guest_port_list|length }}</ForwardingNum>
+  {%- for index in range(guest_port_list|length) %}
+          <Forwarding hostip="0.0.0.0" hostport="{{ host_port_list[index] }}" guestport="{{ guest_port_list[index] }}"/>
+  {%- endfor %}
+  {%- endif %}
+  {%- else %}
+          # No Port Forwarding
+  {%- endif %}
+        </NAT>
+      </Network>
+  {%- if vm['vrde']['enabled'] == True %}
+      <RemoteDisplay enabled="true">
+        <VRDEProperties>
+          <Property name="TCP/Address" value="0.0.0.0"/>
+          <Property name="TCP/Ports" value="{{ vm['vrde']['port'] }}"/>
+        </VRDEProperties>
+  {%- else %}
+        <RemoteDisplay enabled="false">
+  {%- endif %}
+      </RemoteDisplay>
+    </Machine>
+  {%- endfor %}
+  {%- endfor %}
+  </VM>
+  <NODES>
+  {%- for node in instance['node'] %}
+    <Node name="{{ node['name'] }}" platform= "deter" OSType="{{ deter_node_delay }}" ExperimentName="{{ instance['name'] }}" TeamName="{{ project_name }}">
+  {%- if node['vnc']['enabled'] == True %}
+      <VNC enabled="true">
+        <VNCPort>{{ node['vnc']['port'] }}</VNCPort>
+      </VNC>
+  {%- else %}
+      <VNC enabled="false">
+      </VNC>
+  {%- endif %}
+    </Node>
+  {%- endfor %}
+  </NODES>
+</Client>
+
+
+
+
+

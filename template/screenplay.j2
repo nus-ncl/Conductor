@@ -49,7 +49,7 @@ networks:
   {% endfor %}
   integrate(networks) # sort & integrate
 
-{% event template
+{% event class
 order: null
 place: null
 {%- if type == 'package' or if type == 'file' %}
@@ -71,6 +71,6 @@ description: null
 {% set events=[] %}
 events:
   {% for event in events %}
-  one_event = event_template(event)
+  one_event = event_class(event)
   events.append(one_event)
   {% endfor %}
